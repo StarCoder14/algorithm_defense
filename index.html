@@ -133,6 +133,9 @@
   .lrow button{min-height:36px;padding:6px 11px;font-size:11px;flex:0 0 auto}
   .labh{font-family:var(--disp);font-size:11px;color:var(--dim);letter-spacing:1px;
     margin:16px 0 7px;padding-top:12px;border-top:1px solid var(--line)}
+  .seg button{position:relative}
+  .segn{font-style:normal;font-size:10px;font-weight:700;color:var(--tc,var(--dim));
+    margin-left:5px;padding:1px 5px;border-radius:99px;background:#0b0f1a}
   .wallet{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
   .tw{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;
     border:1px solid var(--line);border-radius:9px;background:var(--panel2);opacity:.45}
@@ -2189,20 +2192,13 @@ function recipeStatus(){
 function htmlGacha(){
   const g = SHEET.gtab;
   const seg = [['draft','드래프트'],['tier','등급'],['named','지목']].map(([k,n]) => {
-    const cnt = S.tk[k];
-    return `<button data-g="${k}" class="${g===k?'sel':''}">${n}
-      ${cnt > 0 ? `<em class="dot">${cnt}</em>` : ''}</button>`;
+    const cnt = S.tk[k], fresh = cnt > (S.seen[k]||0);
+    return `<button data-g="${k}" class="${g===k?'sel':''}" style="--tc:${TICKET[k].c}">
+      ${n}<em class="segn">${cnt}</em>${fresh ? '<em class="dot">!</em>' : ''}</button>`;
   }).join('');
 
-  // 보유 소환권 요약
-  const wallet = Object.keys(TICKET).map(k =>
-    `<div class="tw ${S.tk[k]>0?'has':''}"><i style="background:${TICKET[k].c}"></i>
-      <span>${TICKET[k].n}</span><b>${S.tk[k]}</b></div>`).join('');
-
-  let h = `<div class="wallet">${wallet}</div>
-    <p class="gnote" style="margin:0 0 9px">소환소는 골드를 쓰지 않습니다.
-      <b>3웨이브마다 드래프트권</b>, <b>5웨이브마다 등급권</b>,
-      <b>보스 격파와 5·15·25웨이브에 지목권</b>이 들어옵니다.</p>
+  let h = `<p class="gnote" style="margin:0 0 9px">소환소는 골드를 쓰지 않고 <b>소환권</b>으로만 굴립니다.
+      3웨이브마다 드래프트권, 6웨이브마다 등급권, 8웨이브와 보스 격파 시 지목권이 들어옵니다.</p>
     <div class="seg">${seg}</div>`;
 
   if (g === 'draft'){
