@@ -24,10 +24,10 @@
     border-left:1px solid var(--line);border-right:1px solid var(--line)}
 
   /* 상단 HUD — 한 줄 */
-  .hud{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;flex:0 0 auto}
+  .hud{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;flex:0 0 auto}
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:4px 2px;text-align:center;overflow:hidden}
-  .stat i{display:block;font-style:normal;color:var(--dim);font-size:7.5px;letter-spacing:.7px}
-  .stat b{font-size:12.5px;line-height:1.25;white-space:nowrap}
+  .stat i{display:block;font-style:normal;color:var(--dim);font-size:8px;letter-spacing:0}
+  .stat b{font-size:11.5px;line-height:1.25;white-space:nowrap}
 
   /* 보드 — 남는 공간 전부 */
   .board{flex:1 1 auto;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;
@@ -158,6 +158,49 @@
   .ab-g div{height:100%;background:#ffd76e}
   .ab-n{font-size:9px;color:var(--dim);text-align:right}
   .abil .full{margin-top:8px;min-height:36px}
+  .opt{border:1px solid #6b5a2a;border-radius:10px;padding:10px 11px;margin:9px 0 0;background:#1c1a12}
+  .opt-h{display:flex;align-items:center;gap:8px}
+  .opt-h b{font-size:9.5px;letter-spacing:1px;color:var(--dim)}
+  .opt-h span{font-size:15px;font-weight:700;color:#ffd76e;font-family:var(--mono)}
+  .opt-h i{font-style:normal;font-size:9px;color:var(--dim);margin-left:auto;
+    border:1px solid var(--line);border-radius:99px;padding:2px 7px}
+  .opt-bar{display:flex;gap:3px;margin:8px 0 6px}
+  .opt-bar span{flex:1;text-align:center;font-size:8px;padding:3px 1px;border-radius:5px;
+    background:#0b0f1a;color:#4a5570;white-space:nowrap;overflow:hidden}
+  .opt-bar span.on{background:#3a2f14;color:#ffd76e}
+  .opt p{font-size:10px;color:var(--dim);margin:0 0 4px}
+  .opt .full{margin-top:6px}
+  .transh{font-size:10px;letter-spacing:1px;color:var(--dim);margin:14px 0 7px;
+    padding-top:11px;border-top:1px solid var(--line)}
+  .trans{border:1px solid #5a2a4d;border-radius:10px;padding:10px 11px;margin-bottom:8px;background:#1c1220}
+  .trans.owned{border-color:#3a4a75;background:#131a2a;opacity:.75}
+  .trans.can{border-color:#ff6bd6;background:#26142a}
+  .tr-h{display:flex;align-items:center;gap:9px}
+  .tr-h b{flex:1;font-size:13.5px}
+  .tr-h button{min-height:32px;padding:5px 13px;font-size:11px;flex:0 0 auto}
+  .tr-m{font-size:10.5px;color:var(--dim);margin-top:5px}
+  .tr-m .ok{color:#7ee787}
+  .tr-c{font-size:10px;color:var(--dim);margin-top:6px;display:flex;align-items:center;gap:6px}
+  .tr-c i{font-style:normal;margin-left:auto;color:#ff9b7b}
+  .tr-c i.ok{color:#7ee787}
+  .tr-bar{height:3px;background:#0b0f1a;border-radius:2px;margin-top:4px;overflow:hidden}
+  .tr-bar span{display:block;height:100%;background:#ff6bd6;transition:width .3s}
+  .tr-d{font-size:9.5px;color:#6f7a90;line-height:1.55;margin-top:6px}
+  .slotbar{display:flex;align-items:center;gap:9px;border:1px solid #33406a;border-radius:10px;
+    padding:9px 11px;margin-bottom:10px;background:#141b2e}
+  .slotbar.full{border-color:#6b5a2a;background:#1c1a12}
+  .slotbar div{flex:1;min-width:0}
+  .slotbar b{font-size:12.5px;display:block}
+  .slotbar span{font-size:10px;color:var(--dim);line-height:1.5;display:block;margin-top:3px}
+  .slotbar button{min-height:34px;padding:6px 10px;font-size:10.5px;flex:0 0 auto}
+  .slotbar [data-gotrans]{border-color:#5a2a4d;color:#ff9be0}
+  .awlist{border:1px solid #6b5a2a;border-radius:10px;padding:9px 10px;margin-bottom:10px;background:#1c1a12}
+  .awh{font-size:10px;letter-spacing:1px;color:#ffd76e;margin-bottom:6px}
+  .awrow{display:flex;align-items:center;gap:9px;padding:5px 0}
+  .awrow .awl{flex:1;min-width:0}
+  .awrow b{font-size:12.5px}
+  .awrow span{display:block;font-size:9.5px;color:var(--dim);margin-top:2px}
+  .awrow button{min-height:32px;padding:5px 11px;font-size:11px;flex:0 0 auto}
   .autobar{display:flex;justify-content:space-between;align-items:center;gap:10px;
     border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:2px}
   .autobar span{font-size:10.5px;color:var(--dim);line-height:1.55}
@@ -228,6 +271,11 @@
     padding:8px 10px;font-size:10.5px;line-height:1.6;margin-bottom:9px}
   .nchip.tk{border-color:#3f6b45}
   .nchip.tk small{color:#a9e5b3}
+  .gate{border-radius:9px;padding:9px 11px;margin:0 0 10px;font-size:11px;line-height:1.6}
+  .gate.ok{background:#16261a;border:1px solid #3f6b45;color:#a9e5b3}
+  .gate.bad{background:#2c1a1e;border:1px solid #6b3a3f;color:#ffb3b3}
+  .gate b{margin-right:6px}
+  .gate span{display:block;margin-top:4px;opacity:.85;font-size:10px}
   .gnote{font-size:10.5px;color:var(--dim);line-height:1.7;margin:11px 0 0}
 
   .logbox{font-size:11px;line-height:1.8;color:var(--dim)}
@@ -244,41 +292,35 @@
 
   /* ── 메인화면 */
   #title{position:absolute;inset:0;z-index:20;background:linear-gradient(#0d1220,#070a12 60%);
-    display:flex;flex-direction:column;overflow-y:auto;padding:20px 16px calc(20px + env(safe-area-inset-bottom))}
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    padding:24px 18px calc(24px + env(safe-area-inset-bottom))}
   #title.hide{display:none}
-  #title.out{animation:titleOut .42s cubic-bezier(.55,0,.85,.2) both}
-  @keyframes titleOut{to{opacity:0;transform:scale(1.06);filter:blur(5px)}}
-  .board.boot{animation:boardIn .62s cubic-bezier(.22,1,.36,1) both}
-  @keyframes boardIn{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
-  .hud.boot,.ustrip.boot,.controls.boot{animation:riseIn .55s cubic-bezier(.22,1,.36,1) both}
-  .hud.boot{animation-delay:.10s} .ustrip.boot{animation-delay:.20s} .controls.boot{animation-delay:.26s}
-  @keyframes riseIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  /* 부팅 문구 */
-  #boot{position:absolute;inset:0;z-index:19;display:flex;align-items:center;justify-content:center;
-    background:var(--bg);font-size:12px;color:#7ee787;letter-spacing:1px;
-    animation:bootOut .75s ease .25s both}
-  #boot.hide{display:none}
-  @keyframes bootOut{to{opacity:0}}
-  .t-logo{font-family:var(--disp);font-size:29px;line-height:1.12;letter-spacing:-1px;margin:14px 0 0}
+  #t-bg{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .t-chip{position:absolute;display:flex;gap:7px;align-items:center;white-space:nowrap;
+    font-family:var(--mono);font-size:15px;font-weight:700;opacity:0;
+    animation:drift linear infinite;will-change:transform}
+  .t-chip b{font-size:13px;opacity:.75}
+  @keyframes drift{
+    0%  {transform:translate3d(0,0,0) rotate(-24deg) scale(var(--sc));opacity:0}
+    12% {opacity:.15}
+    88% {opacity:.15}
+    100%{transform:translate3d(-80vw,120vh,0) rotate(-24deg) scale(var(--sc));opacity:0}
+  }
+  .t-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+    text-align:center;width:100%;max-width:400px}
+  .t-logo{font-family:var(--disp);font-size:34px;line-height:1.08;letter-spacing:-1px;margin:0}
   .t-logo span{color:#ffd76e;display:block}
-  .t-tag{color:var(--dim);font-size:11px;line-height:1.75;margin:9px 0 0}
-  .t-rule{display:flex;gap:6px;margin:15px 0 4px;flex-wrap:wrap}
-  .t-rule div{font-size:9.5px;color:var(--dim);border:1px solid var(--line);border-radius:99px;padding:4px 9px}
-  .t-stages{display:flex;flex-direction:column;gap:7px;margin:14px 0 0}
-  .t-st{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;
-    padding:10px 12px;background:#111726}
-  .t-st b{font-family:var(--disp);font-size:17px;flex:0 0 auto;line-height:1}
-  .t-st .ts-n{font-size:12px;font-weight:700}
-  .t-st .ts-d{font-size:9.5px;color:var(--dim);line-height:1.6;margin-top:3px}
-  .t-st .ts-b{font-size:9px;color:#ff9b93;margin-top:4px}
-  .t-btns{margin-top:auto;padding-top:16px;display:flex;flex-direction:column;gap:7px}
-  .t-btns .row2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-  #t-start{min-height:52px;font-size:14px}
-  .t-back{margin-bottom:10px}
-  .t-body{font-size:11.5px;line-height:1.8;color:var(--dim)}
+  .t-tag{color:var(--dim);font-size:11.5px;line-height:1.8;margin:14px 0 0}
+  .t-btns{display:flex;flex-direction:column;gap:8px;width:100%;margin-top:32px}
+  .t-btns .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #t-start{min-height:54px;font-size:14px}
+  .t-back{position:relative;z-index:1;align-self:flex-start;margin-bottom:12px}
+  .t-body{position:relative;z-index:1;font-size:11.5px;line-height:1.8;color:var(--dim);
+    max-width:640px;margin:0 auto}
   .t-body h5{color:var(--txt);font-size:12px;margin:14px 0 5px;font-family:var(--disp)}
   .t-body h5:first-child{margin-top:0}
   .t-body b{color:var(--txt)}
+  #title.sub{display:block;overflow-y:auto;align-items:stretch}
 
   /* ── 스테이지 진입 카드 */
   #stagecard{position:absolute;left:8px;right:8px;top:50%;z-index:7;
@@ -295,20 +337,36 @@
     border-top:1px solid var(--line);padding-top:9px}
   .banner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
     background:rgba(9,12,21,.94);text-align:center;gap:13px;padding:26px;z-index:6}
+  .rs{width:100%;max-width:400px}
+  .rs h2{margin:0 0 6px}
+  .rs>p{color:var(--dim);font-size:11.5px;line-height:1.7;margin:0 0 14px}
+  .rs-g{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+  .rs-c{background:#121726;border:1px solid var(--line);border-radius:8px;padding:7px 4px}
+  .rs-c i{display:block;font-style:normal;font-size:8px;color:var(--dim);letter-spacing:.4px}
+  .rs-c b{font-size:13px;line-height:1.3;display:block;margin-top:2px}
+  .rs-c b.hi{color:#ffd76e}
+  .rs-b{font-size:10px;color:var(--dim);margin-top:10px;line-height:1.6}
+  .rs-n{font-size:9.5px;color:#5f6b82;margin:8px 0 0;line-height:1.6}
   .banner h2{font-family:var(--disp);font-size:21px;margin:0}
   .banner p{color:var(--dim);font-size:11.5px;margin:0;line-height:1.85}
   .banner button{min-height:44px;padding:10px 22px}
+  #stagecard .sc-mut{border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-top:8px;text-align:left}
+  #stagecard .sc-mut b{font-size:11.5px}
+  #stagecard .sc-mut span{display:block;font-size:10px;color:var(--dim);line-height:1.6;margin-top:3px}
   .hide{display:none}
 
   /* ══════════ PC 레이아웃 ══════════ */
   @media (min-width:1000px){
     body{padding:0}
+    .rs{max-width:460px}
+    .rs-c b{font-size:15px}
+    .rs-c i{font-size:9px}
     .app{max-width:1180px;height:100vh;padding:14px 18px;gap:10px;
       display:grid;grid-template-columns:minmax(0,1fr) 360px;
       grid-template-rows:auto minmax(0,1fr) auto auto;
       grid-template-areas:"hud side" "board side" "strip side" "ctrl side";
       column-gap:18px}
-    .hud{grid-area:hud;grid-template-columns:repeat(5,1fr);gap:8px}
+    .hud{grid-area:hud;grid-template-columns:repeat(7,1fr);gap:6px}
     .stat{padding:8px 6px;border-radius:9px}
     .stat i{font-size:9px}
     .stat b{font-size:17px}
@@ -333,13 +391,11 @@
     #sheet{transform:none}
 
     #title{padding:40px 60px}
-    .t-logo{font-size:44px}
-    .t-tag{font-size:13px}
-    .t-stages{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .t-st{flex-direction:column;gap:6px}
-    .t-btns{flex-direction:row;gap:10px;max-width:560px}
-    #t-start{flex:2;min-height:58px}
-    .t-btns .row2{flex:1;grid-template-columns:1fr 1fr}
+    .t-logo{font-size:52px}
+    .t-tag{font-size:13.5px}
+    .t-inner{max-width:460px}
+    .t-chip{font-size:19px}
+    #t-start{min-height:60px;font-size:15px}
     #stagecard{left:50%;transform:translate(-50%,-50%);width:420px;right:auto}
     @keyframes cardIn{from{opacity:0;transform:translate(-50%,-40%) scale(.94)}
       to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
@@ -354,11 +410,13 @@
 <div class="app">
 
   <div class="hud">
-    <div class="stat"><i>GOLD</i><b id="s-gold">0</b></div>
-    <div class="stat"><i>MEM</i><b id="s-life">20</b></div>
-    <div class="stat"><i>WAVE</i><b id="s-wave">0/30</b></div>
-    <div class="stat"><i>UNIT</i><b id="s-unit">0/22</b></div>
-    <div class="stat"><i>NEXT</i><b id="s-next">대기</b></div>
+    <div class="stat"><i>골드</i><b id="s-gold">0</b></div>
+    <div class="stat"><i>메모리</i><b id="s-life">20</b></div>
+    <div class="stat"><i>웨이브</i><b id="s-wave">0/30</b></div>
+    <div class="stat"><i>유닛</i><b id="s-unit">0/22</b></div>
+    <div class="stat"><i>다음</i><b id="s-next">대기</b></div>
+    <div class="stat"><i>신화</i><b id="s-myth">0/5</b></div>
+    <div class="stat"><i>토큰</i><b id="s-opt">0</b></div>
   </div>
 
   <div class="board" id="board">
@@ -395,17 +453,16 @@
 
 
   <div id="title">
-    <h1 class="t-logo">ALGORITHM<span>DEFENSE</span></h1>
-    <p class="t-tag">변수를 뽑아 자료구조로 합치고,<br>자료구조를 조합해 알고리즘을 만드는 랜덤 디펜스.</p>
-    <div class="t-rule">
-      <div>랜덤 소환</div><div>3개 합성</div><div>신화 조합</div><div>웨이브 30</div>
-    </div>
-    <div class="t-stages" id="t-stages"></div>
-    <div class="t-btns">
-      <button class="go" id="t-start">게임 시작</button>
-      <div class="row2">
-        <button id="t-dex">유닛 도감</button>
-        <button id="t-how">플레이 방법</button>
+    <div id="t-bg"></div>
+    <div class="t-inner">
+      <h1 class="t-logo">ALGORITHM<span>DEFENSE</span></h1>
+      <p class="t-tag">변수를 뽑아 자료구조로 합치고,<br>자료구조를 조합해 알고리즘을 만드는 랜덤 디펜스.</p>
+      <div class="t-btns">
+        <button class="go" id="t-start">게임 시작</button>
+        <div class="row2">
+          <button id="t-dex">유닛 도감</button>
+          <button id="t-how">플레이 방법</button>
+        </div>
       </div>
     </div>
   </div>
@@ -420,6 +477,7 @@ const TIER = [
   {n:'영웅', hex:'#ffa657', label:'고급 자료구조'},
   {n:'전설', hex:'#ff7b72', label:'최적화 기법'},
   {n:'신화', hex:'#ffd76e', label:'알고리즘'},
+  {n:'초월', hex:'#ff6bd6', label:'계산 이론'},
 ];
 const U = {
   int:  {n:'int', t:0, sym:'42', dmg:14, rng:2.3, cd:0.85, sp:{t:'single'},
@@ -451,6 +509,15 @@ const U = {
     d:'코드를 재사용 가능한 덩어리로 묶습니다. 주변 8칸 아군 공격력 +30%.',
     v:'인접 아군으로 호출 파선이 뻗습니다.', c:'boost(u){ u.dmg *= 1.3 }'},
 
+  pool: {n:'스레드풀', t:1, sym:'≡', dmg:0, rng:1.6, cd:1.6, sp:{t:'buffSpd',mul:0.3},
+    d:'미리 만들어 둔 스레드를 재사용합니다. 공격은 못 하지만 인접 8칸 아군의 공격속도를 30% 올립니다.',
+    v:'인접 아군으로 작업 큐가 뻗어 나갑니다.', c:'pool.submit(task)'},
+  gcu:  {n:'가비지 컬렉터', t:2, sym:'♻', dmg:0, rng:0, cd:11, sp:{t:'repair',amt:1},
+    d:'쓰지 않는 메모리를 회수합니다. 공격 대신 11초마다 잃어버린 메모리를 1 되돌립니다.',
+    v:'회수 파동이 퍼지며 메모리가 복구됩니다.', c:'sweep(); free(unreachable);'},
+  mtx:  {n:'뮤텍스', t:3, sym:'🔒', dmg:74, rng:2.8, cd:1.6, sp:{t:'lock',dur:1.3},
+    d:'임계 구역을 잠급니다. 때린 적을 1.3초간 완전히 정지시킵니다. 보스에게는 통하지 않습니다.',
+    v:'대상에 자물쇠가 채워지며 멈춥니다.', c:'lock(); /* critical */ unlock();'},
   stk:  {n:'스택', t:2, sym:'LIFO', dmg:46, rng:2.7, cd:1.0, sp:{t:'snipeLast'},
     d:'나중에 넣은 걸 먼저 꺼냅니다(LIFO). 맨 뒤의 적부터 후려칩니다.',
     v:'블록이 쌓였다가 pop 되며 떨어집니다.', c:'stack.pop()'},
@@ -542,14 +609,41 @@ const U = {
     v:'패턴이 일렬로 미끄러지며 일치 지점을 찍습니다.', c:'π = build_failure(pat)',
     sk:{p:.08, n:'실패 함수', d:'선두 10명에게 2배 피해', f:'top', k:10, mul:2},
     ult:{g:'time', need:28, n:'패턴 일치', d:'선두 6명에게 현재 체력 12% + 4배 피해', f:'deep', k:6, pct:.12, mul:4}},
+  psort:{n:'병렬 정렬', t:5, sym:'⇉', dmg:175, rng:3.3, cd:0.75, sp:{t:'multi',k:7},
+    d:'배열을 조각내 여러 스레드가 동시에 정렬하고 마지막에 합칩니다.',
+    v:'여러 갈래가 동시에 뻗어 나갑니다.', c:'parallel_sort(arr)',
+    sk:{p:.08, n:'분할 병합', d:'선두 14명에게 2.2배 피해', f:'top', k:14, mul:2.2},
+    ult:{g:'hit', need:36, n:'전 코어 가동', d:'맵 전체에 5배 피해', f:'all', mul:5}},
+  mvcc: {n:'동시성 제어', t:5, sym:'⧉', dmg:230, rng:3.1, cd:1.25, sp:{t:'lock',dur:1.1},
+    d:'여러 버전을 동시에 유지해 서로를 막지 않게 합니다. 잠그면서 때립니다.',
+    v:'대상이 잠기고 버전이 갈라집니다.', c:'MVCC: snapshot isolation',
+    sk:{p:.10, n:'교착 해소', d:'전체를 3초 감속시키고 2.5배 피해', f:'allSlow', mul:2.5, dur:3},
+    ult:{g:'time', need:26, n:'전역 잠금', d:'전체를 5초간 정지시키고 3.5배 피해', f:'freeze', dur:5, mul:3.5}},
   bins: {n:'이진탐색', t:5, sym:'½', dmg:180, rng:99, cd:1.15, sp:{t:'execute',p:0.3,global:true},
     d:'범위를 절반씩 잘라 O(log n)에 찾습니다. 30% 확률로 약점을 찾아 즉사.',
     v:'lo–mid–hi 브라켓이 좁혀듭니다.', c:'mid = (lo + hi) >> 1;',
     sk:{p:.08, n:'정확한 이분', d:'일반 적 즉사, 보스는 체력 12% 삭제', f:'exec', pct:.12},
     ult:{g:'kill', need:26, n:'탐색 완료', d:'맵 전체 적의 현재 체력 25%를 삭제합니다', f:'pctAll', pct:.25}},
 };
+Object.assign(U, {
+  jit:  {n:'JIT 컴파일러', t:6, sym:'⚙', dmg:340, rng:3.2, cd:0.95, sp:{t:'aoe',r:2.8},
+    d:'실행 중에 바이트코드를 기계어로 번역합니다. 이제 뽑히는 일반 등급 변수는 보드에 남지 않고 그 자리에서 컴파일되어 폭발합니다.',
+    v:'소환된 변수가 즉시 기계어로 번역되어 터집니다.', c:'compile(bytecode) → native',
+    sk:{p:.10, n:'인라인 확장', d:'범위 2배에 3배 피해', f:'area', r:5.6, mul:3},
+    ult:{g:'hit', need:30, n:'전체 재컴파일', d:'맵 전체에 6배 피해', f:'all', mul:6}},
+  pnp:  {n:'P = NP', t:6, sym:'∀', dmg:760, rng:99, cd:1.7, sp:{t:'global'},
+    d:'검증할 수 있다면 풀 수도 있다는 가정. 사거리가 없고, 아군 전체의 궁극기 충전을 1.6배로 끌어올립니다.',
+    v:'증명이 맵 전체로 즉시 전파됩니다.', c:'if (P === NP) solve(any)',
+    sk:{p:.10, n:'다항 시간 환원', d:'대상 현재 체력 20% 삭제', f:'pct', pct:.20},
+    ult:{g:'time', need:24, n:'모든 문제 해결', d:'맵 전체 적의 현재 체력 30%를 삭제합니다', f:'pctAll', pct:.30}},
+  turing:{n:'튜링 완전', t:6, sym:'⊨', dmg:300, rng:3.4, cd:0.9, sp:{t:'multi',k:6},
+    d:'무엇이든 계산할 수 있는 기계. 공격할 때마다 보유한 신화 중 하나의 스킬을 무작위로 실행합니다.',
+    v:'다른 알고리즘의 연산이 무작위로 재생됩니다.', c:'∀f: computable(f)',
+    sk:{p:.12, n:'정지 판정', d:'선두 12명에게 2.5배 피해', f:'top', k:12, mul:2.5},
+    ult:{g:'dmg', need:26000, n:'보편 기계', d:'전체 5배 피해 + 4초 감속', f:'allSlow', mul:5, dur:4}},
+});
 const IDS = Object.keys(U);
-const BY_TIER = [0,1,2,3,4,5].map(t => IDS.filter(k => U[k].t === t));
+const BY_TIER = [0,1,2,3,4,5,6].map(t => IDS.filter(k => U[k].t === t));
 const RECIPES = [
   {id:'quick', need:['arr','rec','ptr']},
   {id:'bfs',   need:['graph','que','loop']},
@@ -561,13 +655,32 @@ const RECIPES = [
   {id:'uf',    need:['tree','arr','rec']},
   {id:'bdp',   need:['bit','memo','ifs']},
   {id:'kmp',   need:['fn','arr','loop']},
+  {id:'psort', need:['pool','arr','heap']},
+  {id:'mvcc',  need:['mtx','hash','gcu']},
+];
+const TRANS = [
+  {id:'jit',    need:['psort','lru'],
+   cond:{k:'common', n:60, label:'일반 등급 누적 소환 60회'}},
+  {id:'pnp',    need:['bins','dp'],
+   cond:{k:'ult', n:40, label:'궁극기 누적 발동 40회'}},
+  {id:'turing', need:['uf','kmp','bdp'],
+   cond:{k:'myth', n:8, label:'신화 누적 제작 8종'}},
 ];
 const RATES = [0.55, 0.27, 0.125, 0.045, 0.010];
-const SELL  = [25, 70, 180, 450, 1200, 3000];           // 등급별 판매가 (기대 환급 87G < 소환가 100G)
-const PICK  = [null, 260, 780, 2200, 6000];             // 등급 지정 기본가
-const PICK_UP = 1.20;
-const NAMED = [null, 600, 1800, 4500, 11000];           // 유닛 지목 기본가
-const NAMED_UP = 1.35;
+// 뽑을수록 비싸집니다. 증가분 자체가 커지는 복리 구조라 후반 골드를 흡수합니다.
+const SUMMON_BASE = 100, SUMMON_UP = 1.02;
+const summonCost = () => Math.round(SUMMON_BASE * Math.pow(SUMMON_UP, S.summons) / 10) * 10;
+// ── 신화 전용 성장: 복잡도를 한 단계씩 낮춥니다.
+// 중복 없이 골드와 '최적화 토큰'만으로 올릴 수 있는 신화만의 길입니다.
+const BIGO = ['O(n²)', 'O(n log n)', 'O(n)', 'O(log n)', 'O(1)'];
+const OPT_MAX = 4;
+const OPT_DMG = 0.35, OPT_SPD = 0.10;
+const optCost = lv => Math.round(6000 * Math.pow(1.9, lv) / 100) * 100;
+const optLv = u => u.opt || 0;
+const powerOf = u => 1 + OPT_DMG*optLv(u);     // 복잡도 최적화가 곧 위력입니다
+const rangeOf = u => U[u.id].rng;
+const ultNeed = u => U[u.id].ult.need;
+const SELL  = [25, 70, 180, 450, 1200, 3000, 8000];           // 등급별 판매가 (기대 환급 87G < 소환가 100G)
 // ── 소환권: 소환소는 골드를 쓰지 않고 소환권으로만 굴립니다
 const TICKET = {
   draft: {n:'드래프트권', c:'#79c0ff', d:'후보 3장 중 하나를 고릅니다'},
@@ -578,6 +691,7 @@ const TIER_COST  = {2:1, 3:2, 4:4};
 const NAMED_COST = {1:1, 2:1, 3:2, 4:3};
 // ── 연구소: 골드의 주 사용처. 살수록 비싸집니다.
 const RESEARCH = [
+  {k:'myth', n:'신화 슬롯',     d:'보드에 올릴 수 있는 신화 +1 (기본 5)', max:5, base:2600, g:1.55, c:'#ffd76e'},
   {k:'atk',  n:'최적화 레벨',   d:'모든 유닛 공격력 +5%',        max:25, base:420,  g:1.17, c:'#ff7b72'},
   {k:'spd',  n:'클럭 상승',     d:'모든 유닛 공격속도 +4%',      max:20, base:520,  g:1.19, c:'#f2cc60'},
   {k:'cap',  n:'힙 영역 확장',  d:'배치 가능 칸 +1',             max:10, base:1100, g:1.34, c:'#79c0ff'},
@@ -592,7 +706,6 @@ const SHOP = [
 ];
 const resCost  = r => Math.round(r.base * Math.pow(r.g, S.res[r.k]) / 10) * 10;
 const shopCost = s => Math.round(s.base * Math.pow(s.g, S.buy[s.k]) / 10) * 10;
-const MULTI_N = 5, MULTI_COST = 460;
 const PITY_MAX = 30;                                     // 랜덤 소환 천장
 const ENEMY = {
   // ── 스테이지 1 · 컴파일 타임
@@ -601,7 +714,7 @@ const ENEMY = {
   nul:  {n:'널포인터', hp:78, sp:106, r:8, gold:13, c:'#a5d6ff', shape:'diamond'},
   exc:  {n:'예외', hp:110, sp:58, r:10, gold:17, c:'#ff9bce', shape:'diamond',
          shield:0.6, ab:'예외 처리 보호막이 피해를 먼저 흡수합니다.'},
-  seg:  {n:'세그폴트', hp:1500, sp:32, r:18, gold:150, c:'#ff7b72', shape:'hex', boss:true,
+  seg:  {n:'세그폴트', hp:1550, sp:32, r:18, gold:150, c:'#ff7b72', shape:'hex', boss:true,
          armor:14, ab:'장갑 14 — 한 방이 약한 연타 공격을 흘려냅니다.'},
   // ── 스테이지 2 · 런타임
   leak: {n:'메모리누수', hp:280, sp:37, r:13, gold:24, c:'#ff9bce', shape:'square'},
@@ -612,7 +725,7 @@ const ENEMY = {
   child:{n:'자식 프로세스', hp:85, sp:80, r:7, gold:5, c:'#ffd0a0', shape:'tri'},
   gc:   {n:'가비지컬렉터', hp:330, sp:40, r:13, gold:30, c:'#8ce8c8', shape:'square',
          heal:{r:2.3, pct:0.05}, ab:'주변 적을 초당 5%씩 회복시킵니다. 먼저 끊어야 합니다.'},
-  lock: {n:'데드락', hp:2400, sp:30, r:19, gold:230, c:'#d2a8ff', shape:'hex', boss:true,
+  lock: {n:'데드락', hp:1550, sp:30, r:19, gold:230, c:'#d2a8ff', shape:'hex', boss:true,
          shield:0.35, haste:{r:3.2, mul:1.5}, ab:'보호막 + 주변 적을 1.5배 가속시킵니다.'},
   // ── 스테이지 3 · 최적화
   miss: {n:'캐시미스', hp:500, sp:74, r:11, gold:42, c:'#a5b4ff', shape:'diamond',
@@ -620,22 +733,22 @@ const ENEMY = {
   opt:  {n:'인라인최적화', hp:860, sp:62, r:13, gold:54, c:'#c0c8d8', shape:'hex',
          armor:24, ab:'장갑 24 — 다단히트를 거의 무력화합니다.'},
   // ── 보스 (스테이지당 10·20 미니보스, 30 스테이지 보스)
-  texerr:{n:'타입 오류', hp:1100, sp:34, r:17, gold:120, c:'#f2cc60', shape:'hex', boss:true,
+  texerr:{n:'타입 오류', hp:950, sp:34, r:17, gold:120, c:'#f2cc60', shape:'hex', boss:true,
          shield:0.8, shieldRegen:0.05,
          ab:'두꺼운 보호막을 초당 5%씩 스스로 재생합니다. 화력을 몰아쳐 한 번에 벗겨야 합니다.'},
-  link: {n:'링커 에러', hp:2600, sp:28, r:20, gold:280, c:'#79c0ff', shape:'hex', boss:true,
+  link: {n:'링커 에러', hp:2650, sp:28, r:20, gold:280, c:'#79c0ff', shape:'hex', boss:true,
          armor:18, shield:0.5, shieldRegen:0.04,
          ab:'장갑 18 + 재생하는 보호막. 스테이지 1의 최종 관문입니다.'},
-  nullref:{n:'널 참조 폭풍', hp:2200, sp:42, r:18, gold:250, c:'#a5d6ff', shape:'hex', boss:true,
+  nullref:{n:'널 참조 폭풍', hp:1650, sp:42, r:18, gold:250, c:'#a5d6ff', shape:'hex', boss:true,
          split:{type:'nul', n:4},
          ab:'쓰러지면 널포인터 4마리로 흩어집니다.'},
-  race: {n:'레이스 컨디션', hp:3300, sp:44, r:19, gold:340, c:'#ff9bce', shape:'hex', boss:true,
+  race: {n:'레이스 컨디션', hp:2300, sp:44, r:19, gold:340, c:'#ff9bce', shape:'hex', boss:true,
          blink:{every:4.5, dist:140},
          ab:'4.5초마다 경로를 앞으로 순간이동합니다. 사거리 밖으로 새어 나갑니다.'},
-  thrash:{n:'스래싱', hp:3800, sp:50, r:19, gold:360, c:'#a5b4ff', shape:'hex', boss:true,
+  thrash:{n:'스래싱', hp:1250, sp:50, r:19, gold:360, c:'#a5b4ff', shape:'hex', boss:true,
          armor:16, stealth:{on:1.2, off:2.2},
          ab:'장갑을 두른 채 주기적으로 사라져 조준을 끊습니다.'},
-  gcboss:{n:'전체 GC', hp:4400, sp:30, r:20, gold:400, c:'#8ce8c8', shape:'hex', boss:true,
+  gcboss:{n:'전체 GC', hp:3050, sp:30, r:20, gold:400, c:'#8ce8c8', shape:'hex', boss:true,
          shield:0.4, heal:{r:3.4, pct:0.06},
          ab:'보호막을 두르고 주변 적 전부를 초당 6%씩 되살립니다.'},
   // ── 스테이지 4 · 동시성
@@ -654,61 +767,154 @@ const ENEMY = {
   zombie:{n:'좀비 프로세스', hp:1800, sp:40, r:13, gold:72, c:'#a8d8a0', shape:'circle',
          regen:0.03, revive:0.5, ab:'초당 3% 회복에 한 번 부활까지 합니다.'},
 
-  livelock:{n:'라이브락', hp:4200, sp:46, r:19, gold:420, c:'#9ae6ff', shape:'hex', boss:true,
+  livelock:{n:'라이브락', hp:1700, sp:46, r:19, gold:420, c:'#9ae6ff', shape:'hex', boss:true,
          shield:0.45, haste:{r:3.2, mul:1.6},
          ab:'보호막을 두르고 주변 적을 1.6배로 몰아붙입니다.'},
-  starve:{n:'기아 상태', hp:4600, sp:32, r:20, gold:470, c:'#ffd0a0', shape:'hex', boss:true,
+  starve:{n:'기아 상태', hp:3550, sp:32, r:20, gold:470, c:'#ffd0a0', shape:'hex', boss:true,
          armor:34, heal:{r:3.2, pct:0.05},
          ab:'장갑 34 + 주변 적을 초당 5%씩 회복시킵니다.'},
-  mutexb:{n:'뮤텍스 교착', hp:5000, sp:30, r:21, gold:520, c:'#c0a0ff', shape:'hex', boss:true,
+  mutexb:{n:'뮤텍스 교착', hp:5350, sp:30, r:21, gold:520, c:'#c0a0ff', shape:'hex', boss:true,
          armorAura:{r:3.4, v:22}, shield:0.5, shieldRegen:0.04,
          ab:'주변 적에게 장갑 22를 뿌리고, 자기 보호막은 계속 재생합니다.'},
-  partition:{n:'네트워크 분단', hp:5200, sp:44, r:20, gold:560, c:'#8ce8c8', shape:'hex', boss:true,
+  partition:{n:'네트워크 분단', hp:2150, sp:44, r:20, gold:560, c:'#8ce8c8', shape:'hex', boss:true,
          blink:{every:4, dist:150}, split:{type:'packet', n:3},
          ab:'순간이동하고, 죽으면 유실 패킷 3마리로 흩어집니다.'},
-  byz:  {n:'비잔틴 장애', hp:5600, sp:38, r:21, gold:620, c:'#ff9bce', shape:'hex', boss:true,
+  byz:  {n:'비잔틴 장애', hp:3550, sp:38, r:21, gold:620, c:'#ff9bce', shape:'hex', boss:true,
          revive:0.55, armor:30,
          ab:'장갑 30. 쓰러뜨려도 체력 55%로 한 번 되살아납니다.'},
-  latency:{n:'지연 폭주', hp:6000, sp:36, r:21, gold:680, c:'#a5b4ff', shape:'hex', boss:true,
+  latency:{n:'지연 폭주', hp:5200, sp:36, r:21, gold:680, c:'#a5b4ff', shape:'hex', boss:true,
          stealth:{on:1.3, off:2.0}, enrage:{at:0.5, mul:1.6},
          ab:'주기적으로 사라지고, 절반 아래로 떨어지면 1.6배로 폭주합니다.'},
-  oom:  {n:'OOM 킬러', hp:6400, sp:34, r:22, gold:780, c:'#ff7b72', shape:'hex', boss:true,
+  oom:  {n:'OOM 킬러', hp:3200, sp:34, r:22, gold:780, c:'#ff7b72', shape:'hex', boss:true,
          armor:36, split:{type:'zombie', n:3},
          ab:'장갑 36. 죽으면서 좀비 프로세스 3마리를 남깁니다.'},
-  pfault:{n:'페이지 폴트 폭풍', hp:6800, sp:40, r:22, gold:860, c:'#c0c8d8', shape:'hex', boss:true,
+  pfault:{n:'페이지 폴트 폭풍', hp:3750, sp:40, r:22, gold:860, c:'#c0c8d8', shape:'hex', boss:true,
          armor:44, blink:{every:5, dist:120},
          ab:'장갑 44에 순간이동까지 합니다.'},
-  panic:{n:'커널 패닉', hp:7600, sp:26, r:24, gold:1600, c:'#ffd76e', shape:'hex', boss:true,
+  panic:{n:'커널 패닉', hp:7950, sp:26, r:24, gold:1600, c:'#ffd76e', shape:'hex', boss:true,
          armor:48, shield:0.5, revive:0.5, enrage:{at:0.4, mul:1.5},
          ab:'최종 보스. 장갑 48, 두꺼운 보호막, 1회 부활, 폭주를 갖췄습니다.'},
-  ovf:  {n:'스택오버플로우', hp:3800, sp:27, r:22, gold:700, c:'#ffd76e', shape:'hex', boss:true,
+  ovf:  {n:'스택오버플로우', hp:4850, sp:27, r:22, gold:700, c:'#ffd76e', shape:'hex', boss:true,
          armor:26, enrage:{at:0.5, mul:1.45},
          ab:'장갑 26. 체력 절반 아래로 떨어지면 1.45배로 폭주합니다.'},
 };
 
+// ── 스테이지 7~15 잡몹
+Object.assign(ENEMY, {
+  overrun:{n:'버퍼 오버런', hp:1700, sp:56, r:12, gold:74, c:'#ff9b7b', shape:'square', armor:34,
+    ab:'장갑 34. 경계를 넘어 흘러넘칩니다.'},
+  inject: {n:'인젝션', hp:1300, sp:82, r:10, gold:78, c:'#ff7bd0', shape:'diamond',
+    stealth:{on:1.2, off:1.6}, ab:'질의 사이에 숨어 들어 조준을 끊습니다.'},
+  phantom:{n:'팬텀 리드', hp:1900, sp:70, r:11, gold:86, c:'#a5d6ff', shape:'diamond',
+    blink:{every:3, dist:96}, ab:'없던 행이 갑자기 나타나듯 앞으로 건너뜁니다.'},
+  hypercall:{n:'하이퍼콜', hp:2300, sp:62, r:12, gold:96, c:'#c0a0ff', shape:'square',
+    armorAura:{r:2.6, v:20}, ab:'주변 적 전부에게 장갑 20을 뿌립니다.'},
+  retrans:{n:'재전송 폭풍', hp:2600, sp:58, r:12, gold:104, c:'#8ce8c8', shape:'circle',
+    revive:0.5, ab:'끊어져도 다시 보내집니다. 한 번 부활합니다.'},
+  grad:   {n:'그래디언트 폭발', hp:3000, sp:54, r:13, gold:118, c:'#ffd76e', shape:'tri',
+    enrage:{at:0.6, mul:1.7}, ab:'체력 60% 아래에서 1.7배로 발산합니다.'},
+  collide:{n:'해시 충돌', hp:3400, sp:50, r:13, gold:130, c:'#79c0ff', shape:'hex',
+    shield:0.6, ab:'같은 버킷에 몰린 만큼 두꺼운 보호막을 두릅니다.'},
+  qubit:  {n:'큐비트', hp:3800, sp:76, r:12, gold:148, c:'#d2a8ff', shape:'diamond',
+    stealth:{on:1, off:1.4}, blink:{every:3.6, dist:110}, ab:'중첩 상태로 사라졌다 나타나며 도약합니다.'},
+  bitflip:{n:'비트 플립', hp:4400, sp:52, r:13, gold:170, c:'#c0c8d8', shape:'hex',
+    armor:56, ab:'장갑 56. 우주 방사선이 만든 단단한 오류입니다.'},
+});
+
+// ── 스테이지 7~15 보스 27종 (능력 조합만 바꿔 압축 정의)
+[
+  ['b71','스택 스매싱',3950,{armor:44,split:{type:'overrun',n:3}},'장갑 44. 죽으면 버퍼 오버런 3마리로 넘칩니다.','#ff9b7b'],
+  ['b72','포맷 스트링',5350,{stealth:{on:1.3,off:1.8},armor:32},'은신과 장갑을 함께 씁니다.','#ff7bd0'],
+  ['b73','제로데이',7250,{shield:0.55,revive:0.5,armor:36},'보호막·부활·장갑을 모두 갖춘 미공개 취약점.','#ff5b52'],
+  ['b81','팬텀 리드',4050,{blink:{every:3.6,dist:150}},'읽을 때마다 다른 곳에 있습니다.','#a5d6ff'],
+  ['b82','인덱스 붕괴',5350,{armor:46,heal:{r:3,pct:0.045}},'장갑 46 + 주변 적을 되살립니다.','#79c0ff'],
+  ['b83','트랜잭션 지옥',7200,{shield:0.5,armorAura:{r:3.2,v:26},revive:0.45},'주변에 장갑을 뿌리고 롤백으로 부활합니다.','#d2a8ff'],
+  ['b91','하이퍼콜 폭주',3950,{haste:{r:3.2,mul:1.7},armor:40},'주변 적을 1.7배로 몰아붙입니다.','#c0a0ff'],
+  ['b92','VM 탈출',5150,{blink:{every:3.4,dist:170},stealth:{on:1.1,off:1.9}},'경계를 뚫고 사라졌다 나타납니다.','#9ae6ff'],
+  ['b93','호스트 장악',6800,{armor:52,shield:0.5,split:{type:'hypercall',n:3}},'쓰러지면 하이퍼콜 3마리가 튀어나옵니다.','#ff7b72'],
+  ['b101','혼잡 붕괴',3650,{heal:{r:3.4,pct:0.05},armor:44},'회복 오라로 무리 전체를 유지합니다.','#8ce8c8'],
+  ['b102','재전송 지옥',4650,{revive:0.6,split:{type:'retrans',n:2}},'부활에 분열까지 겹칩니다.','#7ee787'],
+  ['b103','합의 실패',6100,{armorAura:{r:3.4,v:30},shield:0.55},'주변 전체에 장갑 30을 씌웁니다.','#79c0ff'],
+  ['b111','그래디언트 폭발',3200,{enrage:{at:0.65,mul:1.8},armor:42},'체력 65% 아래에서 1.8배로 발산합니다.','#ffd76e'],
+  ['b112','과적합',4050,{shield:0.6,heal:{r:3,pct:0.05}},'훈련 데이터에 매달려 계속 회복합니다.','#ffa657'],
+  ['b113','모델 붕괴',5200,{armor:54,revive:0.5,enrage:{at:0.4,mul:1.5}},'무너지면서 한 번 더 일어섭니다.','#ff7bd0'],
+  ['b121','해시 충돌',2700,{shield:0.7,armor:46},'두꺼운 보호막과 장갑을 겹쳐 씁니다.','#79c0ff'],
+  ['b122','사이드 채널',3300,{stealth:{on:1.4,off:1.6},armor:48},'관측되지 않는 경로로 새어 나갑니다.','#d2a8ff'],
+  ['b123','키 유출',4200,{blink:{every:3.2,dist:180},revive:0.55},'순간이동에 부활까지 갖췄습니다.','#ffd76e'],
+  ['b131','결어긋남',2150,{stealth:{on:1.2,off:1.4},heal:{r:3,pct:0.055}},'관측을 피하며 주변을 되돌립니다.','#a5b4ff'],
+  ['b132','중첩 붕괴',2600,{blink:{every:3,dist:200},shield:0.6},'여러 위치에 동시에 존재합니다.','#c0a0ff'],
+  ['b133','큐비트 폭주',3250,{armor:58,revive:0.6,haste:{r:3.4,mul:1.6}},'무리 전체를 가속시키며 되살아납니다.','#d2a8ff'],
+  ['b141','비트 플립',1600,{armor:64},'장갑 64. 물리 법칙이 만든 오류입니다.','#c0c8d8'],
+  ['b142','캐시 오염',1900,{armorAura:{r:3.6,v:36},heal:{r:3,pct:0.05}},'주변에 장갑을 뿌리고 회복시킵니다.','#a5d6ff'],
+  ['b143','실리콘 버그',2400,{armor:62,shield:0.6,revive:0.55},'하드웨어에 새겨진 결함. 고칠 수 없습니다.','#ff7b72'],
+  ['b151','힙 붕괴',1150,{armor:60,split:{type:'zombie',n:4}},'무너지며 좀비 4마리를 남깁니다.','#a8d8a0'],
+  ['b152','커널 붕괴',1350,{armor:66,shield:0.6,haste:{r:3.6,mul:1.7}},'커널이 무너지며 모든 것을 가속시킵니다.','#ffa657'],
+  ['b153','정지 문제',1650,{armor:70,shield:0.65,revive:0.6,enrage:{at:0.35,mul:1.6}},
+    '이 게임의 마지막 적. 멈출지 아닐지는 아무도 미리 알 수 없습니다.','#ffd76e'],
+].forEach(([k,n,hp,ab,desc,c]) => {
+  ENEMY[k] = Object.assign({n, hp, sp:30, r:22, gold:Math.round(hp*0.11),
+    c, shape:'hex', boss:true, ab:desc}, ab);
+});
+
 // ── 스테이지 정의
 const STAGES = [
-  {name:'컴파일 타임', sub:'문법과 타입의 세계', boss:'링커 에러', hex:'#79c0ff',
-   minis:['texerr','seg'], last:'link', reps:['exc','seg'],
+  {name:'컴파일 타임', sub:'문법과 타입의 세계', hex:'#79c0ff', minis:['texerr','seg'], last:'link',
+   mobs:[['bug',.45],['warn', .24, 2],['nul', .20, 2],['exc', .18, 4]],
    desc:'기본적인 오류들이 몰려옵니다. 예외는 보호막을 두르고 있어 첫 타격을 흘려냅니다.'},
-  {name:'런타임', sub:'실행 중에 벌어지는 일', boss:'레이스 컨디션', hex:'#d2a8ff',
-   minis:['lock','nullref'], last:'race', reps:['gc','fork'],
-   desc:'가비지 컬렉터가 주변을 회복시키고, 포크 폭탄은 죽으면 갈라집니다. 우선순위 판단이 중요해집니다.'},
-  {name:'최적화', sub:'컴파일러도 내 편은 아니다', boss:'스택 오버플로우', hex:'#ffa657',
-   minis:['thrash','gcboss'], last:'ovf', reps:['miss','opt'],
-   desc:'캐시 미스는 조준을 끊고, 인라인 최적화는 두꺼운 장갑을 두릅니다. 한 방이 굵은 유닛이 필요합니다.'},
-  {name:'동시성', sub:'여럿이 동시에 손을 댄다', boss:'뮤텍스 교착', hex:'#9ae6ff',
-   minis:['livelock','starve'], last:'mutexb', reps:['thread','sema'],
-   desc:'스레드는 빠르게 갈라지고 세마포어는 주변에 장갑을 뿌립니다. 지원형 적을 먼저 끊는 판단이 갈립니다.'},
-  {name:'분산 시스템', sub:'네트워크 너머의 적', boss:'지연 폭주', hex:'#8ce8c8',
-   minis:['partition','byz'], last:'latency', reps:['packet','retry'],
-   desc:'패킷은 순간이동으로 사거리를 빠져나가고, 재시도 큐는 한 번 죽어도 되살아납니다.'},
-  {name:'커널', sub:'가장 낮은 층위', boss:'커널 패닉', hex:'#ffd76e',
-   minis:['oom','pfault'], last:'panic', reps:['page','zombie'],
-   desc:'장갑 40이 기본이고 좀비는 부활합니다. 여기까지 왔다면 연구소를 끝까지 밀어붙였어야 합니다.'},
+  {name:'런타임', sub:'실행 중에 벌어지는 일', hex:'#d2a8ff', minis:['lock','nullref'], last:'race',
+   mobs:[['bug',.25],['nul',.15],['exc',.15],['leak',.17],['fork',.16],['gc', .10, 3],['inf', .12, 5]],
+   desc:'가비지 컬렉터가 주변을 회복시키고, 포크 폭탄은 죽으면 갈라집니다.'},
+  {name:'최적화', sub:'컴파일러도 내 편은 아니다', hex:'#ffa657', minis:['thrash','gcboss'], last:'ovf',
+   mobs:[['bug',.18],['exc',.12],['leak',.12],['fork',.14],['inf',.12],['gc',.08],['miss',.16],['opt',.14]],
+   desc:'캐시 미스는 조준을 끊고, 인라인 최적화는 두꺼운 장갑을 두릅니다.'},
+  {name:'동시성', sub:'여럿이 동시에 손을 댄다', hex:'#9ae6ff', minis:['livelock','starve'], last:'mutexb',
+   mobs:[['bug',.12],['exc',.10],['leak',.10],['fork',.12],['inf',.10],['miss',.12],['opt',.12],['thread',.16],['sema', .12, 2]],
+   desc:'스레드는 빠르게 갈라지고 세마포어는 주변에 장갑을 뿌립니다.'},
+  {name:'분산 시스템', sub:'네트워크 너머의 적', hex:'#8ce8c8', minis:['partition','byz'], last:'latency',
+   mobs:[['exc',.08],['fork',.10],['inf',.10],['miss',.12],['opt',.12],['thread',.12],['sema',.10],['packet',.16],['retry', .12, 2]],
+   desc:'패킷은 순간이동으로 사거리를 빠져나가고, 재시도 큐는 되살아납니다.'},
+  {name:'커널', sub:'가장 낮은 층위', hex:'#ffd76e', minis:['oom','pfault'], last:'panic',
+   mobs:[['opt',.10],['miss',.10],['thread',.10],['sema',.08],['packet',.12],['retry',.12],['page',.16],['zombie',.14]],
+   desc:'장갑 40이 기본이고 좀비는 부활합니다. 연구소를 끝까지 밀어붙였어야 합니다.'},
+  {name:'보안', sub:'누군가는 악의를 갖는다', hex:'#ff9b7b', minis:['b71','b72'], last:'b73',
+   mobs:[['page',.10],['zombie',.10],['thread',.10],['overrun',.16],['inject', .14, 2],['opt',.10],['miss',.10]],
+   desc:'버퍼 오버런은 장갑을 두르고, 인젝션은 질의 사이에 숨습니다.'},
+  {name:'데이터베이스', sub:'일관성이 무너질 때', hex:'#a5d6ff', minis:['b81','b82'], last:'b83',
+   mobs:[['overrun',.12],['inject',.12],['phantom',.16],['zombie',.10],['retry',.10],['page',.10],['sema',.08]],
+   desc:'팬텀 리드는 읽을 때마다 다른 곳에 있습니다. 조준을 유지하기 어렵습니다.'},
+  {name:'가상화', sub:'경계를 넘는 자들', hex:'#c0a0ff', minis:['b91','b92'], last:'b93',
+   mobs:[['phantom',.12],['hypercall',.16],['overrun',.10],['inject',.10],['page',.10],['zombie',.10],['thread',.10]],
+   desc:'하이퍼콜이 주변 적 전부에게 장갑을 뿌립니다. 지원형부터 끊어야 합니다.'},
+  {name:'프로토콜', sub:'멈추지 않는 재전송', hex:'#8ce8c8', minis:['b101','b102'], last:'b103',
+   mobs:[['hypercall',.12],['retrans',.16],['phantom',.12],['packet',.12],['overrun',.10],['page',.10],['collide', .08, 3]],
+   desc:'재전송 폭풍은 한 번 부활합니다. 처치 판정이 두 번 필요합니다.'},
+  {name:'머신러닝', sub:'학습이 폭주한다', hex:'#ffd76e', minis:['b111','b112'], last:'b113',
+   mobs:[['grad',.16],['retrans',.12],['collide',.12],['hypercall',.10],['phantom',.10],['page',.10],['zombie',.08]],
+   desc:'그래디언트 폭발은 체력이 깎일수록 빨라집니다. 반쯤 깎고 놓치면 최악입니다.'},
+  {name:'암호', sub:'뚫리지 않게 설계된 것들', hex:'#79c0ff', minis:['b121','b122'], last:'b123',
+   mobs:[['collide',.16],['inject',.12],['grad',.12],['retrans',.10],['bitflip', .08, 3],['page',.10],['qubit', .08, 5]],
+   desc:'해시 충돌은 체력의 60%를 보호막으로 두릅니다. 순간 화력이 필요합니다.'},
+  {name:'양자', sub:'관측하기 전까지는 모른다', hex:'#d2a8ff', minis:['b131','b132'], last:'b133',
+   mobs:[['qubit',.18],['collide',.12],['grad',.10],['bitflip',.10],['inject',.10],['phantom',.10],['retrans',.08]],
+   desc:'큐비트는 사라지면서 동시에 도약합니다. 사거리가 넓은 유닛이 필수입니다.'},
+  {name:'하드웨어', sub:'물리 법칙이 만든 버그', hex:'#c0c8d8', minis:['b141','b142'], last:'b143',
+   mobs:[['bitflip',.18],['qubit',.12],['collide',.12],['page',.12],['grad',.10],['overrun',.10],['hypercall',.08]],
+   desc:'비트 플립의 장갑 56은 다단히트를 완전히 무력화합니다.'},
+  {name:'정지 문제', sub:'끝을 알 수 없는 계산', hex:'#ffd76e', minis:['b151','b152'], last:'b153',
+   mobs:[['bitflip',.14],['qubit',.14],['zombie',.12],['collide',.12],['grad',.10],['retrans',.10],['page',.10],['hypercall',.08]],
+   desc:'모든 것이 한꺼번에 옵니다. 여기서 멈출 수 있는지는 직접 확인하는 수밖에 없습니다.'},
 ];
 const FINAL_BOSS = STAGES[STAGES.length-1].last;
-const STAGE_LEN = 10;
+const STAGE_LEN = 8;
+// 보스는 속박·감속에 완전 면역, 장갑이 두꺼운 적은 절반만 걸립니다.
+function ccMul(e){
+  if (e.boss) return 0;
+  if (S.rush) return 0;                       // 시간 초과 후에는 전부 면역
+  return (ENEMY[e.type].armor || 0) >= 24 ? 0.5 : 1;
+}
+const applySlow = (e, dur) => { const m = ccMul(e); if (m) e.slow = Math.max(e.slow, dur*m); };
+const applyLock = (e, dur) => { const m = ccMul(e); if (m) e.frozen = Math.max(e.frozen||0, dur*m); };
+const WAVE_LIMIT = 120;      // 한 웨이브 제한 시간(초). 정상 웨이브는 최장 65초입니다.
 const stageOf = w => Math.min(STAGES.length-1, Math.floor((w-1) / STAGE_LEN));
 const stageWave = w => ((w-1) % STAGE_LEN) + 1;
 
@@ -738,24 +944,100 @@ const PACE = 1.3, HP_ADJ = 0.78;
 
 // ═══════════════════════════════ 상태
 const S = {
-  gold:300, life:20, wave:0, maxWave:60, phase:'idle', prep:0, speed:1,
+  gold:300, life:20, wave:0, maxWave:120, summons:0, playT:0,
+  stat:{common:0, ult:0, myth:0, trans:0, earned:0, spent:0}, phase:'idle', prep:0, speed:1,
   auto:false, over:false, units:[], enemies:[], fx:[], texts:[],
-  queue:[], spawnT:0, sel:null, cap: WIDE ? 26 : 22, killed:0, drag:null, t:0,
+  queue:[], spawnT:0, waveT:0, rush:false, sel:null, cap: WIDE ? 26 : 22, killed:0, drag:null, t:0,
   picks:[0,0,0,0,0], named:{}, pity:0, sellArm:null, paused:false, autoPaused:false, draft:null, finalDown:false,
-  allyBuff:0, allyMul:0, pulses:[], corpses:[], res:{atk:0,spd:0,cap:0,mem:0,gold:0,ult:0}, buy:{draft:0,tier:0,named:0}, autoUlt:true, tk:{draft:1, tier:0, named:0}, seen:{draft:0, tier:0, named:0},
+  allyBuff:0, allyMul:0, pulses:[], corpses:[],
+  mut:{list:[], armor:0, aoeCut:0, regen:0, swift:1, shield:0, stealth:false, throttle:1, jam:1, count:1, hp:1}, res:{atk:0,spd:0,cap:0,mem:0,gold:0,ult:0,myth:0}, mythCap:5, buy:{draft:0,tier:0,named:0}, autoUlt:true, tk:{draft:1, tier:0, named:0}, optTk:0, seen:{draft:0, tier:0, named:0},
 };
 const MARK = { merge:new Set(), mat:new Set() };   // 보드 위 편의 표식
-const pickCost = t => Math.round(PICK[t] * Math.pow(PICK_UP, S.picks[t]) / 10) * 10;
-const namedCost = id => Math.round(NAMED[U[id].t] * Math.pow(NAMED_UP, S.named[id]||0) / 10) * 10;
 const cv = document.getElementById('cv'), cx = cv.getContext('2d');
 cv.width = COLS*TS; cv.height = ROWS*TS;
 const $ = id => document.getElementById(id);
 const MONO = "'JetBrains Mono', monospace";
+
+// ══════════════ 효과음 (외부 파일 없이 웹오디오로 합성) ══════════════
+const SFX = (() => {
+  let ac = null, master = null, on = true;
+  const last = {};
+  function init(){                                   // 브라우저 정책상 첫 입력 후에만 열립니다
+    if (ac) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    ac = new AC();
+    master = ac.createGain();
+    master.gain.value = 0.30;
+    master.connect(ac.destination);
+  }
+  const gate = (k, ms) => {                          // 같은 소리가 초당 수십 번 나지 않도록
+    const t = ac ? ac.currentTime*1000 : 0;
+    if (t - (last[k] || -1e9) < ms) return false;
+    last[k] = t; return true;
+  };
+  function tone(f, dur, {type='square', gain=.3, to=null, delay=0, detune=0} = {}){
+    if (!ac || !on) return;
+    const t0 = ac.currentTime + delay;
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t0);
+    if (to) o.frequency.exponentialRampToValueAtTime(Math.max(20,to), t0+dur);
+    o.detune.value = detune;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(gain, t0+0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0+dur+0.02);
+  }
+  function noise(dur, {gain=.2, hp=400, lp=6000, delay=0} = {}){
+    if (!ac || !on) return;
+    const t0 = ac.currentTime + delay;
+    const n = Math.floor(ac.sampleRate * dur);
+    const buf = ac.createBuffer(1, n, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i=0;i<n;i++) d[i] = (Math.random()*2-1) * (1 - i/n);
+    const s = ac.createBufferSource(); s.buffer = buf;
+    const f1 = ac.createBiquadFilter(); f1.type='highpass'; f1.frequency.value=hp;
+    const f2 = ac.createBiquadFilter(); f2.type='lowpass';  f2.frequency.value=lp;
+    const g = ac.createGain(); g.gain.value = gain;
+    s.connect(f1); f1.connect(f2); f2.connect(g); g.connect(master);
+    s.start(t0);
+  }
+  const chord = (fs, dur, opt={}) => fs.forEach((f,i) => tone(f, dur, {...opt, delay:(opt.delay||0)+i*0.05}));
+
+  return {
+    init,
+    toggle(){ on = !on; if (on) init(); return on; },
+    get enabled(){ return on; },
+    click(){ if (gate('c', 40)) tone(880, .05, {type:'square', gain:.12}); },
+    summon(t){                                        // 등급이 높을수록 화음이 두꺼워집니다
+      const sets = [[523],[523,659],[523,659,784],[523,659,784,1047],[440,554,659,880],[392,523,659,784,1047]];
+      chord(sets[Math.min(t,5)], .22, {type:'triangle', gain:.16});
+    },
+    merge(){ [523,659,784].forEach((f,i)=>tone(f,.16,{type:'triangle',gain:.16,delay:i*0.06})); },
+    craft(){ [392,523,659,784,1047].forEach((f,i)=>tone(f,.35,{type:'sawtooth',gain:.13,delay:i*0.07})); },
+    trans(){ [262,330,392,523,659,784,1047].forEach((f,i)=>tone(f,.6,{type:'sawtooth',gain:.12,delay:i*0.08}));
+             noise(.5,{gain:.12,hp:1200}); },
+    kill(){ if (gate('k', 55)) noise(.06, {gain:.10, hp:1500, lp:5000}); },
+    hitBig(){ if (gate('h', 90)) tone(180, .12, {type:'square', gain:.14, to:60}); },
+    skill(){ if (gate('s', 160)) tone(1200, .12, {type:'triangle', gain:.12, to:1900}); },
+    ult(){ if (gate('u', 220)){ tone(160, .5, {type:'sawtooth', gain:.2, to:900});
+                                noise(.35, {gain:.16, hp:600}); } },
+    bossIn(){ tone(70, 1.1, {type:'sawtooth', gain:.24, to:48}); noise(.7,{gain:.1,hp:120,lp:900}); },
+    bossDown(){ [660,523,392,262].forEach((f,i)=>tone(f,.45,{type:'square',gain:.2,delay:i*0.09}));
+                noise(.6,{gain:.2,hp:200}); },
+    leak(){ tone(200, .3, {type:'sawtooth', gain:.22, to:70}); },
+    wave(){ tone(660, .1, {type:'square', gain:.14}); tone(880, .12, {type:'square', gain:.14, delay:.1}); },
+    buy(){ tone(1050, .09, {type:'triangle', gain:.16}); tone(1400, .12, {type:'triangle', gain:.14, delay:.07}); },
+    sell(){ tone(500, .12, {type:'triangle', gain:.14, to:300}); },
+    warn(){ if (gate('w', 900)) { tone(440,.14,{type:'square',gain:.16}); tone(440,.14,{type:'square',gain:.16,delay:.2}); } },
+    over(){ [392,330,262,196].forEach((f,i)=>tone(f,.7,{type:'sawtooth',gain:.2,delay:i*0.16})); },
+    win(){ [523,659,784,1047,1319].forEach((f,i)=>tone(f,.55,{type:'triangle',gain:.18,delay:i*0.12})); },
+  };
+})();
 // ── 이징 (선형 움직임이 딱딱해 보이는 원인)
 const easeOut     = t => 1 - Math.pow(1-t, 3);
 const easeOutBack = t => { const c=1.70158+1; return 1 + (c+1)*Math.pow(t-1,3) + c*Math.pow(t-1,2); };
-const easeInOut   = t => t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
-const easeOutQuint= t => 1 - Math.pow(1-t, 5);
 const lerp = (a,b,t) => a + (b-a)*t;
 
 const LOGS = [];
@@ -800,6 +1082,7 @@ function sellSelected(){
   S.units = S.units.filter(o => o !== u);
   S.gold += v; S.sel = null; S.sellArm = null;
   FX({k:'pop', x:u.x, y:u.y, c:'#ff7b72', life:.35, max:.35});
+  SFX.sell();
   log(`판매: ${U[u.id].n} → +${v}G`);
   sync();
 }
@@ -819,9 +1102,10 @@ function rollWithPity(){
   return {t, pity:false};
 }
 function summon(){
-  if (S.gold < 100) return log('골드가 부족합니다.');
+  const cost = summonCost();
+  if (S.gold < cost) return log(`골드가 부족합니다. ${cost.toLocaleString()}G 필요.`);
   if (S.units.length >= S.cap) return log('칸이 가득 찼습니다. 판매나 합성으로 자리를 비우세요.');
-  S.gold -= 100;
+  S.gold -= cost; S.stat.spent += cost; S.summons++;
   const {t, pity} = rollWithPity();
   const pool = BY_TIER[t];
   const id = pool[(Math.random()*pool.length)|0];
@@ -829,33 +1113,14 @@ function summon(){
   if (u){
     S.sel = u; spawnPop(u);
     log((pity ? '천장 확정! ' : '소환: ') + `${U[id].n} [${TIER[t].n}]`, t>=3);
-  } else { S.gold += 100; log('배치할 자리가 없습니다.'); }
+    SFX.summon(t);
+    if (t === 0) S.stat.common++;
+    if (t === 0 && hasUnit('jit')) jitCompile(u);      // 변수는 그 자리에서 컴파일되어 터집니다
+  } else { S.gold += cost; S.summons--; log('배치할 자리가 없습니다.'); }
   if (S.auto) autoMerge();
   sync();
 }
 // 5연 소환 — 고급 이상 2개가 보장됩니다.
-function multiSummon(){
-  if (S.gold < MULTI_COST) return log('골드가 부족합니다.');
-  if (S.cap - S.units.length < MULTI_N) return log(`${MULTI_N}칸이 비어 있어야 합니다.`);
-  S.gold -= MULTI_COST;
-  const got = [];
-  for (let i=0;i<MULTI_N;i++){
-    const short = 2 - got.filter(t => t>=1).length;   // 남은 보장 수량
-    let t, pity = false;
-    if (short >= MULTI_N - i){ t = rollTier(1); }      // 보장 발동
-    else { const r = rollWithPity(); t = r.t; pity = r.pity; }
-    const pool = BY_TIER[t];
-    const id = pool[(Math.random()*pool.length)|0];
-    const u = place(id);
-    if (!u) break;
-    got.push(t); S.sel = u; spawnPop(u);
-    if (pity) log(`천장 확정! ${U[id].n} [${TIER[t].n}]`, true);
-  }
-  const best = Math.max(...got, 0);
-  log(`5연 소환 → ${got.map(t=>TIER[t].n).join(' ')}`, best>=3);
-  if (S.auto) autoMerge();
-  sync();
-}
 function pickSummon(t){
   const need = TIER_COST[t];
   if (S.tk.tier < need) return log(`등급권이 ${need}장 필요합니다.`);
@@ -885,15 +1150,16 @@ function namedSummon(id){
   renderGacha(); sync();
 }
 // 3택 드래프트 — 후보 3장을 굴려 그중 하나만 데려갑니다.
-const DRAFT_COST = 300;
 function buyResearch(k){
   const r = RESEARCH.find(x => x.k === k);
   if (S.res[k] >= r.max) return;
   const cost = resCost(r);
   if (S.gold < cost) return log('골드가 부족합니다.');
-  S.gold -= cost; S.res[k]++;
+  S.gold -= cost; S.stat.spent += cost; S.res[k]++;
   if (k === 'cap') S.cap += 1;
+  if (k === 'myth') S.mythCap += 1;
   if (k === 'mem'){ S.maxLife = (S.maxLife||20) + 2; S.life += 2; }
+  SFX.buy();
   log(`연구 완료 · ${r.n} Lv.${S.res[k]}`, true);
   sync();
 }
@@ -901,7 +1167,8 @@ function buyTicket(k){
   const s = SHOP.find(x => x.k === k);
   const cost = shopCost(s);
   if (S.gold < cost) return log('골드가 부족합니다.');
-  S.gold -= cost; S.buy[k]++; S.tk[k]++;
+  S.gold -= cost; S.stat.spent += cost; S.buy[k]++; S.tk[k]++;
+  SFX.buy();
   log(`구매 · ${s.n} +1`, true);
   sync();
 }
@@ -938,6 +1205,20 @@ function draftTake(i){
   sync();
 }
 function spawnPop(u){ S.fx.push({k:'pop', x:u.x, y:u.y, c:TIER[U[u.id].t].hex, life:.45, max:.45}); }
+function optimize(u){
+  if (!u || U[u.id].t < 5) return log('복잡도 최적화는 신화·초월 등급만 가능합니다.');
+  const lv = optLv(u);
+  if (lv >= OPT_MAX) return log('이미 O(1)입니다. 더 줄일 수 없습니다.');
+  if (S.optTk < 1) return log('최적화 토큰이 없습니다. 보스를 잡으면 얻습니다.');
+  const cost = optCost(lv);
+  if (S.gold < cost) return log(`골드가 부족합니다. ${cost.toLocaleString()}G 필요.`);
+  S.gold -= cost; S.stat.spent += cost; S.optTk -= 1; u.opt = lv + 1;
+  FX({k:'wave', x:u.x, y:u.y, r:TS*2.6, c:'#ffd76e', n:3, life:.9, max:.9});
+  TXT({x:u.x, y:u.y-28, v:BIGO[u.opt], life:1.5, max:1.5, c:'#ffd76e'});
+  SFX.buy();
+  log(`복잡도 개선 · ${U[u.id].n} ${BIGO[lv]} → ${BIGO[u.opt]}`, true);
+  sync();
+}
 function mergeGroups(maxTier){
   const cnt = {};
   for (const u of S.units) if (!u.lock) cnt[u.id] = (cnt[u.id]||0)+1;
@@ -949,6 +1230,7 @@ function doMerge(id){
   const nt = U[id].t + 1, pool = BY_TIER[nt];
   const nid = pool[(Math.random()*pool.length)|0];
   const u = place(nid, true);   // 재료 3개를 이미 뺐으므로 칸은 반드시 남습니다
+  SFX.merge();
   log(`합성: ${U[id].n} x3 → ${U[nid].n} [${TIER[nt].n}]`, nt>=3);
   if (u){ S.sel = u; spawnPop(u); }
 }
@@ -979,6 +1261,57 @@ function reservedCounts(){
   }
   return out;
 }
+const hasUnit = id => S.units.some(u => u.id === id);
+// 일반 등급 유닛을 즉시 소멸시키고 전체 공격으로 바꿉니다.
+function jitCompile(u){
+  const jits = S.units.filter(o => o.id === 'jit');
+  const power = jits.reduce((a,o) => a + U.jit.dmg * buffOf(o) * powerOf(o), 0) * 1.6;
+  S.units = S.units.filter(o => o !== u);
+  if (S.sel === u) S.sel = null;
+  FX({k:'wave', x:u.x, y:u.y, r:TS*4, c:'#ff6bd6', n:3, life:.8, max:.8});
+  TXT({x:u.x, y:u.y-24, v:'COMPILED', life:1.2, max:1.2, c:'#ff6bd6'});
+  SRC = jits[0];
+  aoeScope(() => { for (const e of allEnemies()) dmgTo(e, power, '#ff6bd6', true); });
+  SRC = null;
+  SFX.ult();
+  log(`${U[u.id].n} 즉시 컴파일 → 전체 폭발`, true);
+}
+function transStatus(){
+  const c = {};
+  for (const u of S.units) c[u.id] = (c[u.id]||0)+1;
+  return TRANS.map((r,i) => {
+    const need = {};
+    for (const n of r.need) need[n] = (need[n]||0)+1;
+    const miss = Object.keys(need).filter(k => (c[k]||0) < need[k]);
+    const have = S.stat[r.cond.k] || 0;
+    const owned = hasUnit(r.id);                       // 같은 초월은 하나만
+    return {r, i, need, miss, have, owned, condOk: have >= r.cond.n,
+            ok: !owned && !miss.length && have >= r.cond.n};
+  });
+}
+function transcend(i){
+  const s = transStatus()[i];
+  if (s.owned) return log(`${U[s.r.id].n}은(는) 이미 보유 중입니다. 종류당 1기만 둘 수 있습니다.`);
+  if (!s.condOk) return log(`조건 미달 · ${s.r.cond.label} (${s.have}/${s.r.cond.n})`);
+  if (s.miss.length) return log(`재료 부족 · ${s.miss.map(k=>U[k].n).join(', ')}`);
+  const pool = S.units.slice(), take = [];
+  for (const need of s.r.need){
+    const j = pool.findIndex(u => u.id === need);
+    if (j < 0) return;
+    take.push(pool.splice(j,1)[0]);
+  }
+  S.units = S.units.filter(u => !take.includes(u));
+  const u = place(s.r.id, true);
+  if (u){
+    S.sel = u; spawnPop(u);
+    FX({k:'wave', x:u.x, y:u.y, r:TS*4, c:'#ff6bd6', n:3, life:1.2, max:1.2});
+    TXT({x:u.x, y:u.y-30, v:'◆ TRANSCEND', life:1.8, max:1.8, c:'#ff6bd6'});
+    S.stat.trans++;
+    SFX.trans();
+    log(`◆◆ 초월 · ${U[s.r.id].n} ◆◆`, true);
+  }
+  sync();
+}
 function craft(i){
   const r = RECIPES[i], pool = S.units.slice(), take = [];
   for (const need of r.need){
@@ -986,8 +1319,11 @@ function craft(i){
     if (j < 0) return;
     take.push(pool.splice(j,1)[0]);
   }
+  if (mythCount() >= S.mythCap)
+    return log(`신화 슬롯 ${mythCount()}/${S.mythCap} — 연구소의 '신화 슬롯'을 사거나 기존 신화를 파세요.`);
   S.units = S.units.filter(u => !take.includes(u));   // 재료를 먼저 소모한 뒤
   const u = place(r.id, true);                        // 칸 제한 무시하고 배치
+  SFX.craft(); S.stat.myth++;
   log(`◆ 신화 제작: ${U[r.id].n} ◆`, true);
   if (u){ S.sel = u; spawnPop(u); }
   sync();
@@ -998,17 +1334,73 @@ function craft(i){
 // 웨이브가 갈수록 성장률 자체가 빨라집니다 (초반 완만 → 후반 급가속)
 function growth(w, g0, g1){
   let m = 1;
-  for (let i=1;i<w;i++) m *= g0 + (g1-g0) * Math.min(1, (i-1)/59);
+  for (let i=1;i<w;i++) m *= g0 + (g1-g0) * Math.min(1, (i-1)/119);
   return m;
 }
+// ══════════ 웨이브 변이 ══════════
+// 웨이브마다 규칙이 바뀝니다. 한 가지 조합으로 전부 넘길 수 없게 만드는 장치입니다.
+const MUTATORS = [
+  {k:'armor',  n:'경화',     c:'#c0c8d8', d:'모든 적 장갑 대폭 상승 — 잔공격이 통하지 않습니다',
+   hint:'한 방이 굵은 유닛으로'},
+  {k:'aoeCut', n:'차폐',     c:'#79c0ff', d:'광역 피해 55% 감소 — 범위 공격이 무력화됩니다',
+   hint:'단일 저격수를 세우세요'},
+  {k:'regen',  n:'자가 복구', c:'#7ee787', d:'모든 적이 초당 최대 체력 2.5%를 회복합니다',
+   hint:'순간 화력이 부족하면 영원히 못 잡습니다'},
+  {k:'swift',  n:'가속',     c:'#f2cc60', d:'적 이동 속도 1.45배',
+   hint:'감속·정지 수단이 필요합니다'},
+  {k:'shield', n:'예외 처리', c:'#8ab4ff', d:'모든 적이 최대 체력 35%의 보호막을 두릅니다',
+   hint:'즉사·처형 효과가 막힙니다'},
+  {k:'stealth',n:'난독화',   c:'#d2a8ff', d:'모든 적이 주기적으로 사라져 조준되지 않습니다',
+   hint:'사거리 전체 유닛이 유리합니다'},
+  {k:'throttle',n:'스로틀링', c:'#ff9b7b', d:'아군 공격속도 25% 감소',
+   hint:'공속 연구와 스레드풀이 빛납니다'},
+  {k:'jam',    n:'게이지 교란',c:'#ff7bd0', d:'궁극기 충전 속도 50% 감소',
+   hint:'평타 화력만으로 버텨야 합니다'},
+  {k:'swarm',  n:'대량 생성', c:'#ffa657', d:'적 수 40% 증가, 체력 25% 감소',
+   hint:'광역 공격이 강해집니다'},
+  {k:'elite',  n:'정예화',   c:'#ff7b72', d:'적 수 30% 감소, 체력 65% 증가',
+   hint:'단일 화력이 강해집니다'},
+];
+// 스테이지가 바뀔 때 한 번만 굴리고, 그 스테이지 10웨이브 내내 유지됩니다.
+function rollMutators(w){
+  const st = stageOf(w);
+  if (st === 0) return [];                       // 첫 스테이지는 규칙을 배우는 구간
+  const n = st >= 9 ? 2 : 1;                     // 후반 스테이지만 두 개가 겹칩니다
+  const pool = MUTATORS.slice(), out = [];
+  for (let i=0;i<n && pool.length;i++)
+    out.push(pool.splice((Math.random()*pool.length)|0, 1)[0]);
+  return out;
+}
+function applyMutators(list, w){
+  const scale = 1 + stageOf(w)*0.12;
+  S.mut = {list, armor:0, aoeCut:0, regen:0, swift:1, shield:0,
+           stealth:false, throttle:1, jam:1, count:1, hp:1};
+  for (const m of list){
+    if (m.k === 'armor')    S.mut.armor    = Math.round(18*scale);
+    if (m.k === 'aoeCut')   S.mut.aoeCut   = 0.55;
+    if (m.k === 'regen')    S.mut.regen    = 0.025;
+    if (m.k === 'swift')    S.mut.swift    = 1.45;
+    if (m.k === 'shield')   S.mut.shield   = 0.35;
+    if (m.k === 'stealth')  S.mut.stealth  = true;
+    if (m.k === 'throttle') S.mut.throttle = 0.75;
+    if (m.k === 'jam')      S.mut.jam      = 0.5;
+    if (m.k === 'swarm'){ S.mut.count *= 1.4; S.mut.hp *= 0.75; }
+    if (m.k === 'elite'){ S.mut.count *= 0.7; S.mut.hp *= 1.65; }
+  }
+}
+const BOSS_SLOT = {3:0, 6:1, 8:2};
+const mythCount = () => S.units.filter(u => U[u.id].t === 5).length;
+
 function buildWave(w){
   const q = [];
-  const baseMul  = growth(w, 1.020, 1.253);
-  const eliteMul = growth(w, 1.018, 1.204);
-  const bossMul  = growth(w, 1.018, 1.190);   // 보스만 소폭 하향
+  const baseMul  = growth(w, 1.020, 1.1512);
+  const eliteMul = growth(w, 1.018, 1.1289);
+  const bossMul  = growth(w, 1.018, 1.1212);
   const ELITE = {leak:1, inf:1, fork:1, gc:1, miss:1, opt:1, child:1,
-                 thread:1, sema:1, packet:1, retry:1, page:1, zombie:1};
-  const count = Math.min(30, 7 + Math.floor(w*0.55));
+                 thread:1, sema:1, packet:1, retry:1, page:1, zombie:1,
+                 overrun:1, inject:1, phantom:1, hypercall:1, retrans:1,
+                 grad:1, collide:1, qubit:1, bitflip:1};
+  const count = Math.max(3, Math.round(Math.min(30, 7 + Math.floor(w*0.55)) * S.mut.count));
   const add = (t, f) => {
     const n = Math.floor(count*f);
     for (let i=0;i<n;i++) q.push({type:t, hpMul: ELITE[t] ? eliteMul : baseMul});
@@ -1016,59 +1408,42 @@ function buildWave(w){
   const one = t => q.push({type:t, hpMul: bossMul});
 
   const st = stageOf(w), sw = stageWave(w), SG = STAGES[st];
-  if (sw === 4)  one(SG.minis[0]);
-  if (sw === 7)  one(SG.minis[1]);
-  if (sw === 10) one(SG.last);
-
-  if (st === 0){
-    add('bug', 0.45);
-    if (sw >= 2) add('warn', 0.24);
-    if (sw >= 3) add('nul', 0.20);
-    if (sw >= 5) add('exc', 0.18);
-  } else if (st === 1){
-    add('bug', 0.25); add('nul', 0.15); add('exc', 0.15);
-    add('leak', 0.17); add('fork', 0.16);
-    if (sw >= 4) add('gc', 0.10);
-    if (sw >= 6) add('inf', 0.12);
-  } else if (st === 2){
-    add('bug', 0.18); add('exc', 0.12); add('leak', 0.12); add('fork', 0.14);
-    add('inf', 0.12); add('gc', 0.08); add('miss', 0.16); add('opt', 0.14);
-  } else if (st === 3){
-    add('bug', 0.12); add('exc', 0.10); add('leak', 0.10); add('fork', 0.12);
-    add('inf', 0.10); add('miss', 0.12); add('opt', 0.12);
-    add('thread', 0.16); if (sw >= 3) add('sema', 0.12);
-  } else if (st === 4){
-    add('exc', 0.08); add('fork', 0.10); add('inf', 0.10); add('miss', 0.12);
-    add('opt', 0.12); add('thread', 0.12); add('sema', 0.10);
-    add('packet', 0.16); if (sw >= 3) add('retry', 0.12);
-  } else {
-    add('opt', 0.10); add('miss', 0.10); add('thread', 0.10); add('sema', 0.08);
-    add('packet', 0.12); add('retry', 0.12);
-    add('page', 0.16); add('zombie', 0.14);
-  }
-  if (sw >= 4 && sw % 3 === 1) add('bug', 0.35);
+  if (sw === 3) one(SG.minis[0]);
+  if (sw === 6) one(SG.minis[1]);
+  if (sw === 8) one(SG.last);
+  for (const [type, frac, from] of SG.mobs) if (!from || sw >= from) add(type, frac);
+  if (BOSS_SLOT[sw] !== undefined) add('bug', 0.3);   // 보스 호위
 
   for (let i=q.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [q[i],q[j]]=[q[j],q[i]]; }
   return q;
 }
 function showStageCard(st){
   const s = STAGES[st], el = $('stagecard');
+  const muts = S.mut.list.map(m =>
+    `<div class="sc-mut" style="border-color:${m.c}">
+       <b style="color:${m.c}">변이 · ${m.n}</b>
+       <span>${m.d}<br>${m.hint}</span></div>`).join('');
   el.innerHTML = `<div class="sc-n">STAGE ${st+1}</div><h3>${s.name}</h3>
-    <div class="sc-s">${s.sub}</div><div class="sc-d">${s.desc}<br>
-    <b style="color:#ff9b93">보스 · ${s.boss}</b></div>`;
+    <div class="sc-s">${s.sub}</div>
+    <div class="sc-d">${s.desc}<br><b style="color:#ff9b93">보스 · ${ENEMY[s.last].n}</b></div>
+    ${muts}`;
   el.classList.remove('hide'); el.style.opacity = '1';
   clearTimeout(showStageCard.t1); clearTimeout(showStageCard.t2);
-  showStageCard.t1 = setTimeout(() => el.style.opacity = '0', 3400);
+  showStageCard.t1 = setTimeout(() => el.style.opacity = '0', S.mut.list.length ? 5000 : 3400);
   showStageCard.t2 = setTimeout(() => el.classList.add('hide'), 3900);
 }
 function startWave(){
   S.wave++;
   if (S.wave > S.maxWave) return victory();
   if (stageWave(S.wave) === 1) showStageCard(stageOf(S.wave));
+  if (stageWave(S.wave) === 1) applyMutators(rollMutators(S.wave), S.wave);  // 스테이지 시작에만 갱신
   S.queue = buildWave(S.wave);
-  S.phase = 'wave'; S.spawnT = 0;
+  S.phase = 'wave'; S.spawnT = 0; S.waveT = 0; S.rush = false;
   $('btn-skip').classList.add('hide');
+  SFX.wave();
   log(`── WAVE ${S.wave} 실행 (적 ${S.queue.length}) ──`, true);
+  if (stageWave(S.wave) === 1)
+    for (const m of S.mut.list) log(`변이 · ${m.n} — ${m.d}`, true);
   sync();
 }
 function endWave(){
@@ -1084,12 +1459,13 @@ function endWave(){
     if (!S.finalDown) return gameOver('최종 보스를 놓쳤습니다');
     return victory();
   }
-  S.phase = 'prep'; S.prep = 3.5;
+  S.phase = 'prep'; S.prep = 1.5;
   $('btn-skip').classList.remove('hide');
   sync();
 }
 function spawn(item, at){
-  const b = ENEMY[item.type], hp = Math.max(1, Math.round(b.hp*item.hpMul*HP_ADJ));
+  const b = ENEMY[item.type];
+  let hp = Math.max(1, Math.round(b.hp*item.hpMul*HP_ADJ*S.mut.hp));
   const e = {
     type:item.type, hp, max:hp, hpMul:item.hpMul,
     x: at ? at.x : px(WP[0][0]), y: at ? at.y : px(WP[0][1]),
@@ -1097,23 +1473,27 @@ function spawn(item, at){
     slow:0, sp:b.sp*PACE, r:b.r, c:b.c, boss:!!b.boss, ph:Math.random()*6,
     spdMul:1, healed:0, enraged:false,
     age:0, flash:0, ang:Math.PI/2, hpGhost:hp, bob:Math.random()*6,
-    shield: b.shield ? Math.round(hp*b.shield) : 0,
-    shieldMax: b.shield ? Math.round(hp*b.shield) : 0,
-    hidden:false, stTimer: b.stealth ? b.stealth.off*Math.random() : 0,
+    shield: Math.round(hp*((b.shield||0) + S.mut.shield)),
+    shieldMax: Math.round(hp*((b.shield||0) + S.mut.shield)),
+    hidden:false, stTimer: (b.stealth||S.mut.stealth) ? 1.6*Math.random() : 0,
   };
+  if (b.boss && !at) SFX.bossIn();
   S.enemies.push(e);
   return e;
 }
 function victory(){
   if (S.over) return;
   S.over = true; S.phase='done';
-  banner('BUILD SUCCESSFUL', `${S.maxWave} 웨이브, 세 스테이지를 모두 방어했습니다.<br>남은 메모리 ${S.life} · 처치 ${S.killed}`);
+  SFX.win();
+  banner('BUILD SUCCESSFUL', `${STAGES.length}개 스테이지 ${S.maxWave}웨이브를 모두 방어했습니다.`, true);
 }
 function gameOver(reason){
   if (S.over) return;
   S.over = true; S.phase='done';
-  banner('SEGMENTATION FAULT', `STAGE ${stageOf(S.wave)+1} · ${STAGES[stageOf(S.wave)].name}<br>
-    ${reason || `WAVE ${S.wave}에서 메모리가 모두 소진됐습니다`}<br>처치 ${S.killed}`);
+  SFX.over();
+  banner('SEGMENTATION FAULT',
+    reason || `WAVE ${S.wave}에서 메모리가 모두 소진됐습니다`, false);
+
 }
 // 한 판이 끝나면 연구·소환권·유닛은 전부 사라집니다. 다음 판은 맨손에서 시작합니다.
 function resetRun(){
@@ -1122,11 +1502,14 @@ function resetRun(){
   S.units = []; S.enemies = []; S.corpses = []; S.fx = []; S.texts = []; S.pulses = [];
   S.queue = []; S.spawnT = 0; S.sel = null; S.sellArm = null; S.drag = null; S.draft = null;
   S.cap = 22; S.allyBuff = 0; S.allyMul = 0;
-  S.res = {atk:0, spd:0, cap:0, mem:0, gold:0, ult:0};
+  S.res = {atk:0, spd:0, cap:0, mem:0, gold:0, ult:0, myth:0}; S.mythCap = 5;
+  S.mut = {list:[], armor:0, aoeCut:0, regen:0, swift:1, shield:0,
+           stealth:false, throttle:1, jam:1, count:1, hp:1};
   S.buy = {draft:0, tier:0, named:0};
-  S.tk  = {draft:1, tier:0, named:0};
+  S.tk  = {draft:1, tier:0, named:0}; S.optTk = 0;
   S.seen = {draft:0, tier:0, named:0};
-  S.picks = [0,0,0,0,0]; S.named = {}; S.pity = 0;
+  S.picks = [0,0,0,0,0]; S.named = {}; S.pity = 0; S.summons = 0;
+  S.stat = {common:0, ult:0, myth:0, trans:0, earned:0, spent:0}; S.playT = 0;
   LOGS.length = 0;
   lastSig = '';
   $('banner').classList.add('hide');
@@ -1135,17 +1518,49 @@ function resetRun(){
   $('title').classList.remove('hide');
   sync();
 }
-function banner(title, html){
-  const b = $('banner');
-  b.innerHTML = `<h2>${title}</h2><p>${html}</p>`;
-  const note = document.createElement('p');
-  note.style.cssText = 'color:#7d8aa3;font-size:10.5px;margin:0';
-  note.textContent = '연구 · 소환권 · 유닛은 이번 판 한정입니다. 처음부터 다시 쌓아야 합니다.';
-  b.appendChild(note);
+const BEST = {wave:0, killed:0};        // 이번 세션 최고 기록 (판이 끝나도 유지)
+function banner(title, html, win){
+  const st = stageOf(Math.max(1,S.wave));
+  const mm = Math.floor(S.playT/60), ss = Math.floor(S.playT%60);
+  const myth = S.units.filter(u => U[u.id].t === 5).length;
+  const trans = S.units.filter(u => U[u.id].t === 6).length;
+  const resLv = Object.values(S.res).reduce((a,b) => a+b, 0);
+  const newWave = S.wave > BEST.wave, newKill = S.killed > BEST.killed;
+  const prev = {wave:BEST.wave, killed:BEST.killed};
+  BEST.wave = Math.max(BEST.wave, S.wave);
+  BEST.killed = Math.max(BEST.killed, S.killed);
+
+  const cell = (label, val, hi) =>
+    `<div class="rs-c"><i>${label}</i><b class="${hi?'hi':''}">${val}</b></div>`;
+
+  $('banner').innerHTML = `
+    <div class="rs">
+      <h2 style="color:${win?'#7ee787':'#ff7b72'}">${title}</h2>
+      <p>${html}</p>
+      <div class="rs-g">
+        ${cell('도달', `${st+1}-${stageWave(Math.max(1,S.wave))}`, newWave)}
+        ${cell('웨이브', `${S.wave} / ${S.maxWave}`, newWave)}
+        ${cell('처치', S.killed.toLocaleString(), newKill)}
+        ${cell('남은 메모리', S.life)}
+        ${cell('플레이 시간', `${mm}분 ${ss}초`)}
+        ${cell('소환', S.summons + '회')}
+        ${cell('신화 제작', S.stat.myth + '종')}
+        ${cell('초월', S.stat.trans + '종')}
+        ${cell('궁극기', S.stat.ult + '회')}
+        ${cell('획득 골드', Math.round(S.stat.earned).toLocaleString())}
+        ${cell('사용 골드', Math.round(S.stat.spent).toLocaleString())}
+        ${cell('연구 레벨 합', resLv)}
+      </div>
+      <div class="rs-b">최종 보유 · 신화 ${myth}기 · 초월 ${trans}기${
+        prev.wave ? ` &nbsp;|&nbsp; 이전 최고 ${prev.wave}웨이브 · ${prev.killed.toLocaleString()}처치` : ''}
+        ${newWave && prev.wave ? ' <b style="color:#ffd76e">신기록!</b>' : ''}</div>
+      <p class="rs-n">연구 · 소환권 · 유닛은 이번 판 한정입니다. 처음부터 다시 쌓아야 합니다.</p>
+    </div>`;
   const bt = document.createElement('button');
   bt.className = 'go'; bt.textContent = '메인으로';
   bt.onclick = resetRun;
-  b.appendChild(bt); b.classList.remove('hide');
+  $('banner').appendChild(bt);
+  $('banner').classList.remove('hide');
 }
 
 // ═══════════════════════════════ 이펙트 헬퍼
@@ -1154,7 +1569,6 @@ const TXT = t => { if (S.texts.length > 44) S.texts.splice(0, 12); S.texts.push(
 const beam = (a,b,c,w,dash) => FX({k:'beam', x1:a.x, y1:a.y, x2:b.x, y2:b.y, c, w:w||2, dash, life:.18, max:.18});
 const bullet = (a,b,txt,c,sz) => FX({k:'bullet', x1:a.x, y1:a.y, x2:b.x, y2:b.y, txt, c, sz:sz||11, life:.26, max:.26});
 const label = (e,txt,c,dy) => FX({k:'label', x:e.x, y:e.y+(dy||-20), txt, c, life:.7, max:.7});
-const ringFx = (e,r,c,n) => FX({k:'wave', x:e.x, y:e.y, r, c, n:n||1, square:false, life:.42, max:.42});
 
 // 유닛별 고유 연출
 const VIS = {
@@ -1166,7 +1580,15 @@ const VIS = {
   arr:  (u,h,c) => { h.forEach((e,i)=>{ beam(u,e,c,2); FX({k:'box', x:e.x, y:e.y-20, txt:'['+i+']', c, life:.5, max:.5}); }); },
   ifs:  (u,h,c,x) => FX({k:'branch', x1:u.x,y1:u.y,x2:h[0].x,y2:h[0].y, c, hit:x.weak, life:.35, max:.35}),
   loop: (u,h,c) => FX({k:'orbit', x:h[0].x, y:h[0].y, r:h[0].r+9, c, turns:4, life:.5, max:.5}),
-  fn:   (u,h,c) => { for (const o of h) beam(u,o,'#79c0ff',1.5,[3,3]); FX({k:'wave', x:u.x,y:u.y, r:TS*1.4, c:'#79c0ff', n:1, life:.5, max:.5}); },
+  fn:   (u,h,c) => { for (const o of h) beam(u,o,'#79c0ff',1.5,[3,3]);
+    FX({k:'wave', x:u.x,y:u.y, r:TS*1.4, c:'#79c0ff', n:1, life:.5, max:.5}); },
+  pool: (u,h,c) => { for (const o of h) FX({k:'queue', x1:u.x, y1:u.y, x2:o.x, y2:o.y, c:'#7ee787', life:.45, max:.45});
+    FX({k:'wave', x:u.x,y:u.y, r:TS*1.4, c:'#7ee787', n:1, life:.5, max:.5}); },
+  gcu:  (u,h,c) => { FX({k:'wave', x:u.x,y:u.y, r:TS*2.4, c:'#7ee787', n:2, life:.7, max:.7}); },
+  mtx:  (u,h,c) => { beam(u,h[0],c,3); FX({k:'bracket', x:h[0].x, y:h[0].y, c, life:.6, max:.6});
+    label(h[0],'LOCK',c,-26); },
+  mvcc: (u,h,c) => { beam(u,h[0],c,4); FX({k:'bracket', x:h[0].x, y:h[0].y, c, life:.7, max:.7});
+    FX({k:'rings', x:h[0].x, y:h[0].y, r:h[0].r+26, n:3, c, life:.6, max:.6}); },
   stk:  (u,h,c) => FX({k:'stack', x:h[0].x, y:h[0].y, c, life:.5, max:.5}),
   que:  (u,h,c) => FX({k:'queue', x1:u.x,y1:u.y,x2:h[0].x,y2:h[0].y, c, life:.35, max:.35}),
   lnk:  (u,h,c) => FX({k:'nodes', pts:[[u.x,u.y]].concat(h.map(e=>[e.x,e.y])), c, life:.45, max:.45}),
@@ -1181,7 +1603,7 @@ const VIS = {
   memo: (u,h,c,x) => { beam(u,h[0],c,2+(x.ramp||0)*2); FX({k:'cache', x:h[0].x, y:h[0].y-26, c, fill:Math.min(6,1+Math.round((x.ramp||0)*4)), life:.5, max:.5}); },
   bit:  (u,h,c,x) => FX({k:'bits', x:x.cx, y:x.cy, r:x.r, c, life:.5, max:.5}),
   quick:(u,h,c,x) => FX({k:'pivot', x:x.cx, y:x.cy, r:x.r, c, life:.55, max:.55}),
-  bfs:  (u,h,c,x) => FX({k:'wave', x:u.x, y:u.y, r:Math.max(cv.width,cv.height), c, n:4, square:true, life:.75, max:.75}),
+  bfs:  (u,h,c,x) => FX({k:'wave', x:u.x, y:u.y, r:TS*4.2, c, n:3, square:true, life:.5, max:.5}),
   dfs:  (u,h,c) => FX({k:'trail', pts:[[u.x,u.y]].concat(h.map(e=>[e.x,e.y])), c, life:.6, max:.6}),
   dij:  (u,h,c) => { FX({k:'route', x1:u.x,y1:u.y,x2:h[0].x,y2:h[0].y, c, life:.6, max:.6}); label(h[0],'dist=0',c,-26); },
   dp:   (u,h,c,x) => { beam(u,h[0],c,3); FX({k:'table', x:h[0].x, y:h[0].y-30, c, fill:Math.min(8,1+Math.round((x.ramp||0)*2)), life:.55, max:.55}); },
@@ -1196,10 +1618,13 @@ const VIS = {
 
 // ═══════════════════════════════ 전투
 let SRC = null;                     // 지금 공격 중인 유닛 (게이지 충전 귀속)
+let AOE = false;                    // 지금 들어가는 피해가 광역인지 ('차폐' 변이용)
+const aoeScope = fn => { AOE = true; try { fn(); } finally { AOE = false; } };
 function dmgTo(e, amount, color, big){
   const b = ENEMY[e.type];
   const before = e.hp + e.shield;
-  const armor = (b.armor||0) + (e.auraArmor||0);          // 세마포어·뮤텍스가 덧씌운 장갑 포함
+  if (AOE && S.mut.aoeCut) amount *= (1 - S.mut.aoeCut);   // 차폐 변이
+  const armor = (b.armor||0) + (e.auraArmor||0) + (S.mut.armor||0);          // 세마포어·뮤텍스가 덧씌운 장갑 포함
   if (armor) amount = Math.max(amount*0.1, amount - armor);   // 장갑: 고정 감소 (최소 10%는 통과)
   if (e.shield > 0){                                              // 보호막이 먼저 닳습니다
     const ab = Math.min(e.shield, amount);
@@ -1225,14 +1650,19 @@ function dmgTo(e, amount, color, big){
   }
   if (e.hp <= 0 && !e.dead){
     e.dead = true;
-    S.gold += Math.round(b.gold * (1 + S.wave*0.05) * (1 + 0.08*S.res.gold));
+    const g = Math.round(b.gold * (1 + S.wave*0.05) * (1 + 0.08*S.res.gold));
+    S.gold += g; S.stat.earned += g;
     S.killed++;
+    SFX.kill();
     FX({k:'pop', x:e.x, y:e.y, c:e.c, life:.3, max:.3});
     S.corpses.push({x:e.x, y:e.y, r:e.r, c:e.c, shape:b.shape, ang:e.ang, t:.32, max:.32});
     if (SRC){ const g = U[SRC.id].ult; if (g && g.g === 'kill') SRC.chg += ultRate(); }
     if (b.boss){
+      SFX.bossDown();
       log(`◆ ${b.n} 격파! ◆`, true);
       grantTicket('named', 1);
+      S.optTk += 1;
+      log('최적화 토큰 +1', true);
       FX({k:'wave', x:e.x, y:e.y, r:TS*5, c:e.c, n:3, life:.9, max:.9});
       if (e.type === FINAL_BOSS) S.finalDown = true;
     }
@@ -1245,6 +1675,12 @@ function dmgTo(e, amount, color, big){
     }
   }
 }
+function spdBuffOf(u){                            // 스레드풀: 인접 아군 공속
+  let m = 1;
+  for (const o of S.units)
+    if (o.id==='pool' && o!==u && Math.abs(o.tx-u.tx)<=1 && Math.abs(o.ty-u.ty)<=1) m += U.pool.sp.mul;
+  return m;
+}
 function buffOf(u){
   let m = (S.allyBuff > 0 ? 1 + S.allyMul : 1) * (1 + 0.05*S.res.atk);   // 연구: 공격력
   for (const o of S.units)
@@ -1252,7 +1688,7 @@ function buffOf(u){
   return m;
 }
 function inRange(u, sp){
-  const R = (sp.global || U[u.id].rng >= 90) ? Infinity : U[u.id].rng*TS;
+  const R = (sp.global || U[u.id].rng >= 90) ? Infinity : rangeOf(u)*TS;
   const out = [];
   for (const e of S.enemies){
     if (e.dead || e.hidden) continue;          // 캐시미스: 사라진 동안 조준 불가
@@ -1272,12 +1708,12 @@ function castEffect(u, ef, base, col, isUlt){
   const boom = (x,y,r) => FX({k:'wave', x, y, r, c:col, n:isUlt?3:2, life:isUlt?.9:.6, max:isUlt?.9:.6});
 
   switch (ef.f){
-    case 'all':      for (const e of list) dmgTo(e, base*ef.mul, col, true);
-                     boom(cv.width/2, cv.height/2, Math.max(cv.width,cv.height)); break;
-    case 'allSlow':  for (const e of list){ dmgTo(e, base*ef.mul, col, true); e.slow = Math.max(e.slow, ef.dur); }
-                     boom(cv.width/2, cv.height/2, Math.max(cv.width,cv.height)); break;
+    case 'all':      aoeScope(() => { for (const e of list) dmgTo(e, base*ef.mul, col, true); });
+                     boom(u.x, u.y, TS*5); break;
+    case 'allSlow':  aoeScope(() => { for (const e of list){ dmgTo(e, base*ef.mul, col, true); applySlow(e, ef.dur); } });
+                     boom(u.x, u.y, TS*5); break;
     case 'area':   { const t = list[0], hit = near(ef.r);
-                     for (const e of hit) dmgTo(e, base*ef.mul, col, true);
+                     aoeScope(() => { for (const e of hit) dmgTo(e, base*ef.mul, col, true); });
                      boom(t.x, t.y, ef.r*TS); break; }
     case 'top':      for (const e of list.slice(0, ef.k)){ dmgTo(e, base*ef.mul, col, true); beam(u, e, col, 3); } break;
     case 'topHp':  { const s = list.slice().sort((a,b) => b.hp - a.hp);
@@ -1296,17 +1732,17 @@ function castEffect(u, ef, base, col, isUlt){
     case 'pct':    { const e = list[0]; dmgTo(e, e.hp*ef.pct + base, col, true);
                      label(e, Math.round(ef.pct*100)+'%', col, -28); beam(u, e, col, 4); break; }
     case 'pctSlow':{ const e = list[0]; dmgTo(e, e.hp*ef.pct + base, col, true);
-                     for (const o of list) o.slow = Math.max(o.slow, ef.dur);
+                     for (const o of list) applySlow(o, ef.dur);
                      label(e, Math.round(ef.pct*100)+'%', col, -28); break; }
-    case 'pctAll':   for (const e of list){ dmgTo(e, e.hp*ef.pct, col, true); }
-                     boom(cv.width/2, cv.height/2, Math.max(cv.width,cv.height)); break;
+    case 'pctAll':   aoeScope(() => { for (const e of list) dmgTo(e, e.hp*ef.pct, col, true); });
+                     boom(u.x, u.y, TS*5); break;
     case 'exec':   { const e = list[0];
                      if (e.boss) dmgTo(e, e.hp*ef.pct, col, true);
                      else { dmgTo(e, e.hp + e.shield, col, true); label(e, 'FOUND', col, -28); }
                      break; }
     case 'deep':     for (const e of list.slice(0, ef.k)){ dmgTo(e, e.hp*ef.pct + base*ef.mul, col, true); beam(u, e, col, 3); } break;
-    case 'freeze':   for (const e of list){ dmgTo(e, base*ef.mul, col, true); e.slow = Math.max(e.slow, ef.dur); e.frozen = ef.dur; }
-                     boom(cv.width/2, cv.height/2, Math.max(cv.width,cv.height)); break;
+    case 'freeze':   aoeScope(() => { for (const e of list){ dmgTo(e, base*ef.mul, col, true); applySlow(e, ef.dur); applyLock(e, ef.dur); } });
+                     boom(u.x, u.y, TS*5); break;
     case 'pulse':  { for (let i=0;i<ef.n2;i++) S.pulses.push({u, mul:ef.mul, col, t:i*0.28, base}); break; }
     case 'rampNuke':{ const e = list[0]; const sp = U[u.id].sp;
                      const mult = 1 + (u.ramp || 0);
@@ -1318,23 +1754,18 @@ function castEffect(u, ef, base, col, isUlt){
   }
   return true;
 }
-const ultRate = () => 1 + 0.10*S.res.ult;
-function ultReady(u){ const g = U[u.id].ult; return !!g && u.chg >= g.need; }
+const ultRate = () => (1 + 0.10*S.res.ult) * S.mut.jam * (hasUnit('pnp') ? 1.6 : 1);
+function ultReady(u){ const g = U[u.id].ult; return !!g && u.chg >= ultNeed(u); }
 function castUlt(u){
   const g = U[u.id].ult;
-  if (!g || u.chg < g.need) return false;
+  if (!g || u.chg < ultNeed(u)) return false;
   u.chg = 0;
   const col = TIER[U[u.id].t].hex;
-  castEffect(u, g, U[u.id].dmg * buffOf(u), col, true);
+  castEffect(u, g, U[u.id].dmg * buffOf(u) * powerOf(u), col, true);
   TXT({x:cv.width/2, y:cv.height*0.42, v:'◆ ' + g.n, life:1.5, c:col});
+  SFX.ult(); S.stat.ult++;
   log(`◆ 궁극기 · ${U[u.id].n} — ${g.n}`, true);
   return true;
-}
-function castAllUlts(){
-  const ready = S.units.filter(ultReady);
-  if (!ready.length) return log('충전된 궁극기가 없습니다.');
-  for (const u of ready) castUlt(u);
-  sync();
 }
 
 function attack(u){
@@ -1342,8 +1773,18 @@ function attack(u){
   SRC = u;
   const vis = VIS[u.id] || ((a,h,c)=>beam(a,h[0],c,2));
 
-  if (sp.t === 'buff'){
-    const near = S.units.filter(o => o!==u && Math.abs(o.tx-u.tx)<=1 && Math.abs(o.ty-u.ty)<=1 && U[o.id].sp.t!=='buff');
+  if (sp.t === 'repair'){                       // 가비지 컬렉터: 메모리 회수
+    const cap = S.maxLife || 20;
+    if (S.life >= cap) return false;
+    S.life = Math.min(cap, S.life + sp.amt);
+    FX({k:'wave', x:u.x, y:u.y, r:TS*2.4, c:col, n:2, life:.7, max:.7});
+    TXT({x:u.x, y:u.y-24, v:'+'+sp.amt+' MEM', life:1.2, max:1.2, c:'#7ee787'});
+    log(`가비지 컬렉터가 메모리를 ${sp.amt} 회수했습니다`);
+    return true;
+  }
+  if (sp.t === 'buffSpd' || sp.t === 'buff'){
+    const near = S.units.filter(o => o!==u && Math.abs(o.tx-u.tx)<=1 && Math.abs(o.ty-u.ty)<=1
+      && U[o.id].sp.t!=='buff' && U[o.id].sp.t!=='buffSpd' && U[o.id].sp.t!=='repair');
     if (!near.length) return false;
     vis(u, near, col, {});
     return true;
@@ -1351,11 +1792,13 @@ function attack(u){
   const list = inRange(u, sp);
   if (!list.length) return false;
   list.sort((a,b) => b.dist - a.dist);
-  const base = def.dmg * buffOf(u);
+  const base = def.dmg * buffOf(u) * powerOf(u);
   let hits = [], meta = {};
 
   switch (sp.t){
     case 'single': { const e=list[0]; dmgTo(e, base, col); hits=[e]; break; }
+    case 'lock': { const e=list[0]; dmgTo(e, base, col, true); applyLock(e, sp.dur);
+                   hits=[e]; break; }
     case 'crit': { const e=list[0], on=Math.random()<sp.p; dmgTo(e, base*(on?sp.mul:1), col, on); hits=[e]; meta.crit=on; break; }
     case 'weak': { const e=list[0], low=e.hp<e.max/2; dmgTo(e, base*(low?sp.mul:1), col, low); hits=[e]; meta.weak=low; break; }
     case 'multi': { hits=list.slice(0,sp.k); for (const e of hits) dmgTo(e, base, col); break; }
@@ -1379,10 +1822,12 @@ function attack(u){
     case 'aoe': {
       const t=list[0], R=sp.r*TS;
       meta.cx=t.x; meta.cy=t.y; meta.r=R;
-      for (const e of S.enemies){
-        if (e.dead) continue;
-        if ((e.x-t.x)**2+(e.y-t.y)**2 <= R*R){ dmgTo(e, base, col, def.t===5); hits.push(e); }
-      }
+      aoeScope(() => {
+        for (const e of S.enemies){
+          if (e.dead) continue;
+          if ((e.x-t.x)**2+(e.y-t.y)**2 <= R*R){ dmgTo(e, base, col, def.t>=5); hits.push(e); }
+        }
+      });
       if (!hits.length) hits=[t];
       break;
     }
@@ -1404,7 +1849,7 @@ function attack(u){
     case 'slowNuke': {
       const e=list[0];
       dmgTo(e, base, col, true);
-      for (const o of S.enemies) if (!o.dead) o.slow = Math.max(o.slow, sp.dur);
+      for (const o of S.enemies) if (!o.dead) applySlow(o, sp.dur);
       hits=[e]; break;
     }
   }
@@ -1416,7 +1861,16 @@ function attack(u){
 
   const g = def.ult;
   if (g && g.g === 'hit') u.chg += ultRate();
+  if (u.id === 'turing'){                              // 보유한 신화의 스킬을 하나 빌려 씁니다
+    const pool = S.units.filter(o => U[o.id].t === 5 && U[o.id].sk);
+    if (pool.length){
+      const src = pool[(Math.random()*pool.length)|0];
+      castEffect(u, U[src.id].sk, def.dmg * buffOf(u) * powerOf(u) * 0.8, col, false);
+      TXT({x:u.x, y:u.y-26, v:U[src.id].sk.n, life:1, max:1, c:col});
+    }
+  }
   if (def.sk && Math.random() < def.sk.p){            // 스킬 발동
+    SFX.skill();
     castEffect(u, def.sk, def.dmg * buffOf(u), col, false);
     TXT({x:u.x, y:u.y-26, v:def.sk.n, life:1.1, c:col});
     FX({k:'pop', x:u.x, y:u.y, c:col, life:.5, max:.5});
@@ -1438,7 +1892,15 @@ function tick(now){
 }
 function step(dt){
   if (S.phase==='prep'){ S.prep -= dt; if (S.prep<=0) startWave(); }
+  S.playT += dt;
   if (S.phase==='wave'){
+    S.waveT += dt;
+    if (!S.rush && S.waveT > WAVE_LIMIT){          // 교착 방지 — 남은 적이 출구로 돌진합니다
+      S.rush = true;
+      for (const e of S.enemies){ e.frozen = 0; e.slow = 0; }
+      SFX.warn();
+      log('시간 초과! 남은 적이 속박을 끊고 돌진합니다', true);
+    }
     S.spawnT -= dt;
     if (S.queue.length && S.spawnT<=0){ spawn(S.queue.shift()); S.spawnT = .32; }
   }
@@ -1466,7 +1928,8 @@ function step(dt){
     if (e.flash > 0) e.flash -= dt;
     e.hpGhost = lerp(e.hpGhost, e.hp, Math.min(1, dt*4.5));   // 체력바가 부드럽게 따라옴
     e.bob += dt * 6;
-    if (b.regen) e.hp = Math.min(e.max, e.hp + e.max*b.regen*dt);
+    const rg = (b.regen||0) + S.mut.regen;
+    if (rg) e.hp = Math.min(e.max, e.hp + e.max*rg*dt);
     if (b.shieldRegen && e.shieldMax)                          // 보호막 자가 재생
       e.shield = Math.min(e.shieldMax, e.shield + e.shieldMax*b.shieldRegen*dt);
     if (b.blink){                                              // 레이스 컨디션: 경로 순간이동
@@ -1479,9 +1942,10 @@ function step(dt){
         TXT({x:e.x, y:e.y-24, v:'BLINK', life:.9, max:.9, c:e.c});
       }
     }
-    if (b.stealth){                                  // 캐시미스: 은신/노출 반복
+    const stl = b.stealth || (S.mut.stealth ? {on:1, off:1.8} : null);
+    if (stl){                                        // 은신/노출 반복
       e.stTimer -= dt;
-      if (e.stTimer <= 0){ e.hidden = !e.hidden; e.stTimer = e.hidden ? b.stealth.on : b.stealth.off; }
+      if (e.stTimer <= 0){ e.hidden = !e.hidden; e.stTimer = e.hidden ? stl.on : stl.off; }
     }
     if (b.enrage && !e.enraged && e.hp < e.max*b.enrage.at){
       e.enraged = true;
@@ -1494,7 +1958,10 @@ function step(dt){
     const dx=tx-e.x, dy=ty-e.y, d=Math.hypot(dx,dy);
     if (e.frozen > 0) e.frozen -= dt;
     const rage = e.enraged ? b.enrage.mul : 1;
-    const v = e.sp * e.spdMul * rage * (e.frozen>0 ? .15 : e.slow>0 ? .55 : 1) * dt;
+    // 잠긴 동안은 완전히 멈춥니다 (설명과 동작을 일치시킵니다)
+    const rush = S.rush ? 1 + Math.min(3, (S.waveT - WAVE_LIMIT) * 0.12) : 1;
+    const v = e.frozen > 0 ? 0
+            : e.sp * e.spdMul * rage * S.mut.swift * rush * (e.slow>0 ? .55 : 1) * dt;
     let na = Math.atan2(dy, dx);                              // 진행 방향으로 부드럽게 회전
     let diff = ((na - e.ang + Math.PI*3) % (Math.PI*2)) - Math.PI;
     e.ang += diff * Math.min(1, dt*7);
@@ -1508,8 +1975,8 @@ function step(dt){
     const p = S.pulses[i]; p.t -= dt;
     if (p.t <= 0){
       SRC = p.u;
-      for (const e of allEnemies()) dmgTo(e, p.base*p.mul, p.col, true);
-      FX({k:'wave', x:cv.width/2, y:cv.height/2, r:Math.max(cv.width,cv.height), c:p.col, n:2, life:.6, max:.6});
+      aoeScope(() => { for (const e of allEnemies()) dmgTo(e, p.base*p.mul, p.col, true); });
+      FX({k:'wave', x:p.u.x, y:p.u.y, r:TS*5, c:p.col, n:2, life:.6, max:.6});
       SRC = null; S.pulses.splice(i,1);
     }
   }
@@ -1517,14 +1984,14 @@ function step(dt){
     u.age += dt;
     u.kx *= Math.pow(0.0008, dt); u.ky *= Math.pow(0.0008, dt);   // 반동 감쇠
     const g = U[u.id].ult;
-    if (g) u.chgVis = lerp(u.chgVis, Math.min(u.chg, g.need), Math.min(1, dt*6));
-    if (g && g.g === 'time') u.chg = Math.min(g.need, u.chg + dt*ultRate());
+    if (g) u.chgVis = lerp(u.chgVis, Math.min(u.chg, ultNeed(u)), Math.min(1, dt*6));
+    if (g && g.g === 'time') u.chg = Math.min(ultNeed(u), u.chg + dt*ultRate());
     if (u.hasteT > 0) u.hasteT -= dt;
     if (S.autoUlt && ultReady(u)) castUlt(u);
     u.cd -= dt;
     if (u.cd <= 0){
       const fired = attack(u);
-      u.cd = fired ? U[u.id].cd / (u.hasteT > 0 ? 2 : 1) / (1 + 0.04*S.res.spd) : .1;
+      u.cd = fired ? U[u.id].cd / (u.hasteT > 0 ? 2 : 1) / (1 + 0.04*S.res.spd) / spdBuffOf(u) / S.mut.throttle / (1 + OPT_SPD*optLv(u)) : .1;
       if (!fired) u.ramp = 0;
     }
   }
@@ -1559,6 +2026,7 @@ function leak(e){
   }
   const cost = e.boss ? 10 : 1;          // 중간 보스는 메모리 10
   S.life -= cost;
+  SFX.leak();
   log(`${b.n} 침투! 메모리 -${cost}`, !!e.boss);
   if (S.life <= 0){ S.life = 0; gameOver(); }
 }
@@ -1625,7 +2093,12 @@ function drawUnit(u, ux, uy){
   const scaled = grow !== 1;
   if (scaled){ cx.save(); cx.translate(ux, uy); cx.scale(grow, grow); cx.translate(-ux, -uy); }
   if (S.sel===u){
-    if (def.rng<90){ cx.globalAlpha=.1; cx.fillStyle=col; cx.beginPath(); cx.arc(ux,uy,def.rng*TS,0,7); cx.fill(); cx.globalAlpha=1; }
+    const sup = def.sp.t==='buff' || def.sp.t==='buffSpd';
+    if (sup){                                    // 지원형은 인접 8칸을 통째로 강조
+      cx.globalAlpha=.12; cx.fillStyle = def.sp.t==='buff' ? '#79c0ff' : '#7ee787';
+      cx.fillRect((u.tx-1)*TS, (u.ty-1)*TS, TS*3, TS*3); cx.globalAlpha=1;
+    }
+    else if (def.rng<90){ cx.globalAlpha=.1; cx.fillStyle=col; cx.beginPath(); cx.arc(ux,uy,def.rng*TS,0,7); cx.fill(); cx.globalAlpha=1; }
     else { cx.globalAlpha=.05; cx.fillStyle=col; cx.fillRect(0,0,cv.width,cv.height); cx.globalAlpha=1; }
     cx.strokeStyle=col; cx.lineWidth=2; cx.strokeRect(x+1,y+1,TS-2,TS-2);
   }
@@ -1635,6 +2108,10 @@ function drawUnit(u, ux, uy){
   if (def.t>=5){ cx.setLineDash([4,3]); cx.lineDashOffset=-S.t*14; }
   cx.strokeRect(x+5,y+5,TS-10,TS-10);
   cx.setLineDash([]); cx.lineDashOffset=0;
+  if (optLv(u)){                                 // 최적화 단계 표시
+    cx.fillStyle='#ffd76e'; cx.font='bold 7px '+MONO; cx.textAlign='right';
+    cx.fillText(BIGO[optLv(u)], x+TS-6, y+TS-12);
+  }
   cx.fillStyle=col; cx.textAlign='center'; cx.textBaseline='middle';
   cx.font=(def.sym.length>3?'9px ':'13px ')+MONO;
   cx.fillText(def.sym, ux, uy-4);
@@ -1652,7 +2129,7 @@ function drawUnit(u, ux, uy){
   }
   const g = U[u.id].ult;
   if (g){                                        // 궁극기 게이지
-    const pct = Math.min(1, u.chgVis / g.need), ready = u.chg >= g.need;
+    const pct = Math.min(1, u.chgVis / ultNeed(u)), ready = u.chg >= ultNeed(u);
     cx.fillStyle = '#0008'; cx.fillRect(x+6, y+TS-9, TS-12, 3.5);
     cx.fillStyle = ready ? '#ffd76e' : '#79c0ff';
     cx.fillRect(x+6, y+TS-9, (TS-12)*pct, 3.5);
@@ -1667,6 +2144,13 @@ function drawUnit(u, ux, uy){
   if (u.hasteT > 0){                             // 공속 증가 중
     cx.strokeStyle='#7ee787'; cx.lineWidth=1.5;
     cx.beginPath(); cx.arc(u.x, u.y, TS*.42, S.t*6, S.t*6+1.6); cx.stroke();
+  }
+  const adj = S.units.filter(o => o!==u && Math.abs(o.tx-u.tx)<=1 && Math.abs(o.ty-u.ty)<=1);
+  const gotAtk = adj.some(o => o.id==='fn'), gotSpd = adj.some(o => o.id==='pool');
+  if (gotAtk || gotSpd){                         // 지금 버프를 받고 있다는 표시
+    let dx = 0;
+    if (gotAtk){ cx.fillStyle='#79c0ff'; cx.beginPath(); cx.arc(x+9, y+TS-9, 2.6, 0, 7); cx.fill(); dx = 8; }
+    if (gotSpd){ cx.fillStyle='#7ee787'; cx.beginPath(); cx.arc(x+9+dx, y+TS-9, 2.6, 0, 7); cx.fill(); }
   }
   if (u.lock){                                   // 자물쇠 — 합성·판매 보호
     const lx = x+11, ly = y+TS-12;
@@ -1747,6 +2231,20 @@ function drawEnemy(e){
     cx.beginPath(); cx.arc(e.x,e.y,e.r+6,-1.2,0.4); cx.stroke();
   }
   if (e.slow>0){ cx.strokeStyle='#ffd76e'; cx.lineWidth=1.5; cx.beginPath(); cx.arc(e.x,e.y,e.r+3,0,7); cx.stroke(); }
+  if (e.frozen > 0){                                         // 잠김 — 사방에서 붙잡는 브라켓
+    const d = e.r + 7, s = 5;
+    cx.globalAlpha = (e.hidden?.22:1) * .35; cx.fillStyle='#79c0ff';
+    cx.beginPath(); cx.arc(e.x, e.y, e.r+2, 0, 7); cx.fill();
+    cx.globalAlpha = e.hidden ? .22 : 1;
+    cx.strokeStyle='#79c0ff'; cx.lineWidth=2.4;
+    for (const [sx,sy] of [[-1,-1],[1,-1],[-1,1],[1,1]]){
+      cx.beginPath();
+      cx.moveTo(e.x+sx*d, e.y+sy*d - sy*s);
+      cx.lineTo(e.x+sx*d, e.y+sy*d);
+      cx.lineTo(e.x+sx*d - sx*s, e.y+sy*d);
+      cx.stroke();
+    }
+  }
   if (e.shield > 0){                                         // 보호막 — 육각 실드
     cx.strokeStyle='#8ab4ff'; cx.lineWidth=2; cx.globalAlpha=(e.hidden?.22:1)*.85;
     cx.beginPath();
@@ -2122,7 +2620,7 @@ function htmlUnit(){
     <div class="u-head"><p class="u-name" style="color:${t.hex}">${esc(d.n)}</p>
       <span class="tag" style="color:${t.hex}">${t.n} · ${t.label}</span></div>
     <div class="u-stats">
-      <div>공격력<b>${d.dmg === 0 ? '지원' : d.dmg}</b></div>
+      <div>공격력<b>${d.dmg === 0 ? '지원' : Math.round(d.dmg*powerOf(u))}</b></div>
       <div>사거리<b>${d.rng >= 90 ? '전체' : d.rng.toFixed(1)}</b></div>
       <div>공속<b>${d.sp.t === 'buff' ? '—' : d.cd.toFixed(2)+'s'}</b></div>
       <div>보유<b>${S.units.filter(x => x.id === u.id).length}</b></div>
@@ -2139,10 +2637,27 @@ function htmlUnit(){
     <p class="u-vfx"><b>연출</b> · ${esc(d.v)}</p>
     <pre class="u-code">${esc(d.c)}</pre>
     ${matWarn(u) ? '<p class="warn">◆ 이 유닛은 신화 조합 재료로 잡혀 있습니다.</p>' : ''}
+    ${d.t >= 5 ? (() => {
+      const lv = optLv(u), cost = optCost(lv), maxed = lv >= OPT_MAX;
+      const can = !maxed && S.optTk >= 1 && S.gold >= cost;
+      return `<div class="opt">
+        <div class="opt-h"><b>복잡도</b><span>${BIGO[lv]}</span>
+          <i>최적화 토큰 ${S.optTk}개</i></div>
+        <div class="opt-bar">${BIGO.map((b,i) =>
+          `<span class="${i<=lv?'on':''}">${b}</span>`).join('')}</div>
+        <p>공격력 +${Math.round(OPT_DMG*lv*100)}% · 공속 +${Math.round(OPT_SPD*lv*100)}% 적용 중</p>
+        ${maxed ? '<div class="ab-rdy" style="border-color:#6b5a2a">상수 시간 도달 — 더 줄일 수 없습니다</div>'
+          : `<button class="full ${can?'go':''}" data-act="opt" ${can?'':'disabled'}>
+              ${BIGO[lv]} → ${BIGO[lv+1]}
+              <small>토큰 1개 + ${cost.toLocaleString()}G · 공격력 +${Math.round(OPT_DMG*100)}%, 공속 +${Math.round(OPT_SPD*100)}%</small></button>`}
+      </div>`;
+    })() : ''}
     <button class="full ${u.lock?'on':''}" data-act="lock">${u.lock ? '잠금 해제' : '잠그기'}<small>${u.lock ? '합성·판매에서 보호 중' : '자동합성과 판매에서 제외합니다'}</small></button>
     <button class="danger full" data-act="sell" ${u.lock?'disabled':''}>${armed ? '한 번 더 눌러 판매' : '판매 · +'+SELL[d.t]+'G'}</button>`;
 }
 function bindUnit(b){
+  const op = b.querySelector('[data-act=opt]');
+  if (op) op.onclick = () => { const u = selUnit(); if (u){ optimize(u); renderSheet(); } };
   const lk = b.querySelector('[data-act=lock]');
   if (lk) lk.onclick = () => { const u = selUnit(); if (u){ u.lock = !u.lock; sync(); renderSheet(); } };
   const s = b.querySelector('[data-act=sell]');
@@ -2150,12 +2665,54 @@ function bindUnit(b){
 }
 const selUnit = () => (S.sel && S.units.includes(S.sel)) ? S.sel : null;
 
+// ── 초월
+function htmlTrans(){
+  let h = `<p class="gnote" style="margin:0 0 10px">신화를 재료로 쓰고 <b>누적 조건</b>까지 채워야 만들어집니다.
+    <b>종류당 1기</b>만 둘 수 있고, 신화 슬롯은 소모하지 않습니다.</p>`;
+  transStatus().forEach(s => {
+    const mat = Object.keys(s.need).map(k =>
+      `<span class="${hasUnit(k)?'ok':''}">${U[k].n}</span>`).join(' + ');
+    const pct = Math.min(100, s.have / s.r.cond.n * 100);
+    h += `<div class="trans ${s.ok?'can':''} ${s.owned?'owned':''}">
+      <div class="tr-h"><b style="color:#ff6bd6">${esc(U[s.r.id].n)}</b>
+        <button data-trans="${s.i}" ${s.ok?'class="go"':'disabled'}>${
+          s.owned ? '보유 중' : s.ok ? '초월' : '미달'}</button></div>
+      <div class="tr-m">재료 · ${mat}</div>
+      <div class="tr-c">${s.r.cond.label}
+        <i class="${s.condOk?'ok':''}">${Math.min(s.have, s.r.cond.n)} / ${s.r.cond.n}</i></div>
+      <div class="tr-bar"><span style="width:${pct}%"></span></div>
+      <div class="tr-d">${esc(U[s.r.id].d)}</div></div>`;
+  });
+  return h;
+}
+function bindTrans(b){
+  b.querySelectorAll('[data-trans]').forEach(el => {
+    el.onclick = () => { transcend(+el.dataset.trans); renderSheet(); };
+  });
+}
+
 // ── 조합
 function htmlCraft(){
+  const tab = SHEET.ctab || 'myth';
+  const tr = transStatus(), ready = tr.filter(s => s.ok).length;
+  const seg = [['myth','신화 조합'], ['trans','초월']].map(([k,n]) =>
+    `<button data-c="${k}" class="${tab===k?'sel':''}">${n}${
+      k==='trans' && ready ? `<em class="dot">${ready}</em>` : ''}</button>`).join('');
+  let h = `<div class="seg">${seg}</div>`;
+  if (tab === 'trans') return h + htmlTrans();
+  return h + htmlMythCraft();
+}
+function htmlMythCraft(){
   const st = recipeStatus().map((s,i) => ({...s, i}))
     .sort((a,b) => a.miss.length - b.miss.length);
   const c = held();
-  let h = `<div class="autobar"><span>같은 유닛 3개를 자동으로 합칩니다<br>(일반·고급 등급만)</span>
+  const full = mythCount() >= S.mythCap;
+  let h = `<div class="slotbar ${full?'full':''}">
+      <div><b>신화 슬롯 ${mythCount()} / ${S.mythCap}</b>
+        <span>${full ? '가득 찼습니다. 늘리거나 하나를 팔아야 새로 만들 수 있습니다.'
+          : '보드에 올릴 수 있는 신화 수입니다. 초월 등급은 이 칸을 쓰지 않습니다.'}</span></div>
+      <button data-golab>연구소에서 늘리기</button></div>
+    <div class="autobar"><span>같은 유닛 3개를 자동으로 합칩니다<br>(일반·고급 등급만)</span>
     <button class="${S.auto?'on':''}" data-act="auto">${S.auto?'ON':'OFF'}</button></div>`;
   st.forEach(s => {
     const parts = Object.keys(s.need).map(k =>
@@ -2170,7 +2727,14 @@ function htmlCraft(){
   return h;
 }
 function bindCraft(b){
-  b.querySelector('[data-act=auto]').onclick = () => {
+  b.querySelectorAll('[data-c]').forEach(el => {
+    el.onclick = () => { SHEET.ctab = el.dataset.c; renderSheet(); };
+  });
+  bindTrans(b);
+  const gl = b.querySelector('[data-golab]');
+  if (gl) gl.onclick = () => openSheet('lab', '연구소');
+  const ab = b.querySelector('[data-act=auto]');       // 초월 탭에는 없습니다
+  if (ab) ab.onclick = () => {
     S.auto = !S.auto;
     if (S.auto) autoMerge();
     sync(); renderSheet();
@@ -2298,7 +2862,8 @@ function renderGacha(){ if (SHEET.kind === 'gacha') renderSheet(); }
 // ── 연구소 (골드 사용처)
 function htmlLab(){
   let h = `<p class="gnote" style="margin:0 0 10px">보유 골드 <b style="color:#ffd76e">${Math.floor(S.gold).toLocaleString()}G</b>.
-    연구는 <b>이번 판 안에서만</b> 유지되고, 살수록 비싸집니다.</p><div class="lab">`;
+    연구는 <b>이번 판 안에서만</b> 유지되고, 살수록 비싸집니다.<br>
+    신화 슬롯 <b style="color:#ffd76e">${mythCount()} / ${S.mythCap}</b> · 최적화 토큰 <b>${S.optTk}개</b></p><div class="lab">`;
   for (const r of RESEARCH){
     const lv = S.res[r.k], full = lv >= r.max, cost = resCost(r);
     const can = !full && S.gold >= cost;
@@ -2345,6 +2910,11 @@ function htmlWave(){
   const total = Object.values(m).reduce((s,v) => s + v.n*v.hp, 0);
   let h = `<p class="gnote" style="margin:0 0 10px">WAVE ${w} · 남은 적 ${q.length}마리 ·
     총 체력 ${total.toLocaleString()}</p>`;
+  if (S.mut.list.length) h += S.mut.list.map(m =>
+    `<div class="gate bad" style="border-color:${m.c}">
+      <b style="color:${m.c}">스테이지 변이 · ${m.n}</b>
+      <span>${m.d}<br>${m.hint}</span></div>`).join('');
+  h += `<p class="gnote" style="margin:0 0 10px">신화 슬롯 ${mythCount()} / ${S.mythCap}</p>`;
   for (const [k,v] of Object.entries(m).sort((a,b) => b[1].hp - a[1].hp)){
     const e = ENEMY[k];
     h += `<div class="recipe"><div class="rl">
@@ -2378,9 +2948,15 @@ function htmlDex(){
   const add = (k,v) => h += `<div class="row"><b>${k}</b><span>${v}</span></div>`;
   add('이동','유닛을 끌어서 옮깁니다. 다른 유닛 위에 놓으면 자리를 맞바꿉니다.');
   add('합성','같은 유닛 3개 → 한 단계 위 등급 랜덤 1개. 전설까지만 가능합니다.');
+  add('초월','신화 2~3기를 재료로 쓰고 누적 조건까지 채워야 하며, 종류당 1기만 둘 수 있습니다. 신화 슬롯을 소모하지 않습니다. JIT 컴파일러가 있으면 이후 뽑히는 일반 등급 변수는 보드에 남지 않고 즉시 컴파일되어 전체 폭발로 바뀝니다.');
+  add('복잡도 최적화','신화 전용입니다. 보스를 잡으면 나오는 최적화 토큰과 골드로 O(n²)부터 O(1)까지 네 단계를 낮춥니다. 단계마다 공격력 +35%, 공속 +10%. 중복 신화가 필요 없습니다.');
   add('신화','합성으로는 나오지 않습니다. 조합식 재료를 보드에 모아 제작하세요. 칸이 꽉 차 있어도 제작됩니다.');
   add('함수','공격 대신 인접 8칸 아군을 +30% 강화합니다. 신화 옆에 두세요.');
   add('판매','영웅 이상은 실수 방지를 위해 두 번 눌러야 팔립니다.');
+  add('속박 저항','보스는 정지·감속에 완전히 면역입니다. 장갑 24 이상인 적은 지속시간이 절반만 적용됩니다.');
+  add('웨이브 제한','한 웨이브가 120초를 넘기면 남은 적이 속박을 끊고 점점 빨라지며 출구로 돌진합니다. 붙잡아 두기만 해서는 웨이브를 끝낼 수 없습니다.');
+  add('스테이지 변이','스테이지 2부터 변이가 붙고, 그 스테이지 10웨이브 내내 유지됩니다. 스테이지 10부터는 두 개가 겹칩니다. 스테이지가 바뀔 때 판을 갈아엎으세요.');
+  add('신화 슬롯','보드에 올릴 수 있는 신화 수에는 한계가 있습니다. 연구소에서 늘릴 수 있고, 어떤 신화를 남길지가 핵심 선택입니다.');
   return h + '</div>';
 }
 
@@ -2388,9 +2964,10 @@ function htmlDex(){
 function htmlMenu(){
   return `<div class="menu">
     <button data-act="pause" class="${S.paused?'on':''}">${S.paused?'일시정지 해제':'일시정지'}<small>${S.paused?'다시 시작합니다':'다시 눌러야 재개됩니다'}</small></button>
-    <button data-go="lab">연구소<small>골드로 영구 강화 · 소환권 구매</small></button>
+    <button data-go="lab">연구소<small>골드로 강화 · 소환권 구매</small></button>
     <button data-go="dex">유닛 도감<small>전체 유닛 설명과 확률</small></button>
     <button data-go="log">기록<small>소환·합성·침투 로그</small></button>
+    <button class="${SFX.enabled?'on':''}" data-act="sound">효과음 ${SFX.enabled?'ON':'OFF'}<small>소환·전투·보스 연출음</small></button>
     <button class="danger" data-act="restart">처음부터 다시<small>진행 상황이 사라집니다</small></button>
   </div>`;
 }
@@ -2399,8 +2976,12 @@ function bindMenu(b){
     el.onclick = () => openSheet(el.dataset.go,
       {dex:'유닛 도감', log:'기록', lab:'연구소'}[el.dataset.go]);
   });
-  b.querySelector('[data-act=restart]').onclick = () => { closeSheet(); resetRun(); };
-  b.querySelector('[data-act=pause]').onclick = () => { S.paused = !S.paused; S.autoPaused = false; renderSheet(); };
+  const sd = b.querySelector('[data-act=sound]');
+  if (sd) sd.onclick = () => { SFX.toggle(); renderSheet(); };
+  const rs = b.querySelector('[data-act=restart]');
+  if (rs) rs.onclick = () => { closeSheet(); resetRun(); };
+  const ps = b.querySelector('[data-act=pause]');
+  if (ps) ps.onclick = () => { S.paused = !S.paused; S.autoPaused = false; renderSheet(); };
 }
 
 // ── 상태 동기화
@@ -2417,15 +2998,25 @@ function sync(){
   lastLife = S.life;
   $('s-wave').textContent = S.wave ? (stageOf(S.wave)+1) + '-' + stageWave(S.wave) : '0-0';
   $('s-unit').textContent = S.units.length + '/' + S.cap;
-  $('s-next').textContent = S.phase === 'wave' ? (S.enemies.length + S.queue.length) + '마리'
+  $('s-opt').textContent = S.optTk;
+  $('s-opt').style.color = S.optTk > 0 ? '#ffd76e' : '';
+  const my = mythCount(), myEl = $('s-myth');
+  myEl.textContent = my + '/' + S.mythCap;
+  myEl.style.color = my >= S.mythCap ? '#ffd76e' : '';
+  const nx = $('s-next');
+  nx.style.color = (S.phase === 'wave' && S.waveT > WAVE_LIMIT - 30)
+    ? (S.rush ? '#ff4d4d' : '#ffd76e') : '';
+  nx.textContent = (S.phase === 'wave' && S.waveT > WAVE_LIMIT - 30)
+    ? (S.rush ? '돌진!' : Math.ceil(WAVE_LIMIT - S.waveT) + '초')
+    : S.phase === 'wave' ? (S.enemies.length + S.queue.length) + '마리'
     : S.phase === 'prep' ? S.prep.toFixed(1) + 's' : '대기';
   $('btn-skip').classList.toggle('hide', S.phase !== 'prep' || S.paused);
   $('btn-resume').classList.toggle('hide', !S.paused);
 
   // 골드 액수 대신 '상태가 실제로 바뀌었는가'만 봅니다 (깜빡임 방지)
-  const sig = [S.units.map(u=>u.id).join(','), S.sel ? S.units.indexOf(S.sel) : -1,
+  const sig = [S.units.map(u=>u.id+(u.opt||'')).join(','), S.optTk, S.sel ? S.units.indexOf(S.sel) : -1,
                S.sellArm ? 1 : 0, S.over ? 1 : 0, S.auto ? 1 : 0,
-               S.gold >= 100 ? 1 : 0, mergeGroups(3).length,
+               S.gold >= summonCost() ? 1 : 0, S.summons, mergeGroups(3).length,
                ticketTotal(), ticketAlerts().length, S.draft ? 1 : 0,
                SHEET.kind === 'lab' ? Math.floor(S.gold/250) : 0].join('|');
   if (sig !== lastSig){ lastSig = sig; heavySync(); }
@@ -2436,7 +3027,9 @@ function queueSheetRender(){            // 0.35초에 한 번으로 묶어 그�
 }
 function heavySync(){
   const u = selUnit();
-  $('btn-summon').disabled = S.gold < 100 || S.over;
+  const sc = summonCost();
+  $('btn-summon').disabled = S.gold < sc || S.over;
+  $('btn-summon').innerHTML = `랜덤 소환<small>${sc.toLocaleString()}G</small>`;
   $('btn-gacha').disabled = S.over;
   $('btn-gacha').classList.toggle('go', !!S.draft);
   const tkAll = ticketTotal(), alerts = ticketAlerts();
@@ -2457,6 +3050,10 @@ function heavySync(){
   const g = mergeGroups(3);
   $('btn-merge').disabled = !g.length || S.over;
   $('btn-merge').innerHTML = '합성<small>' + (g.length ? g.length + '조합 가능' : '3개 필요') + '</small>';
+  const trReady = transStatus().filter(s => s.ok).length;
+  $('btn-craft').classList.toggle('go', trReady > 0 || recipeStatus().some(s => s.ok));
+  $('btn-craft').innerHTML = trReady
+    ? `조합<small>◆ 초월 ${trReady}종 가능</small>` : '조합<small>신화 제작</small>';
   $('btn-lab').disabled = S.over;
   $('btn-lab').classList.toggle('go', RESEARCH.some(r => S.res[r.k] < r.max && S.gold >= resCost(r)));
   const sb = $('btn-sell');
@@ -2523,6 +3120,10 @@ $('ustrip').onclick     = () => openSheet('unit', '유닛 정보');
 $('s-next').parentElement.onclick = () => openSheet('wave', '웨이브 정보');
 $('s-next').parentElement.style.cursor = 'pointer';
 $('s-gold').parentElement.onclick = () => openSheet('lab', '연구소');
+$('s-myth').parentElement.onclick = () => openSheet('lab', '연구소');
+$('s-opt').parentElement.onclick = () => openSheet('lab', '연구소');
+$('s-opt').parentElement.style.cursor = 'pointer';
+$('s-myth').parentElement.style.cursor = 'pointer';
 $('s-gold').parentElement.style.cursor = 'pointer';
 $('sheet-close').onclick = closeSheet;
 $('scrim').onclick = closeSheet;
@@ -2532,7 +3133,7 @@ $('btn-speed').onclick = e => {
   e.currentTarget.classList.toggle('on', S.speed > 1);
 };
 $('btn-skip').onclick = () => {
-  const b = Math.round(S.prep * 24);
+  const b = Math.round(S.prep * 45);
   S.gold += b; S.prep = 0;
   log('선제 실행 보너스 +' + b + 'G');
 };
@@ -2542,20 +3143,28 @@ $('btn-resume').onclick = () => { S.paused = false; sync(); };
 
 // ── 메인화면
 function buildTitle(){
-  const box = $('t-stages');
-  if (!box) return;
-  box.innerHTML = STAGES.map((s,i) => `
-    <div class="t-st"><b style="color:${s.hex}">${i+1}</b>
-      <div><div class="ts-n">${s.name} <span style="color:var(--dim);font-weight:400">· ${s.sub}</span></div>
-      <div class="ts-d">웨이브 ${i*10+1}–${i*10+10} · ${s.reps.map(k=>ENEMY[k].n).join(', ')}</div>
-      <div class="ts-b">보스 · ${s.boss}</div></div></div>`).join('');
+  const bg = $('t-bg');
+  if (!bg) return;
+  const ids = Object.keys(U);
+  let h = '';
+  for (let i=0;i<20;i++){
+    const d = U[ids[(Math.random()*ids.length)|0]], t = TIER[d.t];
+    const dur = 24 + Math.random()*20;
+    h += `<span class="t-chip" style="left:${8 + Math.random()*104}%;top:${-30 + Math.random()*45}%;
+      color:${t.hex};animation-duration:${dur.toFixed(1)}s;animation-delay:${(-Math.random()*dur).toFixed(1)}s;
+      --sc:${(0.7 + Math.random()*0.85).toFixed(2)}">
+      <b>${esc(d.sym)}</b>${esc(d.n)}</span>`;
+  }
+  bg.innerHTML = h;
 }
 function titleMain(){
+  $('title').classList.remove('sub');
   $('title').innerHTML = TITLE_HTML;   // 먼저 마크업을 복구한 뒤
   bindTitle();                         // 버튼을 다시 묶고
   buildTitle();                        // 스테이지 카드를 채웁니다
 }
 function titleSub(title, body){
+  $('title').classList.add('sub');
   $('title').innerHTML = `<button class="t-back" id="t-back">← 돌아가기</button>
     <h1 class="t-logo" style="font-size:20px;margin:0 0 12px">${title}</h1>
     <div class="t-body">${body}</div>`;
@@ -2606,6 +3215,12 @@ titleMain();
 
 if (isDesk()) openSheet('unit', '유닛 정보');
 addEventListener('resize', () => { if (isDesk() && !SHEET.kind) openSheet('unit', '유닛 정보'); });
+// 브라우저 정책상 사용자의 첫 입력이 있어야 소리를 낼 수 있습니다.
+addEventListener('pointerdown', () => SFX.init(), {once:true});
+document.addEventListener('pointerdown', e => {
+  if (e.target && e.target.closest && e.target.closest('button')) SFX.click();
+}, true);
+
 log('시스템 초기화 완료. 소환 100G, 확률은 정직합니다.');
 sync();
 requestAnimationFrame(tick);
