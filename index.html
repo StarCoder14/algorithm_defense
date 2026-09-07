@@ -69,6 +69,13 @@
     white-space:nowrap;text-overflow:ellipsis}
   button small{display:block;font-size:8.5px;font-weight:400;color:var(--dim);margin-top:1px}
   button:active:not(:disabled){transform:scale(.955)}
+  /* 눌림 피드백 — 살짝 눌렸다 돌아오고 테두리가 한 번 밝아집니다 */
+  button.press{animation:btnPress .22s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes btnPress{
+    0%{transform:scale(.94);filter:brightness(1.35)}
+    60%{transform:scale(1.015);filter:brightness(1.1)}
+    100%{transform:scale(1);filter:brightness(1)}
+  }
   button:disabled{opacity:.32;cursor:not-allowed}
   button:focus-visible{outline:2px solid #79c0ff;outline-offset:2px}
   .primary{background:#17233d;border-color:#31477a;color:#cfe3ff}
@@ -326,7 +333,7 @@
   #stagecard{position:absolute;left:8px;right:8px;top:50%;z-index:7;
     animation:cardIn .5s cubic-bezier(.22,1,.36,1) both;
     background:rgba(10,14,24,.94);border:1px solid #2b3859;border-radius:12px;padding:16px 15px;
-    text-align:center;pointer-events:none;transition:opacity .45s ease}
+    text-align:center;pointer-events:auto;transition:opacity .45s ease}
   @keyframes cardIn{from{opacity:0;transform:translateY(-40%) scale(.94)}
     to{opacity:1;transform:translateY(-50%) scale(1)}}
   #stagecard.hide{display:none}
@@ -353,6 +360,7 @@
   #stagecard .sc-mut{border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-top:8px;text-align:left}
   #stagecard .sc-mut b{font-size:11.5px}
   #stagecard .sc-mut span{display:block;font-size:10px;color:var(--dim);line-height:1.6;margin-top:3px}
+  #stagecard .sc-close{pointer-events:auto;min-height:30px;margin-top:11px;padding:5px 14px;font-size:10.5px}
   .hide{display:none}
 
   /* ══════════ PC 레이아웃 ══════════ */
@@ -396,7 +404,7 @@
     .t-inner{max-width:460px}
     .t-chip{font-size:19px}
     #t-start{min-height:60px;font-size:15px}
-    #stagecard{left:50%;transform:translate(-50%,-50%);width:420px;right:auto}
+    #stagecard{left:50%;transform:translate(-50%,-50%);width:420px;right:auto;pointer-events:auto}
     @keyframes cardIn{from{opacity:0;transform:translate(-50%,-40%) scale(.94)}
       to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
     button:hover:not(:disabled){background:#1b2338;border-color:#3d4b6e}
@@ -534,118 +542,118 @@ const U = {
   tree: {n:'트리', t:3, sym:'/\\', dmg:58, rng:3.0, cd:0.9, sp:{t:'multi',k:6},
     d:'하나의 노드가 여러 자식으로 뻗어 나갑니다. 6명 동시 타격.',
     v:'유닛에서 이진 가지가 뻗어 나갑니다.', c:'node.children.forEach()',
-    sk:{p:.08, n:'전위 순회', d:'범위 내 최대 12명을 1.8배로 훑습니다', f:'top', k:12, mul:1.8}},
+    sk:{n:'전위 순회', d:'범위 내 최대 12명을 1.8배로 훑습니다', f:'top', k:12, mul:1.8}},
   graph:{n:'그래프', t:3, sym:'●—●', dmg:44, rng:2.9, cd:1.05, sp:{t:'aoe',r:1.7},
     d:'정점과 간선으로 얽힌 관계망. 넓은 범위를 한꺼번에 폭격합니다.',
     v:'대상끼리 간선으로 얽힙니다.', c:'for (v of adj[u])',
-    sk:{p:.08, n:'연결 성분 붕괴', d:'폭발 반경 2배, 피해 2.2배', f:'area', r:3.4, mul:2.2}},
-  heap: {n:'힙', t:3, sym:'▲', dmg:130, rng:3.2, cd:1.5, sp:{t:'snipeMax'},
+    sk:{n:'연결 성분 붕괴', d:'폭발 반경 2배, 피해 2.2배', f:'area', r:3.4, mul:2.2}},
+  heap: {n:'힙', t:3, sym:'▲', dmg:130, rng:3.2, cd:1.5, sp:{t:'snipeMax'}, fixedRate:true,
     d:'항상 최댓값이 꼭대기에 있습니다. 체력이 가장 높은 적을 저격합니다.',
     v:'위에서 삼각형이 낙하 저격합니다.', c:'heap.top()',
-    sk:{p:.10, n:'힙 정렬', d:'체력 상위 3명에게 2.5배', f:'topHp', k:3, mul:2.5}},
+    sk:{n:'힙 정렬', d:'체력 상위 3명에게 2.5배', f:'topHp', k:3, mul:2.5}},
   rec:  {n:'재귀', t:3, sym:'f(f)', dmg:34, rng:2.7, cd:1.1, sp:{t:'multiHit',k:6,fall:0.82},
     d:'자기 자신을 다시 부릅니다. 깊어질수록 약해지지만 6번 파고듭니다.',
     v:'동심원이 점점 작아지며 겹칩니다.', c:'f(n){ return f(n-1) }',
-    sk:{p:.08, n:'무한 재귀', d:'대상에게 12연타', f:'burst', k:12, mul:1, fall:.9}},
+    sk:{n:'무한 재귀', d:'대상에게 12연타', f:'burst', k:12, mul:1, fall:.9}},
 
   ptr:  {n:'포인터', t:4, sym:'*p', dmg:95, rng:3.0, cd:1.15, sp:{t:'execute',p:0.16},
     d:'값이 아니라 주소를 가리킵니다. 16% 확률로 일반 적을 즉사시킵니다.',
     v:'* 표식이 박히고 성공 시 NULL 파열.', c:'*ptr = NULL;',
-    sk:{p:.06, n:'널 참조', d:'대상 현재 체력의 10%를 즉시 삭제 (보스 포함)', f:'pct', pct:.10},
-    ult:{g:'dmg', need:4500, n:'메모리 해제', d:'맵 전체 적의 현재 체력 18%를 삭제합니다', f:'pctAll', pct:.18}},
+    sk:{n:'널 참조', d:'대상 현재 체력의 10%를 즉시 삭제 (보스 포함)', f:'pct', pct:.10},
+    ult:{g:'dmg', need:5200, n:'메모리 해제', d:'맵 전체 적의 현재 체력 18%를 삭제합니다', f:'pctAll', pct:.18}},
   memo: {n:'메모이제이션', t:4, sym:'⌗', dmg:40, rng:2.9, cd:0.8, sp:{t:'rampUp',step:0.16,max:3.2},
     d:'계산한 값을 캐시에 저장해 재사용합니다. 연속 공격 시 최대 3.2배까지 누적.',
     v:'캐시 칸이 하나씩 채워지고 빔이 굵어집니다.', c:'cache[n] ??= solve(n);',
-    sk:{p:.10, n:'캐시 히트', d:'누적 배율 즉시 최대 + 3초간 공속 2배', f:'ramp', dur:3},
-    ult:{g:'time', need:26, n:'전체 캐싱', d:'8초간 모든 아군의 공격력이 60% 오릅니다', f:'ally', mul:.6, dur:8}},
+    sk:{n:'캐시 히트', d:'누적 배율 즉시 최대 + 3초간 공속 2배', f:'ramp', dur:3},
+    ult:{g:'time', need:30, n:'전체 캐싱', d:'8초간 모든 아군의 공격력이 60% 오릅니다', f:'ally', mul:.6, dur:8}},
   bit:  {n:'비트마스크', t:4, sym:'1011', dmg:88, rng:3.0, cd:1.3, sp:{t:'aoe',r:2.1},
     d:'상태 전체를 정수 하나의 비트로 표현합니다. 한 연산으로 싹 밀어버립니다.',
     v:'0과 1이 범위에 깔리며 터집니다.', c:'state |= (1 << i);',
-    sk:{p:.08, n:'XOR 폭발', d:'반경 3배 범위에 2.2배', f:'area', r:6.3, mul:2.2},
-    ult:{g:'kill', need:22, n:'비트 전환', d:'맵 전체에 공격력 6배의 일괄 연산', f:'all', mul:6}},
+    sk:{n:'XOR 폭발', d:'반경 3배 범위에 2.2배', f:'area', r:6.3, mul:2.2},
+    ult:{g:'kill', need:27, n:'비트 전환', d:'맵 전체에 공격력 6배의 일괄 연산', f:'all', mul:6}},
 
-  quick:{n:'퀵정렬', t:5, sym:'⇅', dmg:210, rng:3.6, cd:1.05, sp:{t:'aoe',r:2.4},
+  quick:{n:'퀵정렬', t:5, sym:'⇅', dmg:210, rng:3.6, cd:1.05, sp:{t:'aoe',r:2.4}, fixedRate:true,
     d:'피벗을 기준으로 갈라 정복합니다. 평균 O(n log n)으로 통째로 쪼갭니다.',
     v:'피벗 선이 그어지고 좌우로 갈라집니다.', c:'partition(lo, hi)',
-    sk:{p:.08, n:'완전 정렬', d:'범위 내 전체에 3배', f:'area', r:2.4, mul:3},
-    ult:{g:'dmg', need:26000, n:'분할 정복', d:'맵 전체를 4배 위력으로 3번 연속 쪼갭니다', f:'pulse', mul:4, n2:3}},
+    sk:{n:'완전 정렬', d:'범위 내 전체에 2.1배', f:'area', r:2.4, mul:2.1},
+    ult:{g:'dmg', need:43200, n:'분할 정복', d:'맵 전체를 3.2배 위력으로 2번 연속 쪼갭니다', f:'pulse', mul:3.2, n2:2}},
   bfs:  {n:'너비우선탐색', t:5, sym:'BFS', dmg:150, rng:99, cd:1.2, sp:{t:'aoe',r:3.2,global:true},
     d:'가까운 곳부터 층층이 훑습니다. 맵 전체를 파도처럼 쓸어버립니다.',
     v:'사각 파동이 층층이 퍼져 나갑니다.', c:'while(q.length) visit(q.shift())',
-    sk:{p:.08, n:'레벨 순회', d:'맵 전체에 2.2배', f:'all', mul:2.2},
-    ult:{g:'hit', need:38, n:'최단 경로 봉쇄', d:'전체에 5배 피해 + 3초 감속', f:'allSlow', mul:5, dur:3}},
+    sk:{n:'레벨 순회', d:'맵 전체에 2.2배', f:'all', mul:2.2},
+    ult:{g:'hit', need:65, n:'최단 경로 봉쇄', d:'전체에 5배 피해 + 3초 감속', f:'allSlow', mul:5, dur:3}},
   dfs:  {n:'깊이우선탐색', t:5, sym:'DFS', dmg:120, rng:3.4, cd:0.95, sp:{t:'chain',k:9,fall:0.9},
     d:'막힐 때까지 한 길을 끝까지 파고듭니다. 최대 9연쇄.',
     v:'한 줄기 경로가 적을 따라 깊게 이어집니다.', c:'dfs(v){ for(n of adj) dfs(n) }',
-    sk:{p:.08, n:'백트래킹', d:'연쇄가 20회까지 이어집니다', f:'chain', k:20, mul:1.2, fall:.93},
-    ult:{g:'dmg', need:22000, n:'깊이 우선 탐색', d:'선두 5명에게 현재 체력 12% + 4배 피해', f:'deep', k:5, pct:.12, mul:4}},
-  dij:  {n:'다익스트라', t:5, sym:'⤳', dmg:520, rng:99, cd:1.9, sp:{t:'slowNuke',slow:0.45,dur:2.2},
+    sk:{n:'백트래킹', d:'연쇄가 20회까지 이어집니다', f:'chain', k:20, mul:1.2, fall:.93},
+    ult:{g:'dmg', need:31000, n:'깊이 우선 탐색', d:'선두 5명에게 현재 체력 12% + 4배 피해', f:'deep', k:5, pct:.12, mul:4}},
+  dij:  {n:'다익스트라', t:5, sym:'⤳', dmg:520, rng:99, cd:1.9, sp:{t:'slowNuke',slow:0.45,dur:2.2}, fixedRate:true,
     d:'모든 지점까지의 최단 경로를 계산합니다. 선두를 지우고 전체를 2.2초 감속.',
     v:'경로를 따라 최단경로 선이 그려집니다.', c:'dist[v] = min(dist[v], d+w)',
-    sk:{p:.10, n:'음의 간선', d:'대상 체력 15% 삭제 + 전체 4초 감속', f:'pctSlow', pct:.15, dur:4},
-    ult:{g:'time', need:30, n:'경로 재계산', d:'전체를 5초간 거의 정지시키고 3배 피해', f:'freeze', dur:5, mul:3}},
+    sk:{n:'음의 간선', d:'대상 체력 15% 삭제 + 전체 4초 감속', f:'pctSlow', pct:.15, dur:4},
+    ult:{g:'time', need:36, n:'경로 재계산', d:'전체를 5초간 거의 정지시키고 3배 피해', f:'freeze', dur:5, mul:3}},
   dp:   {n:'동적계획법', t:5, sym:'DP', dmg:130, rng:3.3, cd:0.7, sp:{t:'rampUp',step:0.22,max:5},
     d:'작은 문제의 답을 쌓아 큰 문제를 풉니다. 때릴수록 최대 5배까지 폭증.',
     v:'DP 테이블이 채워지며 값이 커집니다.', c:'dp[i] = dp[i-1] + dp[i-2];',
-    sk:{p:.10, n:'최적 부분 구조', d:'배율 즉시 최대 + 5초간 공속 2배', f:'ramp', dur:5},
-    ult:{g:'hit', need:42, n:'점화식 폭발', d:'단일 대상에게 누적 배율 x8 — 보스 처형용', f:'rampNuke', mul:8}},
+    sk:{n:'최적 부분 구조', d:'배율 즉시 최대 + 5초간 공속 2배', f:'ramp', dur:5},
+    ult:{g:'hit', need:62, n:'점화식 폭발', d:'단일 대상에게 누적 배율 x8 — 보스 처형용', f:'rampNuke', mul:8}},
   lru:  {n:'LRU 캐시', t:5, sym:'⇄', dmg:165, rng:99, cd:0.85, sp:{t:'rampUp',step:.18,max:4},
     d:'최근 쓴 것을 앞으로 당기고 오래된 것은 버립니다. 해시맵과 연결리스트를 붙여 O(1)을 만듭니다.',
     v:'캐시 칸이 앞으로 당겨지며 채워집니다.', c:'get(k){ move_to_front(k) }',
-    sk:{p:.10, n:'캐시 적중', d:'배율 즉시 최대 + 3초간 공속 2배', f:'ramp', dur:3},
-    ult:{g:'kill', need:24, n:'캐시 무효화', d:'맵 전체 적의 현재 체력 20%를 비웁니다', f:'pctAll', pct:.20}},
+    sk:{n:'캐시 적중', d:'배율 즉시 최대 + 3초간 공속 2배', f:'ramp', dur:3},
+    ult:{g:'kill', need:34, n:'캐시 무효화', d:'맵 전체 적의 현재 체력 20%를 비웁니다', f:'pctAll', pct:.20}},
   uf:   {n:'유니온 파인드', t:5, sym:'∪', dmg:140, rng:3.4, cd:0.95, sp:{t:'chain',k:7,fall:.95},
     d:'서로소 집합을 합치고 대표를 찾습니다. 경로 압축으로 거의 상수 시간에 끝납니다.',
     v:'적들이 하나의 집합으로 묶입니다.', c:'find(x){ p[x]=find(p[x]) }',
-    sk:{p:.08, n:'경로 압축', d:'연쇄가 18회까지 이어집니다', f:'chain', k:18, mul:1.2, fall:.95},
-    ult:{g:'dmg', need:19000, n:'전체 병합', d:'맵 전체를 하나로 묶어 4.5배 피해', f:'all', mul:4.5}},
+    sk:{n:'경로 압축', d:'연쇄가 18회까지 이어집니다', f:'chain', k:18, mul:1.2, fall:.95},
+    ult:{g:'dmg', need:27700, n:'전체 병합', d:'맵 전체를 하나로 묶어 4.5배 피해', f:'all', mul:4.5}},
   bdp:  {n:'비트 DP', t:5, sym:'1<<n', dmg:190, rng:3.2, cd:1.1, sp:{t:'aoe',r:2.6},
     d:'방문 상태를 비트로 압축해 모든 부분집합을 훑습니다. 외판원 문제의 정석 해법.',
     v:'비트열이 깔린 뒤 부분집합이 한꺼번에 터집니다.', c:'dp[mask][i]',
-    sk:{p:.08, n:'부분집합 순회', d:'반경 2배 범위에 3배 피해', f:'area', r:5.2, mul:3},
-    ult:{g:'hit', need:34, n:'상태 압축', d:'전체에 5배 피해 + 3초 감속', f:'allSlow', mul:5, dur:3}},
+    sk:{n:'부분집합 순회', d:'반경 2배 범위에 3배 피해', f:'area', r:5.2, mul:3},
+    ult:{g:'hit', need:56, n:'상태 압축', d:'전체에 5배 피해 + 3초 감속', f:'allSlow', mul:5, dur:3}},
   kmp:  {n:'KMP 탐색', t:5, sym:'π[ ]', dmg:150, rng:3.2, cd:0.8, sp:{t:'multi',k:5},
     d:'실패 함수를 미리 만들어 두어 되돌아가지 않고 한 번에 훑습니다. O(n+m).',
     v:'패턴이 일렬로 미끄러지며 일치 지점을 찍습니다.', c:'π = build_failure(pat)',
-    sk:{p:.08, n:'실패 함수', d:'선두 10명에게 2배 피해', f:'top', k:10, mul:2},
-    ult:{g:'time', need:28, n:'패턴 일치', d:'선두 6명에게 현재 체력 12% + 4배 피해', f:'deep', k:6, pct:.12, mul:4}},
+    sk:{n:'실패 함수', d:'선두 10명에게 2배 피해', f:'top', k:10, mul:2},
+    ult:{g:'time', need:41, n:'패턴 일치', d:'선두 6명에게 현재 체력 12% + 4배 피해', f:'deep', k:6, pct:.12, mul:4}},
   psort:{n:'병렬 정렬', t:5, sym:'⇉', dmg:175, rng:3.3, cd:0.75, sp:{t:'multi',k:7},
     d:'배열을 조각내 여러 스레드가 동시에 정렬하고 마지막에 합칩니다.',
     v:'여러 갈래가 동시에 뻗어 나갑니다.', c:'parallel_sort(arr)',
-    sk:{p:.08, n:'분할 병합', d:'선두 14명에게 2.2배 피해', f:'top', k:14, mul:2.2},
-    ult:{g:'hit', need:36, n:'전 코어 가동', d:'맵 전체에 5배 피해', f:'all', mul:5}},
+    sk:{n:'분할 병합', d:'선두 14명에게 2.2배 피해', f:'top', k:14, mul:2.2},
+    ult:{g:'hit', need:63, n:'전 코어 가동', d:'맵 전체에 5배 피해', f:'all', mul:5}},
   mvcc: {n:'동시성 제어', t:5, sym:'⧉', dmg:230, rng:3.1, cd:1.25, sp:{t:'lock',dur:1.1},
     d:'여러 버전을 동시에 유지해 서로를 막지 않게 합니다. 잠그면서 때립니다.',
     v:'대상이 잠기고 버전이 갈라집니다.', c:'MVCC: snapshot isolation',
-    sk:{p:.10, n:'교착 해소', d:'전체를 3초 감속시키고 2.5배 피해', f:'allSlow', mul:2.5, dur:3},
-    ult:{g:'time', need:26, n:'전역 잠금', d:'전체를 5초간 정지시키고 3.5배 피해', f:'freeze', dur:5, mul:3.5}},
-  bins: {n:'이진탐색', t:5, sym:'½', dmg:180, rng:99, cd:1.15, sp:{t:'execute',p:0.3,global:true},
+    sk:{n:'교착 해소', d:'전체를 3초 감속시키고 2.5배 피해', f:'allSlow', mul:2.5, dur:3},
+    ult:{g:'time', need:30, n:'전역 잠금', d:'전체를 5초간 정지시키고 3.5배 피해', f:'freeze', dur:5, mul:3.5}},
+  bins: {n:'이진탐색', t:5, sym:'½', dmg:180, rng:99, cd:1.15, sp:{t:'execute',p:0.3,global:true}, fixedRate:true,
     d:'범위를 절반씩 잘라 O(log n)에 찾습니다. 30% 확률로 약점을 찾아 즉사.',
     v:'lo–mid–hi 브라켓이 좁혀듭니다.', c:'mid = (lo + hi) >> 1;',
-    sk:{p:.08, n:'정확한 이분', d:'일반 적 즉사, 보스는 체력 12% 삭제', f:'exec', pct:.12},
-    ult:{g:'kill', need:26, n:'탐색 완료', d:'맵 전체 적의 현재 체력 25%를 삭제합니다', f:'pctAll', pct:.25}},
+    sk:{n:'정확한 이분', d:'일반 적 즉사, 보스는 체력 12% 삭제', f:'exec', pct:.12},
+    ult:{g:'kill', need:31, n:'탐색 완료', d:'맵 전체 적의 현재 체력 25%를 삭제합니다', f:'pctAll', pct:.25}},
 };
 Object.assign(U, {
   jit:  {n:'JIT 컴파일러', t:6, sym:'⚙', dmg:340, rng:3.2, cd:0.95, sp:{t:'aoe',r:2.8},
     d:'실행 중에 바이트코드를 기계어로 번역합니다. 이제 뽑히는 일반 등급 변수는 보드에 남지 않고 그 자리에서 컴파일되어 폭발합니다.',
     v:'소환된 변수가 즉시 기계어로 번역되어 터집니다.', c:'compile(bytecode) → native',
-    sk:{p:.10, n:'인라인 확장', d:'범위 2배에 3배 피해', f:'area', r:5.6, mul:3},
-    ult:{g:'hit', need:30, n:'전체 재컴파일', d:'맵 전체에 6배 피해', f:'all', mul:6}},
+    sk:{n:'인라인 확장', d:'범위 2배에 3배 피해', f:'area', r:5.6, mul:3},
+    ult:{g:'hit', need:72, n:'전체 재컴파일', d:'맵 전체에 6배 피해', f:'all', mul:6}},
   pnp:  {n:'P = NP', t:6, sym:'∀', dmg:760, rng:99, cd:1.7, sp:{t:'global'},
     d:'검증할 수 있다면 풀 수도 있다는 가정. 사거리가 없고, 아군 전체의 궁극기 충전을 1.6배로 끌어올립니다.',
     v:'증명이 맵 전체로 즉시 전파됩니다.', c:'if (P === NP) solve(any)',
-    sk:{p:.10, n:'다항 시간 환원', d:'대상 현재 체력 20% 삭제', f:'pct', pct:.20},
-    ult:{g:'time', need:24, n:'모든 문제 해결', d:'맵 전체 적의 현재 체력 30%를 삭제합니다', f:'pctAll', pct:.30}},
+    sk:{n:'다항 시간 환원', d:'대상 현재 체력 20% 삭제', f:'pct', pct:.20},
+    ult:{g:'time', need:31, n:'모든 문제 해결', d:'맵 전체 적의 현재 체력 30%를 삭제합니다', f:'pctAll', pct:.30}},
   turing:{n:'튜링 완전', t:6, sym:'⊨', dmg:300, rng:3.4, cd:0.9, sp:{t:'multi',k:6},
     d:'무엇이든 계산할 수 있는 기계. 공격할 때마다 보유한 신화 중 하나의 스킬을 무작위로 실행합니다.',
     v:'다른 알고리즘의 연산이 무작위로 재생됩니다.', c:'∀f: computable(f)',
-    sk:{p:.12, n:'정지 판정', d:'선두 12명에게 2.5배 피해', f:'top', k:12, mul:2.5},
-    ult:{g:'dmg', need:26000, n:'보편 기계', d:'전체 5배 피해 + 4초 감속', f:'allSlow', mul:5, dur:4}},
+    sk:{n:'정지 판정', d:'선두 12명에게 2.5배 피해', f:'top', k:12, mul:2.5},
+    ult:{g:'dmg', need:49600, n:'보편 기계', d:'전체 5배 피해 + 4초 감속', f:'allSlow', mul:5, dur:4}},
 });
 const IDS = Object.keys(U);
 const BY_TIER = [0,1,2,3,4,5,6].map(t => IDS.filter(k => U[k].t === t));
 const RECIPES = [
-  {id:'quick', need:['arr','rec','ptr']},
+  {id:'quick', need:['heap','rec','ptr']},
   {id:'bfs',   need:['graph','que','loop']},
   {id:'dfs',   need:['graph','stk','rec']},
   {id:'dij',   need:['graph','heap','arr']},
@@ -674,6 +682,9 @@ const summonCost = () => Math.round(SUMMON_BASE * Math.pow(SUMMON_UP, S.summons)
 // 중복 없이 골드와 '최적화 토큰'만으로 올릴 수 있는 신화만의 길입니다.
 const BIGO = ['O(n²)', 'O(n log n)', 'O(n)', 'O(log n)', 'O(1)'];
 const OPT_MAX = 4;
+// ── 스킬 발동: 모든 유닛이 1%에서 시작해, 1초에 한 번씩만 0.5%p 씩 쌓입니다.
+// 공속이 빨라도 누적 속도는 같고, 발동하면 다시 1%로 돌아갑니다.
+const SKILL_BASE = 0.01, SKILL_STEP = 0.005, SKILL_TICK = 1.0;
 const OPT_DMG = 0.35, OPT_SPD = 0.10;
 const optCost = lv => Math.round(6000 * Math.pow(1.9, lv) / 100) * 100;
 const optLv = u => u.opt || 0;
@@ -689,13 +700,16 @@ const TICKET = {
 };
 const TIER_COST  = {2:1, 3:2, 4:4};
 const NAMED_COST = {1:1, 2:1, 3:2, 4:3};
+// ── 메모리(라이프) 예산은 물량에 맞춰야 합니다. 새어나가는 '비율'은 개편 전과 같은 0.7% 수준인데,
+// 마리 수가 4배면 절대 유출도 4배입니다. 20/+2 는 웨이브당 30마리 시절에 맞춘 값이었습니다.
+const LIFE_BASE = 40, MEM_PER_LV = 4;
 // ── 연구소: 골드의 주 사용처. 살수록 비싸집니다.
 const RESEARCH = [
   {k:'myth', n:'신화 슬롯',     d:'보드에 올릴 수 있는 신화 +1 (기본 5)', max:5, base:2600, g:1.55, c:'#ffd76e'},
   {k:'atk',  n:'최적화 레벨',   d:'모든 유닛 공격력 +5%',        max:25, base:420,  g:1.17, c:'#ff7b72'},
   {k:'spd',  n:'클럭 상승',     d:'모든 유닛 공격속도 +4%',      max:20, base:520,  g:1.19, c:'#f2cc60'},
   {k:'cap',  n:'힙 영역 확장',  d:'배치 가능 칸 +1',             max:10, base:1100, g:1.34, c:'#79c0ff'},
-  {k:'mem',  n:'메모리 증설',   d:'최대 메모리 +2 (즉시 회복)',  max:12, base:850,  g:1.26, c:'#7ee787'},
+  {k:'mem',  n:'메모리 증설',   d:'최대 메모리 +'+MEM_PER_LV+' (즉시 회복)', max:12, base:850,  g:1.26, c:'#7ee787'},
   {k:'gold', n:'수익 파이프라인',d:'처치 골드 +8%',              max:15, base:700,  g:1.21, c:'#ffd76e'},
   {k:'ult',  n:'게이지 가속',   d:'궁극기 충전 속도 +10%',       max:12, base:950,  g:1.25, c:'#d2a8ff'},
 ];
@@ -914,7 +928,63 @@ function ccMul(e){
 }
 const applySlow = (e, dur) => { const m = ccMul(e); if (m) e.slow = Math.max(e.slow, dur*m); };
 const applyLock = (e, dur) => { const m = ccMul(e); if (m) e.frozen = Math.max(e.frozen||0, dur*m); };
+// ── 아레나: 후반에는 지형이 무너져 경로가 사라집니다.
+// 적은 빠져나가지 않고 중앙으로 몰리며, 필드에 100마리가 넘으면 즉시 패배합니다.
+const ARENA_FROM = 97;           // 스테이지 13 시작 (전체 120웨이브 중)
+// 동시 생존 상한. 웨이브 규모에 맞춰 커져야 합니다 —
+// 한 웨이브가 86~185마리인데 상한이 100이면 웨이브 하나만으로 넘겨버려서,
+// '많이 쌓아두고 한 번에 쓸어담는' 설계 자체가 성립하지 않습니다. (100 은 30마리 시절 값)
+const arenaCap = w => Math.round(Math.max(140, waveCount(w) * 3.6));
+const ARENA_HP   = 0.45;         // 아레나는 '두꺼운 소수'가 아니라 '얇은 다수'입니다
+// 아레나는 체력이 아니라 물량으로 조입니다.
+// 웨이브가 끊기지 않고 이어지는 구조에서 마리당 체력이 계속 오르면 처리량이 유입을 절대 못 따라갑니다
+// (실측: 체력 +13%/웨이브 vs 보드 화력 +2%/웨이브 → 웨이브 120에서 처리 여유 0.21배 = 불가능).
+// 그래서 잡몹 체력 성장은 진입 시점에 거의 묶고, 늘어나는 것은 마리 수와 유입 속도뿐입니다.
+// 보스는 예외 — 웨이브당 한 기뿐이라 단일 화력 시험대로 남깁니다.
+const ARENA_HP_CREEP = 0.15;     // 아레나 구간에서 잡몹 체력 성장을 15%만 반영
+// 몰아치고 잠깐 숨 돌리는 리듬. 스폰은 BURST 속도로 몰아 내고,
+// 웨이브 간격을 늘려 '평균' 유입을 맞춥니다. 평평하게 흘리면 긴장이 안 생깁니다.
+//
+// 평균 유입을 보드 처리량과 같게 두면 게임이 이분법이 됩니다 — 처리량이 조금만 모자라면
+// 필드가 무한히 불어나 즉사하고, 넘으면 필드가 늘 비어 심심합니다. 그래서 평균은 처리량보다
+// 낮게 두고(여유), 긴장은 '폭격 중에 얼마나 쌓이느냐'로 만듭니다.
+// 폭격 중 최대 적재 ≈ (BURST - 처리량) x 폭격시간 이고, 폭격시간은 마리 수에 비례하므로
+// 웨이브가 갈수록 산이 저절로 높아집니다. BURST 를 낮추면 그 산이 낮아집니다.
+const ARENA_BURST_RATE = 16;
+// 진입 직후엔 낮게 시작해 마지막 웨이브까지 올립니다.
+// 지형이 바뀌자마자 최대 유입이 쏟아지면 보드를 다시 세울 틈이 없어 그대로 즉사합니다.
+const ARENA_INFLOW_FROM = 7, ARENA_INFLOW_TO = 10;
+const arenaInflow = w => ARENA_INFLOW_FROM + (ARENA_INFLOW_TO - ARENA_INFLOW_FROM)
+  * Math.min(1, Math.max(0, (w - ARENA_FROM) / (120 - ARENA_FROM)));
+const arenaWave = w => w >= ARENA_FROM;
 const WAVE_LIMIT = 120;      // 한 웨이브 제한 시간(초). 정상 웨이브는 최장 65초입니다.
+// ── 난이도 축 ────────────────────────────────────────────────────────────
+// 후반 난이도를 '한 마리를 오래 때리기'가 아니라 '많은 수를 빠르게 처리하기'로 둡니다.
+// 마리 수는 끝까지 자라고(w1 7 → w120 158), 그만큼 마리당 체력 성장을 눌렀습니다(w120 기준 0.24배).
+// 둘을 곱한 웨이브 총 체력은 현행 대비 0.89~1.29배 — 축만 바꾸고 쉬워지지는 않게 맞춘 값입니다.
+const COUNT_C0 = 6, COUNT_C1 = 0.55, COUNT_C2 = 0.006;
+const waveCount = w => Math.round(COUNT_C0 + w*COUNT_C1 + w*w*COUNT_C2);
+// 후반에는 잡몹 체력 성장을 눌러야 합니다 — 아레나와 같은 이유입니다.
+// 체력은 웨이브당 +13%인데 보드 화력은 +2%밖에 안 오릅니다(실측). 그냥 두면 웨이브 80 이후
+// 처리량이 유입을 못 따라가 유출이 폭증합니다. 물량을 4배로 늘린 만큼, 한 마리를 두껍게
+// 만드는 축은 접습니다. 보스는 여기 걸리지 않습니다(항상 실제 웨이브 기준).
+const LATE_FROM = 70, LATE_CREEP = 0.40;
+// 잡몹 체력의 '기준 웨이브'. 70 이후로는 천천히, 아레나(97+)에서는 거의 멈춥니다.
+function mobHpWave(w){
+  let x = Math.min(w, LATE_FROM);
+  x += Math.max(0, Math.min(w, ARENA_FROM) - LATE_FROM) * LATE_CREEP;
+  if (w > ARENA_FROM) x += (w - ARENA_FROM) * ARENA_HP_CREEP;
+  return x;
+}
+// 마리 수가 늘어도 스폰이 늘어지지 않도록, 간격이 아니라 '다 나오는 데 걸리는 시간'을 고정합니다.
+const SPAWN_WINDOW = 9;      // 평상시 한 웨이브가 다 나오는 데 걸리는 목표 시간(초)
+// 유입 속도 상한(초당 마리). 마리 수가 아무리 늘어도 이보다 빨리 밀려들지는 않습니다.
+// 평상시에는 새어나간 만큼 메모리가 깎이므로 낮게, 아레나는 안 새는 대신 높게 잡습니다.
+const SPAWN_RATE_MAX = 6.5;
+const spawnGapFor = q => S.arena ? 1 / ARENA_BURST_RATE
+  : Math.max(1 / SPAWN_RATE_MAX, SPAWN_WINDOW / Math.max(1, q));
+// 이번 웨이브를 다 뱉은 뒤 쉬는 시간 — 평균 유입이 ARENA_INFLOW_AVG 가 되도록 역산합니다.
+const arenaGapFor = (q, w) => Math.max(0.6, q * (1/arenaInflow(w) - 1/ARENA_BURST_RATE));
 const stageOf = w => Math.min(STAGES.length-1, Math.floor((w-1) / STAGE_LEN));
 const stageWave = w => ((w-1) % STAGE_LEN) + 1;
 
@@ -939,15 +1009,70 @@ const pathSet = new Set();
   const L = WP[WP.length-1]; pathSet.add(L[0]+','+L[1]);
 })();
 const px = t => t*TS + TS/2;
+// 사각 순환로 — 적은 이 트랙을 계속 돕니다. 빠져나가지 않습니다.
+const ARENA_LOOP = [[2,2],[COLS-3,2],[COLS-3,ROWS-3],[2,ROWS-3]];
+const arenaLoopSet = (function(){
+  const s = new Set();
+  for (let i=0;i<ARENA_LOOP.length;i++){
+    let [x,y] = ARENA_LOOP[i];
+    const [tx,ty] = ARENA_LOOP[(i+1) % ARENA_LOOP.length];
+    const dx = Math.sign(tx-x), dy = Math.sign(ty-y);
+    while (x!==tx || y!==ty){ s.add(x+','+y); x+=dx; y+=dy; }
+  }
+  return s;
+})();
+// 진입로 — 맵 밖 스폰 지점에서 트랙 첫 꼭짓점까지 ㄱ자로 잇습니다.
+// 트랙 위를 밟지 않는 쪽(가로 먼저 / 세로 먼저)을 골라 바깥 여백으로 돌아 들어옵니다.
+const ARENA_WAY = (function(){
+  const [sx, sy] = WP[0];                               // 맵 밖 스폰 지점
+  const ex = Math.min(COLS-1, Math.max(0, sx));         // 맵 안으로 들어온 첫 칸
+  const ey = Math.min(ROWS-1, Math.max(0, sy));
+  const [gx, gy] = ARENA_LOOP[0];                       // 트랙 첫 꼭짓점
+  const tiles = way => {                                // 꺾은선을 칸 목록으로 폅니다
+    const out = [];
+    for (let i=0;i<way.length-1;i++){
+      let [x,y] = way[i]; const [tx,ty] = way[i+1];
+      const dx = Math.sign(tx-x), dy = Math.sign(ty-y);
+      while (x!==tx || y!==ty){ out.push([x,y]); x+=dx; y+=dy; }
+    }
+    out.push(way[way.length-1]);
+    return out;
+  };
+  // 도착 칸(트랙 꼭짓점)을 뺀 나머지가 트랙과 안 겹치는 쪽을 고릅니다
+  const clean = way => tiles(way).slice(0,-1).every(([x,y]) => !arenaLoopSet.has(x+','+y));
+  const A = [[ex,ey],[gx,ey],[gx,gy]];                  // 가로 먼저 꺾기
+  const B = [[ex,ey],[ex,gy],[gx,gy]];                  // 세로 먼저 꺾기
+  const pick = clean(A) ? A : clean(B) ? B : A;
+  // 스폰 지점을 앞에 붙이고, 도착 칸은 ARENA_LOOP[0] 이 맡으므로 뺍니다(목표 중복 방지)
+  const w = [[sx,sy], ...pick].slice(0,-1);
+  return w.filter((p,i) => i===0 || p[0]!==w[i-1][0] || p[1]!==w[i-1][1]);
+})();
+const arenaEntrySet = (function(){
+  const s = new Set();
+  const w = [...ARENA_WAY, ARENA_LOOP[0]];              // 트랙에 닿는 칸까지 이어 깔아야 길이 끊기지 않습니다
+  for (let i=0;i<w.length-1;i++){
+    let [x,y] = w[i]; const [tx,ty] = w[i+1];
+    const dx = Math.sign(tx-x), dy = Math.sign(ty-y);
+    while (x!==tx || y!==ty){ s.add(x+','+y); x+=dx; y+=dy; }
+  }
+  return s;
+})();
+// 아레나에서 설치가 막히는 칸 = 트랙 + 진입로
+const arenaBlockSet = new Set([...arenaLoopSet, ...arenaEntrySet]);
+// 지금 지형 기준 e.wp번째 목표 지점. 아레나는 진입로를 지난 뒤 트랙을 무한히 돕니다.
+const nodeAt = i => !S.arena ? WP[i]
+  : i < ARENA_WAY.length ? ARENA_WAY[i]
+  : ARENA_LOOP[(i - ARENA_WAY.length) % ARENA_LOOP.length];
+
 // 판을 빠르게 굴리기 위한 전역 페이스. 이동이 빨라진 만큼 체력을 낮춰 난이도는 유지합니다.
 const PACE = 1.3, HP_ADJ = 0.78;
 
 // ═══════════════════════════════ 상태
 const S = {
-  gold:300, life:20, wave:0, maxWave:120, summons:0, playT:0,
+  gold:300, life:LIFE_BASE, maxLife:LIFE_BASE, wave:0, maxWave:120, summons:0, playT:0,
   stat:{common:0, ult:0, myth:0, trans:0, earned:0, spent:0}, phase:'idle', prep:0, speed:1,
   auto:false, over:false, units:[], enemies:[], fx:[], texts:[],
-  queue:[], spawnT:0, waveT:0, rush:false, sel:null, cap: WIDE ? 26 : 22, killed:0, drag:null, t:0,
+  queue:[], spawnT:0, spawnGap:0.32, waveN:0, waveT:0, rush:false, arena:false, holdArena:false, sel:null, cap: WIDE ? 26 : 22, killed:0, drag:null, t:0,
   picks:[0,0,0,0,0], named:{}, pity:0, sellArm:null, paused:false, autoPaused:false, draft:null, finalDown:false,
   allyBuff:0, allyMul:0, pulses:[], corpses:[],
   mut:{list:[], armor:0, aoeCut:0, regen:0, swift:1, shield:0, stealth:false, throttle:1, jam:1, count:1, hp:1}, res:{atk:0,spd:0,cap:0,mem:0,gold:0,ult:0,myth:0}, mythCap:5, buy:{draft:0,tier:0,named:0}, autoUlt:true, tk:{draft:1, tier:0, named:0}, optTk:0, seen:{draft:0, tier:0, named:0},
@@ -976,8 +1101,12 @@ const SFX = (() => {
     if (t - (last[k] || -1e9) < ms) return false;
     last[k] = t; return true;
   };
+  function wake(){                                   // 브라우저가 컨텍스트를 재우면 되살립니다
+    if (ac && ac.state === 'suspended') ac.resume();
+  }
   function tone(f, dur, {type='square', gain=.3, to=null, delay=0, detune=0} = {}){
     if (!ac || !on) return;
+    wake();
     const t0 = ac.currentTime + delay;
     const o = ac.createOscillator(), g = ac.createGain();
     o.type = type; o.frequency.setValueAtTime(f, t0);
@@ -991,6 +1120,7 @@ const SFX = (() => {
   }
   function noise(dur, {gain=.2, hp=400, lp=6000, delay=0} = {}){
     if (!ac || !on) return;
+    wake();
     const t0 = ac.currentTime + delay;
     const n = Math.floor(ac.sampleRate * dur);
     const buf = ac.createBuffer(1, n, ac.sampleRate);
@@ -1006,7 +1136,7 @@ const SFX = (() => {
   const chord = (fs, dur, opt={}) => fs.forEach((f,i) => tone(f, dur, {...opt, delay:(opt.delay||0)+i*0.05}));
 
   return {
-    init,
+    init, wake,
     toggle(){ on = !on; if (on) init(); return on; },
     get enabled(){ return on; },
     click(){ if (gate('c', 40)) tone(880, .05, {type:'square', gain:.12}); },
@@ -1050,12 +1180,29 @@ function log(msg, hi){
 
 // ═══════════════════════════════ 소환 · 합성 · 이동
 const occupied = (x,y) => S.units.some(u => u.tx===x && u.ty===y);
-const buildable = (x,y) => x>=0 && x<COLS && y>=0 && y<ROWS && !pathSet.has(x+','+y);
+// 아레나에서는 옛 경로가 사라지므로 트랙+진입로만 막습니다
+const buildable = (x,y) => x>=0 && x<COLS && y>=0 && y<ROWS &&
+  !(S.arena ? arenaBlockSet : pathSet).has(x+','+y);
 function freeTiles(){
   const out = [];
   for (let y=0;y<ROWS;y++) for (let x=0;x<COLS;x++)
     if (buildable(x,y) && !occupied(x,y)) out.push([x,y]);
   return out;
+}
+// 지형이 바뀌면 기존 배치가 트랙 위에 남습니다. 설치 가능한 칸으로 전부 흩뿌립니다.
+function scatterUnits(){
+  const spots = [];
+  for (let y=0;y<ROWS;y++) for (let x=0;x<COLS;x++) if (buildable(x,y)) spots.push([x,y]);
+  for (let i=spots.length-1;i>0;i--){                 // 피셔-예이츠 섞기
+    const j = (Math.random()*(i+1))|0;
+    const t = spots[i]; spots[i] = spots[j]; spots[j] = t;
+  }
+  S.drag = null;
+  S.units.forEach((u, i) => {
+    const sp = spots[i];
+    if (!sp) return;                                  // 칸이 모자라면 남은 유닛은 그대로 둡니다
+    u.tx = sp[0]; u.ty = sp[1]; u.x = px(sp[0]); u.y = px(sp[1]);
+  });
 }
 // force = true 이면 칸 제한을 무시합니다(합성·제작처럼 재료를 먼저 소모하는 경우).
 function place(id, force){
@@ -1063,7 +1210,8 @@ function place(id, force){
   if (!free.length) return null;
   if (!force && S.units.length >= S.cap) return null;
   const [x,y] = free[(Math.random()*free.length)|0];
-  const u = {id, tx:x, ty:y, x:px(x), y:px(y), cd:0, ramp:0, last:null, chg:0, chgVis:0, hasteT:0, age:0, kx:0, ky:0};
+  const u = {id, tx:x, ty:y, x:px(x), y:px(y), cd:0, ramp:0, last:null, chg:0, chgVis:0, hasteT:0, age:0, kx:0, ky:0,
+    skP: SKILL_BASE, skT: 0};
   S.units.push(u);
   return u;
 }
@@ -1158,7 +1306,7 @@ function buyResearch(k){
   S.gold -= cost; S.stat.spent += cost; S.res[k]++;
   if (k === 'cap') S.cap += 1;
   if (k === 'myth') S.mythCap += 1;
-  if (k === 'mem'){ S.maxLife = (S.maxLife||20) + 2; S.life += 2; }
+  if (k === 'mem'){ S.maxLife = (S.maxLife||LIFE_BASE) + MEM_PER_LV; S.life += MEM_PER_LV; }
   SFX.buy();
   log(`연구 완료 · ${r.n} Lv.${S.res[k]}`, true);
   sync();
@@ -1393,14 +1541,17 @@ const mythCount = () => S.units.filter(u => U[u.id].t === 5).length;
 
 function buildWave(w){
   const q = [];
-  const baseMul  = growth(w, 1.020, 1.1512);
-  const eliteMul = growth(w, 1.018, 1.1289);
-  const bossMul  = growth(w, 1.018, 1.1212);
+  // 잡몹 성장은 마리 수 증가분만큼 낮췄습니다(위 '난이도 축' 참고).
+  // 보스는 한 웨이브에 한 기뿐이라 마리 수와 무관 — 기존 곡선을 그대로 둡니다.
+  const hw = mobHpWave(w);                            // 잡몹 체력 기준 웨이브 (후반·아레나에서 눌림)
+  const baseMul  = growth(hw, 1.0115, 1.13340);
+  const eliteMul = growth(hw, 1.0095, 1.11142);
+  const bossMul  = growth(w,  1.018,  1.1212);
   const ELITE = {leak:1, inf:1, fork:1, gc:1, miss:1, opt:1, child:1,
                  thread:1, sema:1, packet:1, retry:1, page:1, zombie:1,
                  overrun:1, inject:1, phantom:1, hypercall:1, retrans:1,
                  grad:1, collide:1, qubit:1, bitflip:1};
-  const count = Math.max(3, Math.round(Math.min(30, 7 + Math.floor(w*0.55)) * S.mut.count));
+  const count = Math.max(3, Math.round(waveCount(w) * S.mut.count));
   const add = (t, f) => {
     const n = Math.floor(count*f);
     for (let i=0;i<n;i++) q.push({type:t, hpMul: ELITE[t] ? eliteMul : baseMul});
@@ -1417,6 +1568,23 @@ function buildWave(w){
   for (let i=q.length-1;i>0;i--){ const j=(Math.random()*(i+1))|0; [q[i],q[j]]=[q[j],q[i]]; }
   return q;
 }
+function showArenaCard(){
+  const el = $('stagecard');
+  el.innerHTML = `<div class="sc-n">지형 붕괴 예고</div>
+    <h3 style="color:#ff6bd6">아레나</h3>
+    <div class="sc-s">경로가 무너지고 사각 순환로만 남습니다</div>
+    <div class="sc-d">적은 더 이상 빠져나가지 않고 트랙을 계속 돕니다.
+      한 마리는 <b>얇아지는 대신</b> 훨씬 <b>많이</b>, 그리고 <b>쉬지 않고</b> 밀려옵니다 —
+      앞 웨이브가 끝나기를 기다리지 않고 다음 웨이브가 이어집니다.<br>
+      필드에 <b>${arenaCap(ARENA_FROM)}마리</b>가 쌓이면 즉시 패배합니다(웨이브가 갈수록 상한도 올라갑니다).
+      한 놈씩 잡는 화력이 아니라 <b style="color:#ff6bd6">한 번에 쓸어내는 화력</b>이 필요합니다.<br>
+      <b style="color:#ffd76e">지금 유닛을 정리하세요.</b> 준비되면 아래 '아레나 시작' 버튼을 누르세요.</div>
+    <button class="sc-close" type="button">닫기</button>`;
+  bindStageCardClose(el);
+  el.classList.remove('hide');
+  el.style.opacity = '1';
+  clearTimeout(showStageCard.t1); clearTimeout(showStageCard.t2);
+}
 function showStageCard(st){
   const s = STAGES[st], el = $('stagecard');
   const muts = S.mut.list.map(m =>
@@ -1426,19 +1594,42 @@ function showStageCard(st){
   el.innerHTML = `<div class="sc-n">STAGE ${st+1}</div><h3>${s.name}</h3>
     <div class="sc-s">${s.sub}</div>
     <div class="sc-d">${s.desc}<br><b style="color:#ff9b93">보스 · ${ENEMY[s.last].n}</b></div>
-    ${muts}`;
+    ${muts}
+    <button class="sc-close" type="button">닫기</button>`;
+  bindStageCardClose(el);
   el.classList.remove('hide'); el.style.opacity = '1';
   clearTimeout(showStageCard.t1); clearTimeout(showStageCard.t2);
   showStageCard.t1 = setTimeout(() => el.style.opacity = '0', S.mut.list.length ? 5000 : 3400);
-  showStageCard.t2 = setTimeout(() => el.classList.add('hide'), 3900);
+  showStageCard.t2 = setTimeout(() => el.classList.add('hide'), S.mut.list.length ? 5400 : 3900);
+}
+function bindStageCardClose(el){
+  const close = el.querySelector('.sc-close');
+  if (!close) return;
+  close.onclick = () => {
+    clearTimeout(showStageCard.t1);
+    clearTimeout(showStageCard.t2);
+    el.style.opacity = '0';
+    el.classList.add('hide');
+  };
 }
 function startWave(){
   S.wave++;
   if (S.wave > S.maxWave) return victory();
-  if (stageWave(S.wave) === 1) showStageCard(stageOf(S.wave));
-  if (stageWave(S.wave) === 1) applyMutators(rollMutators(S.wave), S.wave);  // 스테이지 시작에만 갱신
+  const wasArena = S.arena;
+  if (stageWave(S.wave) === 1){
+    applyMutators(rollMutators(S.wave), S.wave);  // 스테이지 시작에만 갱신
+    showStageCard(stageOf(S.wave));
+  }
   S.queue = buildWave(S.wave);
   S.phase = 'wave'; S.spawnT = 0; S.waveT = 0; S.rush = false;
+  S.arena = arenaWave(S.wave);                        // spawnGapFor 가 지형을 봐야 하므로 먼저 정합니다
+  S.spawnGap = spawnGapFor(S.queue.length);
+  S.waveN = S.queue.length;                           // 아레나 웨이브 간격 계산에 씁니다
+  if (S.arena && !wasArena){
+    log('지형 붕괴 — 경로가 사라졌습니다. 이제 필드의 적 수를 막아야 합니다', true);
+    scatterUnits();                                   // 옛 경로 기준 배치가 트랙과 겹칩니다
+    SFX.bossIn();
+  }
   $('btn-skip').classList.add('hide');
   SFX.wave();
   log(`── WAVE ${S.wave} 실행 (적 ${S.queue.length}) ──`, true);
@@ -1446,6 +1637,10 @@ function startWave(){
     for (const m of S.mut.list) log(`변이 · ${m.n} — ${m.d}`, true);
   sync();
 }
+// 아레나는 큐만 비면 곧바로 다음 웨이브입니다. 남은 적은 그대로 쌓이고,
+// 포화(arenaCap)가 진짜 압력이 됩니다. 마지막 웨이브만 예외 — 보스를 잡아야 끝납니다.
+const waveCleared = () => !S.queue.length &&
+  (!S.enemies.length || (S.arena && S.wave < S.maxWave));
 function endWave(){
   const bonus = 70 + S.wave*14;
   S.gold += bonus;
@@ -1459,16 +1654,25 @@ function endWave(){
     if (!S.finalDown) return gameOver('최종 보스를 놓쳤습니다');
     return victory();
   }
-  S.phase = 'prep'; S.prep = 1.5;
+  S.phase = 'prep'; S.prep = S.arena ? arenaGapFor(S.waveN || 30, S.wave) : 1.5;
+  if (arenaWave(S.wave + 1) && !S.arena){             // 지형이 바뀌기 직전 — 정비 시간
+    S.holdArena = true;
+    showArenaCard();
+    SFX.warn();
+  }
   $('btn-skip').classList.remove('hide');
   sync();
 }
 function spawn(item, at){
   const b = ENEMY[item.type];
-  let hp = Math.max(1, Math.round(b.hp*item.hpMul*HP_ADJ*S.mut.hp));
+  // ARENA_HP 는 '얇은 다수'를 만들기 위한 잡몹 전용 계수입니다.
+  // 보스에까지 걸면 아레나 보스가 순식간에 녹아 최종 보스가 볼거리도 없이 끝납니다.
+  const arenaThin = (S.arena && !b.boss) ? ARENA_HP : 1;
+  let hp = Math.max(1, Math.round(b.hp*item.hpMul*HP_ADJ*S.mut.hp*arenaThin));
   const e = {
     type:item.type, hp, max:hp, hpMul:item.hpMul,
-    x: at ? at.x : px(WP[0][0]), y: at ? at.y : px(WP[0][1]),
+    x: at ? at.x : px(WP[0][0]),
+    y: at ? at.y : px(WP[0][1]),
     wp: at ? at.wp : 1, dist: at ? at.dist : 0,
     slow:0, sp:b.sp*PACE, r:b.r, c:b.c, boss:!!b.boss, ph:Math.random()*6,
     spdMul:1, healed:0, enraged:false,
@@ -1495,13 +1699,23 @@ function gameOver(reason){
     reason || `WAVE ${S.wave}에서 메모리가 모두 소진됐습니다`, false);
 
 }
+// 배속은 값과 버튼 표기를 항상 함께 바꿉니다(리셋 후 표기가 어긋나는 것을 막습니다)
+function setSpeed(v){
+  S.speed = v;
+  const b = $('btn-speed');
+  if (!b) return;
+  b.innerHTML = '배속<small>' + v + 'x</small>';
+  b.classList.toggle('on', v > 1);
+}
 // 한 판이 끝나면 연구·소환권·유닛은 전부 사라집니다. 다음 판은 맨손에서 시작합니다.
 function resetRun(){
-  S.gold = 300; S.life = 20; S.maxLife = 20; S.wave = 0; S.phase = 'idle'; S.prep = 0;
-  S.over = false; S.finalDown = false; S.paused = false; S.speed = 1; S.killed = 0;
+  S.gold = 300; S.life = LIFE_BASE; S.maxLife = LIFE_BASE; S.wave = 0; S.phase = 'idle'; S.prep = 0;
+  S.over = false; S.finalDown = false; S.paused = false; S.killed = 0;
+  S.arena = false; S.holdArena = false; setSpeed(1);
   S.units = []; S.enemies = []; S.corpses = []; S.fx = []; S.texts = []; S.pulses = [];
-  S.queue = []; S.spawnT = 0; S.sel = null; S.sellArm = null; S.drag = null; S.draft = null;
-  S.cap = 22; S.allyBuff = 0; S.allyMul = 0;
+  S.queue = []; S.spawnT = 0; S.spawnGap = 0.32; S.waveN = 0; S.waveT = 0; S.rush = false;
+  S.sel = null; S.sellArm = null; S.drag = null; S.draft = null; S.draftFresh = false;
+  S.cap = WIDE ? 26 : 22; S.allyBuff = 0; S.allyMul = 0;
   S.res = {atk:0, spd:0, cap:0, mem:0, gold:0, ult:0, myth:0}; S.mythCap = 5;
   S.mut = {list:[], armor:0, aoeCut:0, regen:0, swift:1, shield:0,
            stealth:false, throttle:1, jam:1, count:1, hp:1};
@@ -1602,7 +1816,7 @@ const VIS = {
   ptr:  (u,h,c,x) => { bullet(u,h[0],'*',c,15); if (x.exec){ label(h[0],'NULL',c,-24); FX({k:'shatter', x:h[0].x, y:h[0].y, c, life:.5, max:.5}); } },
   memo: (u,h,c,x) => { beam(u,h[0],c,2+(x.ramp||0)*2); FX({k:'cache', x:h[0].x, y:h[0].y-26, c, fill:Math.min(6,1+Math.round((x.ramp||0)*4)), life:.5, max:.5}); },
   bit:  (u,h,c,x) => FX({k:'bits', x:x.cx, y:x.cy, r:x.r, c, life:.5, max:.5}),
-  quick:(u,h,c,x) => FX({k:'pivot', x:x.cx, y:x.cy, r:x.r, c, life:.55, max:.55}),
+  quick:(u,h,c,x) => FX({k:'pivot', x:x.cx, y:x.cy, r:x.r*0.55, c, life:.3, max:.3, small:true}),
   bfs:  (u,h,c,x) => FX({k:'wave', x:u.x, y:u.y, r:TS*4.2, c, n:3, square:true, life:.5, max:.5}),
   dfs:  (u,h,c) => FX({k:'trail', pts:[[u.x,u.y]].concat(h.map(e=>[e.x,e.y])), c, life:.6, max:.6}),
   dij:  (u,h,c) => { FX({k:'route', x1:u.x,y1:u.y,x2:h[0].x,y2:h[0].y, c, life:.6, max:.6}); label(h[0],'dist=0',c,-26); },
@@ -1761,7 +1975,14 @@ function castUlt(u){
   if (!g || u.chg < ultNeed(u)) return false;
   u.chg = 0;
   const col = TIER[U[u.id].t].hex;
-  castEffect(u, g, U[u.id].dmg * buffOf(u) * powerOf(u), col, true);
+  // 궁극기 피해는 다시 궁극기 게이지를 충전하지 않습니다.
+  const source = SRC;
+  SRC = null;
+  try {
+    castEffect(u, g, U[u.id].dmg * buffOf(u) * powerOf(u), col, true);
+  } finally {
+    SRC = source;
+  }
   TXT({x:cv.width/2, y:cv.height*0.42, v:'◆ ' + g.n, life:1.5, c:col});
   SFX.ult(); S.stat.ult++;
   log(`◆ 궁극기 · ${U[u.id].n} — ${g.n}`, true);
@@ -1774,8 +1995,8 @@ function attack(u){
   const vis = VIS[u.id] || ((a,h,c)=>beam(a,h[0],c,2));
 
   if (sp.t === 'repair'){                       // 가비지 컬렉터: 메모리 회수
-    const cap = S.maxLife || 20;
-    if (S.life >= cap) return false;
+    const cap = S.maxLife || LIFE_BASE;
+    if (S.life >= cap){ SRC = null; return false; }
     S.life = Math.min(cap, S.life + sp.amt);
     FX({k:'wave', x:u.x, y:u.y, r:TS*2.4, c:col, n:2, life:.7, max:.7});
     TXT({x:u.x, y:u.y-24, v:'+'+sp.amt+' MEM', life:1.2, max:1.2, c:'#7ee787'});
@@ -1785,12 +2006,12 @@ function attack(u){
   if (sp.t === 'buffSpd' || sp.t === 'buff'){
     const near = S.units.filter(o => o!==u && Math.abs(o.tx-u.tx)<=1 && Math.abs(o.ty-u.ty)<=1
       && U[o.id].sp.t!=='buff' && U[o.id].sp.t!=='buffSpd' && U[o.id].sp.t!=='repair');
-    if (!near.length) return false;
+    if (!near.length){ SRC = null; return false; }
     vis(u, near, col, {});
     return true;
   }
   const list = inRange(u, sp);
-  if (!list.length) return false;
+  if (!list.length){ SRC = null; return false; }
   list.sort((a,b) => b.dist - a.dist);
   const base = def.dmg * buffOf(u) * powerOf(u);
   let hits = [], meta = {};
@@ -1861,7 +2082,7 @@ function attack(u){
 
   const g = def.ult;
   if (g && g.g === 'hit') u.chg += ultRate();
-  if (u.id === 'turing'){                              // 보유한 신화의 스킬을 하나 빌려 씁니다
+  if (u.id === 'turing'){                              // 보유한 신화의 스킬을 매 공격 빌려 씁니다 (확률 누적과 별개)
     const pool = S.units.filter(o => U[o.id].t === 5 && U[o.id].sk);
     if (pool.length){
       const src = pool[(Math.random()*pool.length)|0];
@@ -1869,11 +2090,18 @@ function attack(u){
       TXT({x:u.x, y:u.y-26, v:U[src.id].sk.n, life:1, max:1, c:col});
     }
   }
-  if (def.sk && Math.random() < def.sk.p){            // 스킬 발동
-    SFX.skill();
-    castEffect(u, def.sk, def.dmg * buffOf(u), col, false);
-    TXT({x:u.x, y:u.y-26, v:def.sk.n, life:1.1, c:col});
-    FX({k:'pop', x:u.x, y:u.y, c:col, life:.5, max:.5});
+  if (def.sk){
+    if (u.skT <= 0){                                   // 1초에 한 번만 확률이 오릅니다
+      u.skP = Math.min(1, (u.skP || SKILL_BASE) + SKILL_STEP);
+      u.skT = SKILL_TICK;
+    }
+    if (Math.random() < u.skP){                        // 발동하면 다시 1%로
+      u.skP = SKILL_BASE;
+      SFX.skill();
+      castEffect(u, def.sk, def.dmg * buffOf(u) * powerOf(u), col, false);
+      TXT({x:u.x, y:u.y-26, v:def.sk.n, life:1.1, max:1.1, c:col});
+      FX({k:'pop', x:u.x, y:u.y, c:col, life:.5, max:.5});
+    }
   }
   SRC = null;
   return true;
@@ -1891,18 +2119,26 @@ function tick(now){
   draw();
 }
 function step(dt){
-  if (S.phase==='prep'){ S.prep -= dt; if (S.prep<=0) startWave(); }
+  if (S.phase==='prep' && !S.holdArena){ S.prep -= dt; if (S.prep<=0) startWave(); }
   S.playT += dt;
   if (S.phase==='wave'){
     S.waveT += dt;
-    if (!S.rush && S.waveT > WAVE_LIMIT){          // 교착 방지 — 남은 적이 출구로 돌진합니다
+    const cap = arenaCap(S.wave);
+    if (S.arena && S.enemies.length > cap){           // 포화 = 즉시 패배
+      return gameOver(`필드가 ${cap}마리로 포화됐습니다`);
+    }
+    if (!S.arena && !S.rush && S.waveT > WAVE_LIMIT){          // 교착 방지 — 남은 적이 출구로 돌진합니다
       S.rush = true;
       for (const e of S.enemies){ e.frozen = 0; e.slow = 0; }
       SFX.warn();
       log('시간 초과! 남은 적이 속박을 끊고 돌진합니다', true);
     }
     S.spawnT -= dt;
-    if (S.queue.length && S.spawnT<=0){ spawn(S.queue.shift()); S.spawnT = .32; }
+    // 간격이 프레임보다 짧아질 수 있으므로 한 스텝에 여러 마리가 나올 수 있게 합니다
+    while (S.queue.length && S.spawnT <= 0){
+      spawn(S.queue.shift());
+      S.spawnT += S.spawnGap;
+    }
   }
   // 오라 초기화 후 재계산 (가비지컬렉터 회복 / 데드락 가속)
   for (const e of S.enemies) if (!e.dead){ e.spdMul = 1; e.healAura = false; e.auraArmor = 0; }
@@ -1952,9 +2188,9 @@ function step(dt){
       log(`${b.n} 폭주! 속도가 올라갑니다`, true);
       FX({k:'pop', x:e.x, y:e.y, c:e.c, life:.6, max:.6});
     }
-    const tgt = WP[e.wp];
+    const tgt = nodeAt(e.wp);                         // 아레나면 진입로 → 트랙 순으로 이어집니다
     if (!tgt){ leak(e); continue; }
-    const tx=px(tgt[0]), ty=px(tgt[1]);
+    const tx = px(tgt[0]), ty = px(tgt[1]);
     const dx=tx-e.x, dy=ty-e.y, d=Math.hypot(dx,dy);
     if (e.frozen > 0) e.frozen -= dt;
     const rage = e.enraged ? b.enrage.mul : 1;
@@ -1987,11 +2223,19 @@ function step(dt){
     if (g) u.chgVis = lerp(u.chgVis, Math.min(u.chg, ultNeed(u)), Math.min(1, dt*6));
     if (g && g.g === 'time') u.chg = Math.min(ultNeed(u), u.chg + dt*ultRate());
     if (u.hasteT > 0) u.hasteT -= dt;
+    if (u.skT > 0) u.skT -= dt;
     if (S.autoUlt && ultReady(u)) castUlt(u);
     u.cd -= dt;
     if (u.cd <= 0){
       const fired = attack(u);
-      u.cd = fired ? U[u.id].cd / (u.hasteT > 0 ? 2 : 1) / (1 + 0.04*S.res.spd) / spdBuffOf(u) / S.mut.throttle / (1 + OPT_SPD*optLv(u)) : .1;
+      // fixedRate 유닛은 공속 버프·연구·스로틀에 영향받지 않습니다 (한 방이 굵은 유닛)
+      const fixed = U[u.id].fixedRate;
+      u.cd = fired
+        ? (fixed
+            ? U[u.id].cd / (1 + OPT_SPD*optLv(u))
+            : U[u.id].cd / (u.hasteT > 0 ? 2 : 1) / (1 + 0.04*S.res.spd) / spdBuffOf(u)
+              / S.mut.throttle / (1 + OPT_SPD*optLv(u)))
+        : .1;
       if (!fired) u.ramp = 0;
     }
   }
@@ -2003,13 +2247,13 @@ function step(dt){
   S.fx = S.fx.filter(f => f.life > 0);
   for (const t of S.texts){ t.life -= dt; t.vy = (t.vy ?? -52) + 105*dt; t.y += t.vy*dt; }
   S.texts = S.texts.filter(t => t.life > 0);
-  if (S.phase==='wave' && !S.queue.length && !S.enemies.length) endWave();
+  if (S.phase==='wave' && waveCleared()) endWave();
 }
 // 경로를 따라 amount 픽셀만큼 강제 전진
 function advanceAlong(e, amount){
   let left = amount;
   while (left > 0){
-    const tgt = WP[e.wp];
+    const tgt = nodeAt(e.wp);                         // 아레나에서 옛 경로로 순간이동하지 않게 합니다
     if (!tgt) break;
     const tx = px(tgt[0]), ty = px(tgt[1]);
     const dx = tx-e.x, dy = ty-e.y, d = Math.hypot(dx,dy);
@@ -2037,14 +2281,47 @@ function draw(){
   cx.strokeStyle='#161d31'; cx.lineWidth=1;
   for (let x=0;x<=COLS;x++){ cx.beginPath(); cx.moveTo(x*TS,0); cx.lineTo(x*TS,ROWS*TS); cx.stroke(); }
   for (let y=0;y<=ROWS;y++){ cx.beginPath(); cx.moveTo(0,y*TS); cx.lineTo(COLS*TS,y*TS); cx.stroke(); }
-  cx.fillStyle='#1a2440';
-  for (const k of pathSet){ const [x,y]=k.split(',').map(Number); if (y>=0) cx.fillRect(x*TS+1,y*TS+1,TS-2,TS-2); }
+  if (S.arena){
+    // 무너진 지형 — 사각 순환로만 남습니다
+    cx.fillStyle = '#2b1a33';
+    for (const k of arenaBlockSet){
+      const [tx, ty] = k.split(',').map(Number);
+      if (tx < 0 || ty < 0) continue;                     // 맵 밖 스폰 칸은 그리지 않습니다
+      cx.fillRect(tx*TS+1, ty*TS+1, TS-2, TS-2);
+    }
+    cx.save();
+    cx.strokeStyle = '#ff6bd6'; cx.lineWidth = 2;
+    cx.setLineDash([9, 7]); cx.lineDashOffset = -S.t*26;   // 도는 방향으로 흐릅니다
+    cx.beginPath();                                        // 진입로 — 트랙에 닿는 지점까지
+    [...ARENA_WAY, ARENA_LOOP[0]].forEach(([lx, ly], i2) =>
+      i2 ? cx.lineTo(px(lx), px(ly)) : cx.moveTo(px(lx), px(ly)));
+    cx.stroke();
+    cx.beginPath();
+    ARENA_LOOP.forEach(([lx, ly], i2) =>
+      i2 ? cx.lineTo(px(lx), px(ly)) : cx.moveTo(px(lx), px(ly)));
+    cx.closePath(); cx.stroke();
+    cx.setLineDash([]);
+    cx.globalAlpha = .3; cx.lineWidth = 1; cx.strokeStyle = '#ff6bd6';
+    for (let i2 = 0; i2 < 12; i2++){                       // 바깥으로 갈라진 틈
+      const a0 = i2/12*Math.PI*2, cxp = cv.width/2, cyp = cv.height/2;
+      cx.beginPath();
+      cx.moveTo(cxp + Math.cos(a0)*TS*0.8, cyp + Math.sin(a0)*TS*0.8);
+      cx.lineTo(cxp + Math.cos(a0)*TS*1.9, cyp + Math.sin(a0)*TS*1.9);
+      cx.stroke();
+    }
+    cx.restore();
+  } else {
+    cx.fillStyle='#1a2440';
+    for (const k of pathSet){ const [x,y]=k.split(',').map(Number); if (y>=0) cx.fillRect(x*TS+1,y*TS+1,TS-2,TS-2); }
+  }
+  if (!S.arena){
   cx.save();                                                 // 진행 방향으로 흐르는 점선
   cx.strokeStyle='#2f3d63'; cx.lineWidth=2;
   cx.setLineDash([6,14]); cx.lineDashOffset=-S.t*26;
   cx.beginPath();
   WP.forEach(([wx,wy],i) => i ? cx.lineTo(px(wx),px(wy)) : cx.moveTo(px(wx),px(wy)));
   cx.stroke(); cx.restore();
+  }
 
   // 드롭 대상 하이라이트
   if (S.drag && S.drag.moved){
@@ -2476,16 +2753,21 @@ function drawFX(){
         break;
       }
       case 'pivot': {
-        cx.lineWidth=2;
+        // 평타(small)는 얇은 피벗선만, 스킬은 막대까지 펼칩니다
+        cx.lineWidth = f.small ? 1.4 : 2;
         cx.beginPath(); cx.moveTo(f.x, f.y-f.r); cx.lineTo(f.x, f.y+f.r); cx.stroke();
-        cx.font='bold 9px '+MONO; cx.fillText('pivot', f.x, f.y-f.r-9);
-        for (let i=0;i<5;i++){
-          const h=(i+1)*7, side=i<2?-1:1, off=(20+i*13)*p*side;
-          cx.globalAlpha=a*.8;
-          cx.fillRect(f.x+off-3, f.y-h/2, 6, h);
+        if (!f.small){
+          cx.font='bold 9px '+MONO; cx.fillText('pivot', f.x, f.y-f.r-9);
+          for (let i=0;i<5;i++){
+            const h=(i+1)*7, side=i<2?-1:1, off=(20+i*13)*p*side;
+            cx.globalAlpha=a*.8;
+            cx.fillRect(f.x+off-3, f.y-h/2, 6, h);
+          }
         }
-        cx.globalAlpha=a; cx.lineWidth=1.5;
-        cx.beginPath(); cx.arc(f.x,f.y,f.r*p,0,7); cx.stroke();
+        if (!f.small){                                // 확산 원은 스킬에서만
+          cx.globalAlpha=a; cx.lineWidth=1.5;
+          cx.beginPath(); cx.arc(f.x,f.y,f.r*p,0,7); cx.stroke();
+        }
         break;
       }
       case 'trail': {
@@ -2622,12 +2904,15 @@ function htmlUnit(){
     <div class="u-stats">
       <div>공격력<b>${d.dmg === 0 ? '지원' : Math.round(d.dmg*powerOf(u))}</b></div>
       <div>사거리<b>${d.rng >= 90 ? '전체' : d.rng.toFixed(1)}</b></div>
-      <div>공속<b>${d.sp.t === 'buff' ? '—' : d.cd.toFixed(2)+'s'}</b></div>
+      <div>공속<b>${d.sp.t === 'buff' ? '—' : d.cd.toFixed(2)+'s'}${d.fixedRate?' 고정':''}</b></div>
       <div>보유<b>${S.units.filter(x => x.id === u.id).length}</b></div>
     </div>
     <p class="u-desc">${esc(d.d)}</p>
     ${d.sk ? `<div class="abil sk"><div class="ab-h"><b>스킬</b><span>${esc(d.sk.n)}</span>
-       <i>${Math.round(d.sk.p*100)}%</i></div><p>${esc(d.sk.d)}</p></div>` : ''}
+       <i>${((u.skP || SKILL_BASE)*100).toFixed(1)}%</i></div>
+       <p>${esc(d.sk.d)}</p>
+       <div class="ab-g"><div style="width:${Math.min(100,(u.skP||SKILL_BASE)*100*4)}%;background:#79c0ff"></div></div>
+       <div class="ab-n">1%에서 시작 · 1초마다 +0.5%p · 발동하면 초기화</div></div>` : ''}
     ${d.ult ? `<div class="abil ult"><div class="ab-h"><b>궁극기</b><span>${esc(d.ult.n)}</span>
        <i>${({dmg:'피해 누적', time:'시간 경과', hit:'공격 횟수', kill:'처치 수'})[d.ult.g]}</i></div>
        <p>${esc(d.ult.d)}</p>
@@ -2910,6 +3195,11 @@ function htmlWave(){
   const total = Object.values(m).reduce((s,v) => s + v.n*v.hp, 0);
   let h = `<p class="gnote" style="margin:0 0 10px">WAVE ${w} · 남은 적 ${q.length}마리 ·
     총 체력 ${total.toLocaleString()}</p>`;
+  if (arenaWave(w)) h += `<div class="gate bad" style="border-color:#ff6bd6">
+    <b style="color:#ff6bd6">아레나</b>
+    <span>경로가 없습니다. 적은 빠져나가지 않고 중앙에 쌓입니다.<br>
+    얇지만 쉬지 않고 밀려옵니다 — 앞 웨이브가 끝나기 전에 다음 웨이브가 이어집니다.<br>
+    필드에 ${arenaCap(w)}마리가 쌓이면 즉시 패배합니다. 광역·관통 화력이 곧 생존입니다.</span></div>`;
   if (S.mut.list.length) h += S.mut.list.map(m =>
     `<div class="gate bad" style="border-color:${m.c}">
       <b style="color:${m.c}">스테이지 변이 · ${m.n}</b>
@@ -2949,11 +3239,14 @@ function htmlDex(){
   add('이동','유닛을 끌어서 옮깁니다. 다른 유닛 위에 놓으면 자리를 맞바꿉니다.');
   add('합성','같은 유닛 3개 → 한 단계 위 등급 랜덤 1개. 전설까지만 가능합니다.');
   add('초월','신화 2~3기를 재료로 쓰고 누적 조건까지 채워야 하며, 종류당 1기만 둘 수 있습니다. 신화 슬롯을 소모하지 않습니다. JIT 컴파일러가 있으면 이후 뽑히는 일반 등급 변수는 보드에 남지 않고 즉시 컴파일되어 전체 폭발로 바뀝니다.');
+  add('공속 고정','퀵정렬·다익스트라·힙·이진탐색은 공속 버프와 연구, 스로틀링 변이의 영향을 받지 않습니다. 한 방이 굵은 대신 연사가 되지 않습니다. 복잡도 최적화만 이들의 공속을 올립니다.');
+  add('스킬','영웅 이상 유닛의 스킬은 1% 확률에서 시작해 1초마다 0.5%p 씩 오릅니다. 공속이 빨라도 누적 속도는 같고, 한 번 발동하면 다시 1%로 돌아갑니다. 평균 10~30초에 한 번 터집니다.');
   add('복잡도 최적화','신화 전용입니다. 보스를 잡으면 나오는 최적화 토큰과 골드로 O(n²)부터 O(1)까지 네 단계를 낮춥니다. 단계마다 공격력 +35%, 공속 +10%. 중복 신화가 필요 없습니다.');
   add('신화','합성으로는 나오지 않습니다. 조합식 재료를 보드에 모아 제작하세요. 칸이 꽉 차 있어도 제작됩니다.');
   add('함수','공격 대신 인접 8칸 아군을 +30% 강화합니다. 신화 옆에 두세요.');
   add('판매','영웅 이상은 실수 방지를 위해 두 번 눌러야 팔립니다.');
   add('속박 저항','보스는 정지·감속에 완전히 면역입니다. 장갑 24 이상인 적은 지속시간이 절반만 적용됩니다.');
+  add('아레나','웨이브 105부터 지형이 무너져 경로가 사라집니다. 적은 빠져나가지 않고 중앙으로 몰리며, 메모리 대신 필드의 적 수가 승패를 가릅니다. 100마리를 넘기면 즉시 패배합니다. 가비지 컬렉터로 버티는 전략이 통하지 않습니다.');
   add('웨이브 제한','한 웨이브가 120초를 넘기면 남은 적이 속박을 끊고 점점 빨라지며 출구로 돌진합니다. 붙잡아 두기만 해서는 웨이브를 끝낼 수 없습니다.');
   add('스테이지 변이','스테이지 2부터 변이가 붙고, 그 스테이지 10웨이브 내내 유지됩니다. 스테이지 10부터는 두 개가 겹칩니다. 스테이지가 바뀔 때 판을 갈아엎으세요.');
   add('신화 슬롯','보드에 올릴 수 있는 신화 수에는 한계가 있습니다. 연구소에서 늘릴 수 있고, 어떤 신화를 남길지가 핵심 선택입니다.');
@@ -2989,7 +3282,10 @@ let lastSig = '';
 let lastLife = 20;
 function sync(){
   $('s-gold').textContent = Math.floor(S.gold);
-  $('s-life').textContent = S.life;
+  $('s-life').textContent = S.arena
+    ? S.enemies.length + '/' + arenaCap(S.wave)
+    : S.life;
+  $('s-life').style.color = (S.arena && S.enemies.length > arenaCap(S.wave)*0.75) ? '#ff7b72' : '';
   if (S.life < lastLife){
     const chip = $('s-life').parentElement;
     chip.classList.add('hurt');
@@ -3011,6 +3307,7 @@ function sync(){
     : S.phase === 'wave' ? (S.enemies.length + S.queue.length) + '마리'
     : S.phase === 'prep' ? S.prep.toFixed(1) + 's' : '대기';
   $('btn-skip').classList.toggle('hide', S.phase !== 'prep' || S.paused);
+  $('btn-skip').textContent = S.holdArena ? '아레나 시작 — 준비 완료' : '빨리 시작';
   $('btn-resume').classList.toggle('hide', !S.paused);
 
   // 골드 액수 대신 '상태가 실제로 바뀌었는가'만 봅니다 (깜빡임 방지)
@@ -3127,12 +3424,11 @@ $('s-myth').parentElement.style.cursor = 'pointer';
 $('s-gold').parentElement.style.cursor = 'pointer';
 $('sheet-close').onclick = closeSheet;
 $('scrim').onclick = closeSheet;
-$('btn-speed').onclick = e => {
-  S.speed = S.speed === 1 ? 2 : S.speed === 2 ? 3 : S.speed === 3 ? 5 : 1;
-  e.currentTarget.innerHTML = '배속<small>' + S.speed + 'x</small>';
-  e.currentTarget.classList.toggle('on', S.speed > 1);
+$('btn-speed').onclick = () => {
+  setSpeed(S.speed === 1 ? 2 : S.speed === 2 ? 3 : S.speed === 3 ? 5 : 1);
 };
 $('btn-skip').onclick = () => {
+  if (S.holdArena){ S.holdArena = false; S.prep = 0; $('stagecard').classList.add('hide'); return; }
   const b = Math.round(S.prep * 45);
   S.gold += b; S.prep = 0;
   log('선제 실행 보너스 +' + b + 'G');
@@ -3217,8 +3513,17 @@ if (isDesk()) openSheet('unit', '유닛 정보');
 addEventListener('resize', () => { if (isDesk() && !SHEET.kind) openSheet('unit', '유닛 정보'); });
 // 브라우저 정책상 사용자의 첫 입력이 있어야 소리를 낼 수 있습니다.
 addEventListener('pointerdown', () => SFX.init(), {once:true});
+// 탭을 되돌아오거나 다시 클릭할 때마다 오디오를 깨웁니다
+addEventListener('pointerdown', () => SFX.wake());
+document.addEventListener('visibilitychange', () => { if (!document.hidden) SFX.wake(); });
 document.addEventListener('pointerdown', e => {
-  if (e.target && e.target.closest && e.target.closest('button')) SFX.click();
+  const b = e.target && e.target.closest && e.target.closest('button');
+  if (!b || b.disabled) return;
+  SFX.click();
+  b.classList.remove('press');
+  void b.offsetWidth;
+  b.classList.add('press');
+  setTimeout(() => b.classList.remove('press'), 220);
 }, true);
 
 log('시스템 초기화 완료. 소환 100G, 확률은 정직합니다.');
