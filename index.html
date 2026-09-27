@@ -330,6 +330,25 @@
   #title.sub{display:block;overflow-y:auto;align-items:stretch}
 
   /* ── 스테이지 진입 카드 */
+  #coach{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:50;
+    width:min(430px,calc(100% - 20px));background:rgba(18,23,37,.97);border:1px solid #ffd76e;
+    border-radius:14px;padding:11px 14px 10px;box-shadow:0 10px 32px rgba(0,0,0,.55);text-align:left}
+  #coach.ok{border-color:#7ee787}
+  #coach.hide,#coach-ring.hide{display:none}
+  #coach .c-top{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.5px;color:#ffd76e}
+  #coach.ok .c-state{color:#7ee787}
+  #coach h4{margin:5px 0 4px;font-size:15px;font-family:var(--disp)}
+  #coach .c-d{font-size:12px;line-height:1.75;color:var(--dim)}
+  #coach .c-bar{height:3px;background:#243049;border-radius:2px;margin:9px 0 8px;overflow:hidden}
+  #coach .c-bar i{display:block;height:100%;background:#ffd76e;transition:width .3s}
+  #coach .c-btns{display:flex;gap:6px;justify-content:flex-end}
+  #coach .c-btns .go{min-height:32px;padding:0 16px}
+  .tut-ghost{min-height:32px;padding:0 11px;font-size:11px;color:var(--dim);
+    background:transparent;border:1px solid var(--line,#243049);border-radius:9px}
+  #coach-ring{position:fixed;z-index:49;pointer-events:none;border:2px solid #ffd76e;border-radius:12px;
+    box-shadow:0 0 0 4px rgba(255,215,110,.16),0 0 22px rgba(255,215,110,.45);
+    animation:coachPulse 1.1s ease-in-out infinite;transition:left .15s,top .15s,width .15s,height .15s}
+  @keyframes coachPulse{0%,100%{opacity:1}50%{opacity:.4}}
   #stagecard{position:absolute;left:8px;right:8px;top:50%;z-index:7;
     animation:cardIn .5s cubic-bezier(.22,1,.36,1) both;
     background:rgba(10,14,24,.94);border:1px solid #2b3859;border-radius:12px;padding:16px 15px;
@@ -446,6 +465,8 @@
     <div id="scrim"></div>
 
     <div id="stagecard" class="hide"></div>
+    <div id="coach" class="hide"></div>
+    <div id="coach-ring" class="hide"></div>
 
     <div class="banner hide" id="banner"></div>
   </div>
@@ -1011,6 +1032,9 @@ Object.assign(ENEMY, {
   ENEMY[k] = Object.assign({n, hp, sp:30, r:22, gold:Math.round(hp*0.11),
     c, shape:'hex', boss:true, ab:desc}, ab);
 });
+// 마지막 웨이브 뒤에 나오는 뱀. 마디 하나하나가 이 적이지만 체력은 한 몸(S.snake)에 모여 있습니다.
+ENEMY.ouro = {n:'우로보로스', hp:1, sp:40, r:13, gold:0, c:'#ff6bd6', shape:'circle', boss:true,
+  ab:'웨이브 120 뒤에 나타나 트랙 한 바퀴를 통째로 감습니다. 어느 마디를 때려도 한 몸의 체력이 깎이고, 한 바퀴 돌 때마다 메모리를 삼킵니다.'};
 
 // ── 스테이지 정의
 const STAGES = [
@@ -1061,7 +1085,36 @@ const STAGES = [
    desc:'모든 것이 한꺼번에 옵니다. 여기서 멈출 수 있는지는 직접 확인하는 수밖에 없습니다.'},
 ];
 const FINAL_BOSS = STAGES[STAGES.length-1].last;
+// ── 최종 보스: 우로보로스 (순환 참조) ─────────────────────────────────
+// 웨이브 120을 막으면 트랙 한 바퀴를 통째로 채우는 뱀이 들어옵니다.
+// 마디는 따로따로 맞지만 체력은 한 몸이라, 한 번에 여러 마디를 긁는 광역·관통·연쇄가 곧 화력입니다.
+// 빠져나가지 않는 대신 머리가 한 바퀴 돌 때마다 메모리를 삼키고 조금씩 빨라집니다.
+const SNAKE_GAP      = 0.62;   // 마디 간격(칸). 둘레 ÷ 간격 = 마디 수 → 트랙을 딱 한 바퀴 채웁니다
+const SNAKE_LAP_SEC  = 20;     // 첫 바퀴에 걸리는 시간(초). 맵마다 둘레가 달라도 같게 맞춥니다
+const SNAKE_SPEEDUP  = 1.12;   // 한 바퀴마다 빨라지는 배율
+const SNAKE_LAP_MEM  = 12;     // 한 바퀴마다 잃는 메모리
+// 실측(웨이브 120을 넘긴 보드 9판): ×8 에서 처치 시간 중앙 47초. ×10 으로 올려 목표 50~60초에 맞춥니다.
+const SNAKE_HP_MUL   = 10;     // 공용 체력 = 최종 보스 체력 × 이 값 × (마디 수 / 40)
+const SNAKE_REF_N    = 40;
+// 한 번의 공격·스킬·궁극기가 뱀에게 넣을 수 있는 피해 상한(최대 체력 대비).
+// 맵 전체를 치는 궁극기는 마디 수(35~48)만큼 곱해져 들어가서, 상한이 없으면
+// 그런 궁극기를 가진 보드가 15초 만에 끝내버립니다(실측). 여러 마디를 긁는 이점은
+// 남기되, 한 방에 녹이지는 못하게 자릅니다.
+const SNAKE_CAST_CAP = 0.10;
+// 초당 상한. 시전당 상한만으로는 '한 방이 센 보드' 만 잡히고, '초당 시전이 많은 보드' 는
+// 그대로 15초에 끝냈습니다(실측). 순환 참조는 한 번에 일정 속도로만 풀린다는 규칙으로,
+// 아무리 화력이 높아도 최소 1/SNAKE_DPS_CAP 초는 걸리게 만듭니다.
+// 화력이 낮은 보드는 이 상한에 닿지 않으므로 아무 영향이 없습니다.
+// 두 상한은 이렇게 맞물립니다: 버킷은 시전당 상한(10%)까지 모이고 초당 상한 속도로 찹니다.
+// → 오래 때리지 않았다면 큰 궁극기 한 방이 10%까지 들어가고(버스트는 보상),
+//    계속 두들기면 2.5%/초로 묶입니다(지속 화력은 상한).
+const SNAKE_DPS_CAP  = 0.025;  // 최대 체력의 2.5%/초 → 최소 40초     // 마디 수로 체력을 맞춰, 세로·가로 맵의 난이도를 같게 합니다
 const STAGE_LEN = 8;
+// ── 부스 전시용 배속 ──────────────────────────────────────────────────
+// 처음 두 스테이지는 2배속으로 보여주고(규칙을 눈으로 익히는 구간),
+// 3스테이지(웨이브 17)부터 5배속으로 넘깁니다. 1배속 48분짜리를 부스에서 돌릴 수는 없으니까요.
+// 한 번만 올리고 잠그지는 않습니다 — 그 뒤엔 배속 버튼으로 자유롭게 바꿀 수 있습니다.
+const SPEED_START = 2, SPEED_FAST = 5, SPEED_FAST_STAGE = 3;
 // 보스는 속박·감속에 완전 면역, 장갑이 두꺼운 적은 절반만 걸립니다.
 function ccMul(e){
   if (e.boss) return 0;
@@ -1226,7 +1279,7 @@ const S = {
   auto:false, over:false, units:[], enemies:[], fx:[], texts:[],
   queue:[], spawnT:0, spawnGap:0.32, waveN:0, waveT:0, rush:false, arena:false, holdArena:false, sel:null, cap: WIDE ? 26 : 22, killed:0, drag:null, t:0,
   picks:[0,0,0,0,0], named:{}, pity:0, sellArm:null, paused:false, autoPaused:false, draft:null, finalDown:false,
-  augments:[], augmentChoices:null, augmentAwait:false, augmentPlan:makeAugmentPlan(), augmentState:{
+  tut:null, snake:null, augments:[], augmentChoices:null, augmentAwait:false, augmentPlan:makeAugmentPlan(), augmentState:{
     damage:0,single:0,aoe:0,speed:0,gold:0,cap:0,cost:0,summonGrowth:null,waveMem:0,waveGold:0,
     craftRefund:0,skill:1,armor:0,reveal:0,overload:0,roster:0,boss:0,normal:0,canary:0,waveShield:0,
     prep:0,leakGuard:0,regen:0,traffic:0,hp:0,progressive:0,arenaCap:0,threshold:Infinity,step:0,
@@ -1491,6 +1544,7 @@ function sellSelected(){
   const v = sellValue(u);
   S.units = S.units.filter(o => o !== u);
   S.gold += v; S.sel = null; S.sellArm = null;
+  S.stat.sold = (S.stat.sold || 0) + 1;
   FX({k:'pop', x:u.x, y:u.y, c:'#ff7b72', life:.35, max:.35});
   SFX.sell();
   log(`판매: ${U[u.id].n} → +${v}G`);
@@ -1648,6 +1702,7 @@ function doMerge(id){
   const pool = ROLL_TIER[nt];
   const nid = pool[(Math.random()*pool.length)|0];
   const u = place(nid, true);   // 재료 3개를 이미 뺐으므로 칸은 반드시 남습니다
+  S.stat.merged = (S.stat.merged || 0) + 1;
   SFX.merge();
   log(`합성: ${U[id].n} x3 → ${U[nid].n} [${TIER[nt].n}]`, nt>=3);
   if (u){ S.sel = u; spawnPop(u); }
@@ -1877,6 +1932,8 @@ function startWave(){
   if (stageWave(S.wave) === 1){
     applyMutators(rollMutators(S.wave), S.wave);  // 스테이지 시작에만 갱신
     showStageCard(stageOf(S.wave));
+    // 정해진 스테이지에 닿으면 한 번만 배속을 올립니다
+    if (stageOf(S.wave) === SPEED_FAST_STAGE - 1 && S.speed < SPEED_FAST) setSpeed(SPEED_FAST);
   }
   S.queue = buildWave(S.wave);
   S.phase = 'wave'; S.spawnT = 0; S.waveT = 0; S.rush = false;
@@ -1913,7 +1970,7 @@ function endWave(){
   if (S.wave >= S.maxWave){
     // 최종 보스를 잡지 못한 채 웨이브가 끝났다면 승리가 아닙니다
     if (!S.finalDown) return gameOver('최종 보스를 놓쳤습니다');
-    return victory();
+    return startSnake();          // 승리는 뱀을 끊어낸 뒤입니다
   }
   S.phase = 'prep'; S.prep = (S.arena ? arenaGapFor(S.waveN || 30, S.wave) : 1.5) * (1 - augState('prep'));
   if (AUGMENT_WAVES.includes(S.wave) && offerAugment()){
@@ -1951,11 +2008,194 @@ function spawn(item, at){
   S.enemies.push(e);
   return e;
 }
+// ── 우로보로스 ────────────────────────────────────────────────────────
+function loopPerimeter(){
+  let L = 0;
+  for (let i = 0; i < ARENA_LOOP.length; i++){
+    const a = ARENA_LOOP[i], b = ARENA_LOOP[(i + 1) % ARENA_LOOP.length];
+    L += Math.abs(b[0] - a[0]) + Math.abs(b[1] - a[1]);
+  }
+  return L * TS;
+}
+function startSnake(){
+  const perim = loopPerimeter(), gap = SNAKE_GAP * TS;
+  const N = Math.max(12, Math.floor(perim / gap));
+  const bossHp = ENEMY[FINAL_BOSS].hp * growth(S.maxWave, 1.018, 1.1212) * HP_ADJ;
+  const hp = Math.round(bossHp * SNAKE_HP_MUL * N / SNAKE_REF_N);
+  S.snake = {N, gap, v: perim / SNAKE_LAP_SEC, hp, max: hp, ghost: hp,
+             spawned: 0, segs: [], lap: 0, dead: false, deadT: 0,
+             castId: -1, castDealt: 0, castMsg: false, bucket: hp * SNAKE_CAST_CAP};
+  S.phase = 'wave'; S.queue = []; S.waveT = 0;
+  if (S.speed > 2) setSpeed(2);             // 피날레는 눈으로 보게 한 단계 늦춥니다(잠그지는 않습니다)
+  showSnakeCard(); SFX.bossIn();
+  log('◆ 최종 보스 · 우로보로스 — 순환 참조가 트랙을 감습니다 ◆', true);
+  sync();
+}
+function snakeTick(dt){
+  const s = S.snake;
+  if (s.dead){ s.deadT += dt; if (s.deadT > 1.6) victory(); return; }
+  // 한 마디씩 진입로로 들어옵니다. 앞 마디가 간격만큼 나아가면 다음 마디 —
+  // 속도가 바뀌어도 간격이 흐트러지지 않게 시간이 아니라 거리로 잽니다.
+  const last = s.segs[s.segs.length - 1];
+  if (s.spawned < s.N && (!last || last.dist >= s.gap)){
+    const e = spawn({type:'ouro', hpMul:1}, {x: px(WP[0][0]), y: px(WP[0][1]), wp: 1, dist: 0});
+    e.link = s; e.seg = s.spawned++; e.sp = s.v; e.shield = e.shieldMax = 0;
+    e.r = e.seg === 0 ? 18 : 13;
+    s.segs.push(e);
+  }
+  // 마디마다 공용 체력의 몫만 비춰 둡니다. 퍼센트 피해가 마디 수만큼 부풀지 않게 하려는 것입니다.
+  for (const e of s.segs){ e.max = s.max / s.N; e.hp = Math.max(1, s.hp / s.N); }
+  s.ghost += (s.hp - s.ghost) * Math.min(1, dt * 4);
+  // 초당 상한을 토큰 버킷으로 — 1초치까지만 모아둘 수 있습니다
+  s.bucket = Math.min(s.max * SNAKE_CAST_CAP, s.bucket + SNAKE_DPS_CAP * s.max * dt);
+  // 머리가 트랙 첫 꼭짓점을 다시 지날 때마다 한 바퀴
+  const head = s.segs[0];
+  if (head){
+    const lap = Math.floor((head.wp - ARENA_WAY.length - 1) / ARENA_LOOP.length);
+    if (lap > s.lap){
+      s.lap = lap;
+      snakeBite(head);
+      s.v *= SNAKE_SPEEDUP;
+      for (const e of s.segs) e.sp = s.v;
+    }
+  }
+}
+function snakeHit(e, amount, color, big){
+  const s = e.link;
+  if (s.dead) return;
+  // 시전 한 번당 상한 — 마디를 많이 긁을수록 유리한 건 그대로지만, 한 방에 녹지는 않습니다
+  if (s.castId !== CAST){ s.castId = CAST; s.castDealt = 0; s.castMsg = false; }
+  const room = Math.min(s.max * SNAKE_CAST_CAP - s.castDealt, s.bucket);
+  if (room <= 0){
+    e.flash = 0.14;
+    if (!s.castMsg){ s.castMsg = true; TXT({x:e.x, y:e.y-18, v:'⊘ 상한', life:.7, max:.7, c:'#9aa7bd'}); }
+    return;
+  }
+  amount = Math.min(amount, room);
+  s.castDealt += amount;
+  s.bucket -= amount;
+  const before = s.hp;
+  s.hp -= amount;
+  e.flash = 0.14;
+  if (big) TXT({x:e.x, y:e.y-16, v:Math.round(amount), life:.9, max:.9, c:color||'#fff'});
+  if (SRC){
+    const g = U[SRC.id].ult;
+    if (g && g.g === 'dmg') SRC.chg += Math.max(0, before - Math.max(0, s.hp)) * ultRate();
+  }
+  if (s.hp <= 0) killSnake();
+}
+// 한 바퀴마다 메모리를 삼킵니다. 서킷 브레이커·블루-그린은 유출과 똑같이 적용됩니다.
+function snakeBite(head){
+  let cost = SNAKE_LAP_MEM;
+  if (augState('leakHalf')) cost = Math.max(1, Math.ceil(cost * (1 - augState('leakHalf'))));
+  TXT({x:head.x, y:head.y-30, v:'LAP ' + S.snake.lap + ' · 메모리 -' + cost, life:1.4, max:1.4, c:'#ff7b72'});
+  FX({k:'wave', x:head.x, y:head.y, r:TS*2.4, c:'#ff6bd6', n:2, life:.7, max:.7});
+  if (augState('blueGreen') > 0 && S.life <= cost){
+    S.augmentState.blueGreen = 0; S.life = 20;
+    log('블루-그린이 메모리 소진을 복구했습니다', true);
+    return;
+  }
+  S.life -= cost;
+  SFX.leak();
+  log('우로보로스가 한 바퀴를 돌았습니다 · 메모리 -' + cost + ' · 더 빨라집니다', true);
+  if (S.life <= 0){ S.life = 0; gameOver('우로보로스가 메모리를 전부 삼켰습니다'); }
+}
+function killSnake(){
+  const s = S.snake;
+  if (!s || s.dead) return;
+  s.dead = true; s.hp = 0;
+  s.segs.forEach((e, i) => {
+    if (e.dead) return;
+    e.dead = true;
+    if (i % 3 === 0) FX({k:'pop', x:e.x, y:e.y, c:i % 2 ? '#ff6bd6' : '#c39bff', life:.5, max:.5});
+    S.corpses.push({x:e.x, y:e.y, r:e.r, c:'#ff6bd6', shape:'circle', ang:e.ang, t:.5, max:.5});
+  });
+  const h = s.segs[0];
+  if (h) FX({k:'wave', x:h.x, y:h.y, r:TS*6, c:'#ffd76e', n:3, life:1.1, max:1.1});
+  S.killed++;
+  SFX.bossDown();
+  log('◆ 우로보로스 격파 — 순환 참조가 끊어졌습니다 ◆', true);
+}
+function showSnakeCard(){
+  const el = $('stagecard');
+  clearTimeout(showStageCard.t1); clearTimeout(showStageCard.t2);
+  el.classList.remove('aug-card');
+  el.innerHTML = '<div class="sc-n">FINAL BOSS</div><h3 style="color:#ff6bd6">우로보로스</h3>'
+    + '<div class="sc-s">순환 참조 — 자기 꼬리를 문 뱀</div>'
+    + '<div class="sc-d">트랙 한 바퀴를 통째로 감습니다. <b>어느 마디를 때려도 한 몸의 체력</b>이 깎이니, '
+    + '여러 마디를 한 번에 긁는 <b style="color:#ff6bd6">광역·관통·연쇄</b>가 곧 화력입니다.<br>'
+    + '빠져나가지 않는 대신 머리가 한 바퀴 돌 때마다 <b>메모리 ' + SNAKE_LAP_MEM + '</b>을 삼키고 조금씩 빨라집니다.<br>'
+    + '<b>순환 참조는 한 번에 다 못 끊습니다</b> — 아무리 화력이 높아도 푸는 데 시간이 걸립니다.</div>';
+  el.classList.remove('hide'); el.style.opacity = '1';
+  showStageCard.t1 = setTimeout(() => { el.style.opacity = '0'; }, 4200);
+  showStageCard.t2 = setTimeout(() => el.classList.add('hide'), 4800);
+}
+function drawSnake(){
+  const s = S.snake;
+  if (!s) return;
+  const segs = s.segs.filter(e => !e.dead);
+  if (segs.length){
+    cx.save();
+    cx.lineCap = 'round'; cx.lineJoin = 'round';
+    // 몸통 — 이웃한 마디끼리만 잇습니다(진입 직후 맵 밖 마디와 선이 튀지 않게)
+    const body = (w, col) => {
+      cx.strokeStyle = col; cx.lineWidth = w; cx.beginPath();
+      for (let i = 0; i < segs.length; i++){
+        const e = segs[i], p = segs[i - 1];
+        if (!p || Math.hypot(e.x - p.x, e.y - p.y) > s.gap * 2.2) cx.moveTo(e.x, e.y); else cx.lineTo(e.x, e.y);
+      }
+      cx.stroke();
+    };
+    body(28, '#1d0e2e');
+    body(20, '#4a2270');
+    body(7, 'rgba(255,107,214,.5)');
+    // 비늘 — 맞은 마디는 하얗게 번쩍입니다
+    for (let i = 1; i < segs.length; i++){
+      const e = segs[i];
+      cx.fillStyle = e.flash > 0 ? '#ffffff' : (i % 2 ? '#ff6bd6' : '#c39bff');
+      cx.globalAlpha = e.flash > 0 ? 1 : .85;
+      cx.beginPath(); cx.arc(e.x, e.y, i % 2 ? 3.4 : 2.3, 0, Math.PI * 2); cx.fill();
+    }
+    cx.globalAlpha = 1;
+    // 머리
+    const h = segs[0];
+    if (h.seg === 0){
+      cx.translate(h.x, h.y); cx.rotate(h.ang);
+      cx.fillStyle = h.flash > 0 ? '#ffffff' : '#ff6bd6';
+      cx.beginPath(); cx.ellipse(3, 0, 20, 15, 0, 0, Math.PI * 2); cx.fill();
+      cx.strokeStyle = '#1d0e2e'; cx.lineWidth = 3; cx.stroke();
+      cx.fillStyle = '#ffd76e';
+      for (const y of [-6, 6]){ cx.beginPath(); cx.arc(10, y, 3.6, 0, Math.PI * 2); cx.fill(); }
+      cx.fillStyle = '#0b0e17';
+      for (const y of [-6, 6]){ cx.beginPath(); cx.ellipse(10.6, y, 1.2, 3, 0, 0, Math.PI * 2); cx.fill(); }
+      if ((S.t * 3) % 1 < 0.5){                        // 날름거리는 혀
+        cx.strokeStyle = '#ff7b72'; cx.lineWidth = 2; cx.beginPath();
+        cx.moveTo(22, 0); cx.lineTo(31, 0); cx.moveTo(31, 0); cx.lineTo(36, -4); cx.moveTo(31, 0); cx.lineTo(36, 4);
+        cx.stroke();
+      }
+    }
+    cx.restore();
+  }
+  // 상단 체력바
+  const W = cv.width - 40, x0 = 20, y0 = 10;
+  const p = Math.max(0, s.hp / s.max), pg = Math.max(0, s.ghost / s.max);
+  cx.save();
+  cx.fillStyle = 'rgba(11,14,23,.88)'; cx.fillRect(x0 - 5, y0 - 5, W + 10, 29);
+  cx.fillStyle = '#2b1740'; cx.fillRect(x0, y0 + 11, W, 8);
+  cx.fillStyle = 'rgba(255,255,255,.35)'; cx.fillRect(x0, y0 + 11, W * pg, 8);
+  cx.fillStyle = '#ff6bd6'; cx.fillRect(x0, y0 + 11, W * p, 8);
+  cx.font = 'bold 10px ' + MONO; cx.textBaseline = 'top';
+  cx.fillStyle = '#ffd76e'; cx.textAlign = 'left';
+  cx.fillText('FINAL · 우로보로스', x0, y0 - 1);
+  cx.fillStyle = '#e8eefc'; cx.textAlign = 'right';
+  cx.fillText(s.dead ? '순환 참조 해제' : ('LAP ' + s.lap + ' · 한 바퀴마다 메모리 -' + SNAKE_LAP_MEM + ' · ' + Math.ceil(p * 100) + '%'), x0 + W, y0 - 1);
+  cx.restore();
+}
 function victory(){
   if (S.over) return;
   S.over = true; S.phase='done';
   SFX.win();
-  banner('BUILD SUCCESSFUL', `${STAGES.length}개 스테이지 ${S.maxWave}웨이브를 모두 방어했습니다.`, true);
+  banner('BUILD SUCCESSFUL', `${STAGES.length}개 스테이지 ${S.maxWave}웨이브를 모두 방어하고, 우로보로스의 순환 참조를 끊어냈습니다.`, true);
 }
 function gameOver(reason){
   if (S.over) return;
@@ -1977,7 +2217,7 @@ function setSpeed(v){
 function resetRun(){
   S.gold = 300; S.life = LIFE_BASE; S.maxLife = LIFE_BASE; S.wave = 0; S.phase = 'idle'; S.prep = 0;
   S.over = false; S.finalDown = false; S.paused = false; S.killed = 0;
-  S.arena = false; S.holdArena = false; setSpeed(1);
+  S.arena = false; S.holdArena = false; setSpeed(SPEED_START);
   S.units = []; S.enemies = []; S.corpses = []; S.fx = []; S.texts = []; S.pulses = [];
   S.queue = []; S.spawnT = 0; S.spawnGap = 0.32; S.waveN = 0; S.waveT = 0; S.rush = false;
   S.sel = null; S.sellArm = null; S.drag = null; S.draft = null; S.draftFresh = false;
@@ -1996,6 +2236,13 @@ function resetRun(){
   S.buy = {draft:0, tier:0, named:0};
   S.tk  = {draft:1, tier:0, named:0}; S.optTk = 0;
   S.seen = {draft:0, tier:0, named:0};
+  // 앞 판에서 만진 토글·화면 상태는 전부 초기값으로 되돌립니다.
+  // (부스 전시: 다음 사람이 앞사람 설정을 물려받으면 안 됩니다)
+  S.auto = false; S.autoUlt = true; S.autoPaused = false;
+  S.tut = null; S.snake = null; $('coach').classList.add('hide'); $('coach-ring').classList.add('hide');
+  SHEET.kind = null; SHEET.gtab = 'draft';
+  MARK.merge.clear(); MARK.mat.clear();
+  if (!SFX.enabled) SFX.toggle();              // 음소거도 판마다 풀립니다
   S.picks = [0,0,0,0,0]; S.named = {}; S.pity = 0; S.summons = 0;
   S.stat = {common:0, ult:0, myth:0, trans:0, earned:0, spent:0}; S.playT = 0;
   LOGS.length = 0;
@@ -2121,6 +2368,7 @@ const VIS = {
 
 // ═══════════════════════════════ 전투
 let SRC = null;                     // 지금 공격 중인 유닛 (게이지 충전 귀속)
+let CAST = 0;                       // 공격·스킬·궁극기 한 번을 구분하는 번호 (뱀 피해 상한용)
 let AOE = false;                    // 지금 들어가는 피해가 광역인지 ('차폐' 변이용)
 const aoeScope = fn => { AOE = true; try { fn(); } finally { AOE = false; } };
 function dmgTo(e, amount, color, big){
@@ -2130,6 +2378,7 @@ function dmgTo(e, amount, color, big){
   if (SRC) amount = augDamage(SRC, amount, AOE, e);
   const armor = ((b.armor||0) + (e.auraArmor||0) + (S.mut.armor||0)) * (1 - augState('armor'));          // 세마포어·뮤텍스가 덧씌운 장갑 포함
   if (armor) amount = Math.max(amount*0.1, amount - armor);   // 장갑: 고정 감소 (최소 10%는 통과)
+  if (e.link) return snakeHit(e, amount, color, big);         // 뱀 마디: 공용 체력으로
   if (e.shield > 0){                                              // 보호막이 먼저 닳습니다
     const ab = Math.min(e.shield, amount);
     e.shield -= ab; amount -= ab;
@@ -2205,6 +2454,7 @@ function inRange(u, sp){
 // ══════════════ 스킬 · 궁극기
 function allEnemies(){ return S.enemies.filter(e => !e.dead && !e.hidden); }
 function castEffect(u, ef, base, col, isUlt){
+  CAST++;
   const list = allEnemies();
   if (!list.length && ef.f !== 'ally' && ef.f !== 'ramp') return false;
   list.sort((a,b) => b.dist - a.dist);
@@ -2283,7 +2533,7 @@ function castUlt(u){
 
 function attack(u){
   const def = U[u.id], sp = def.sp, col = TIER[def.t].hex;
-  SRC = u;
+  SRC = u; CAST++;
   const vis = VIS[u.id] || ((a,h,c)=>beam(a,h[0],c,2));
 
   if (sp.t === 'repair'){                       // 가비지 컬렉터: 메모리 회수
@@ -2533,13 +2783,14 @@ function tick(now){
   requestAnimationFrame(tick);
   const dt = Math.min(.05, (now-prev)/1000); prev = now;
   S.t += dt;
+  tutTick(dt);
   // 어떤 창을 열어도 시간은 계속 흐릅니다. 멈추는 건 직접 누른 일시정지뿐.
   if (!S.over && !S.paused) for (let i=0;i<S.speed;i++) step(dt);
   sync();
   draw();
 }
 function step(dt){
-  if (S.phase==='prep' && !S.holdArena){ S.prep -= dt; if (S.prep<=0) startWave(); }
+  if (S.phase==='prep' && !S.holdArena && !(S.tut && S.tut.hold)){ S.prep -= dt; if (S.prep<=0) startWave(); }
   S.playT += dt;
   if (S.phase==='wave'){
     S.waveT += dt;
@@ -2559,6 +2810,7 @@ function step(dt){
       spawn(S.queue.shift());
       S.spawnT += S.spawnGap;
     }
+    if (S.snake) snakeTick(dt);
   }
   // 오라 초기화 후 재계산 (가비지컬렉터 회복 / 데드락 가속)
   for (const e of S.enemies) if (!e.dead){ e.spdMul = 1; e.healAura = false; e.auraArmor = 0; }
@@ -2645,7 +2897,7 @@ function step(dt){
   for (let i=S.pulses.length-1;i>=0;i--){            // 퀵정렬 궁극기: 연속 폭격
     const p = S.pulses[i]; p.t -= dt;
     if (p.t <= 0){
-      SRC = p.u;
+      SRC = p.u; CAST++;
       aoeScope(() => { for (const e of allEnemies()) dmgTo(e, p.base*p.mul, p.col, true); });
       FX({k:'wave', x:p.u.x, y:p.u.y, r:TS*5, c:p.col, n:2, life:.6, max:.6});
       SRC = null; S.pulses.splice(i,1);
@@ -2684,7 +2936,7 @@ function step(dt){
   S.fx = S.fx.filter(f => f.life > 0);
   for (const t of S.texts){ t.life -= dt; t.vy = (t.vy ?? -52) + 105*dt; t.y += t.vy*dt; }
   S.texts = S.texts.filter(t => t.life > 0);
-  if (S.phase==='wave' && waveCleared()) endWave();
+  if (S.phase==='wave' && !S.snake && waveCleared()) endWave();   // 뱀과 싸우는 동안은 웨이브가 끝나지 않습니다
 }
 // 경로를 따라 amount 픽셀만큼 되돌립니다 (advanceAlong 의 반대).
 // 롤백 계열이 씁니다. 지나온 목표 지점을 거슬러 올라가며 e.wp 를 되돌립니다.
@@ -2795,7 +3047,8 @@ function draw(){
   }
   for (const u of S.units) if (!(S.drag && S.drag.u===u && S.drag.moved)) drawUnit(u, u.x, u.y);
   drawFX();
-  for (const e of S.enemies) drawEnemy(e);
+  drawSnake();
+  for (const e of S.enemies) if (!e.link) drawEnemy(e);
   for (const c of S.corpses){                                   // 사라지는 연출
     const p = 1 - c.t/c.max, s = 1 + p*0.7;
     cx.save(); cx.globalAlpha = (1-easeOut(p)) * .8;
@@ -3943,11 +4196,158 @@ function bindTitle(){
         const el = sel === 'board' ? $('board') : document.querySelector('.'+sel);
         if (el){ el.classList.add('boot'); setTimeout(() => el.classList.remove('boot'), 1000); }
       });
-      startWave();
+      // 부스 전시라 매 판 튜토리얼을 지나갑니다. 아는 사람은 건너뛰기로 넘어갑니다.
+      showTutorial(startWave);
     }, 400);
   };
   $('t-dex').onclick = () => titleSub('유닛 도감', htmlDex());
   $('t-how').onclick = () => titleSub('플레이 방법', HOW_HTML);
+}
+// ── 부스 전시용 튜토리얼 (직접 해보기) ─────────────────────────────
+// 읽고 넘기는 카드가 아니라, 실제로 조작해야 다음 단계로 넘어갑니다.
+// 튜토리얼 동안은 골드를 넉넉히 주고 웨이브가 저절로 시작되지 않게 붙잡아 둡니다.
+// 끝나면(또는 건너뛰면) 그동안 받은 골드·유닛은 전부 버리고 깨끗한 새 판으로 시작합니다.
+//
+// 단계마다: t 제목 · d 안내 · at 가리킬 곳(버튼 id / 'unit' / 'board')
+//           sheet 이 시트가 열려 있으면 버튼 대신 시트를 가리킴
+//           setup 들어올 때 준비 · done 조건을 만족하면 완료 · leave 떠날 때 정리
+//           fight 이 단계에서만 웨이브 진행을 허용
+const cntStat = k => S.stat[k] || 0;
+const resSum = () => Object.values(S.res).reduce((a, b) => a + b, 0);
+const TUT_STEPS = [
+  {t:'소환', at:'btn-summon',
+   d:'아래 <b>소환</b> 버튼을 눌러 첫 유닛을 뽑아보세요. 소환은 완전 랜덤입니다.',
+   done: () => S.units.length >= 1},
+  {t:'유닛 살펴보기', at:'unit',
+   d:'보드 위 유닛을 <b>한 번 눌러보세요.</b> 사거리와 공격 방식, 능력이 표시됩니다.',
+   setup(){ S.sel = null; },
+   done: () => !!S.sel},
+  {t:'옮기기', at:'unit',
+   d:'유닛을 <b>끌어서 다른 칸으로</b> 옮겨보세요. 적이 지나가는 어두운 길 가까이 둘수록 오래 때립니다. 다른 유닛 위에 놓으면 자리를 맞바꿉니다.',
+   setup(){ S.tut.pos = S.units.map(u => u.tx + ',' + u.ty).join('|'); },
+   done: () => S.units.map(u => u.tx + ',' + u.ty).join('|') !== S.tut.pos},
+  {t:'병력 늘리기', at:'btn-summon',
+   d:'<b>소환</b>을 몇 번 더 눌러 유닛을 <b>4기 이상</b> 모으세요. 소환할수록 값이 조금씩 오릅니다.',
+   done: () => S.units.length >= 4},
+  {t:'첫 전투', at:'board', fight:true,
+   d:'적이 옵니다! 유닛은 <b>자동으로</b> 공격합니다. 적이 길 끝까지 빠져나가면 <b>메모리</b>(생명)가 깎이고, 0이 되면 끝입니다.',
+   setup(){ setSpeed(1); if (S.phase === 'idle') startWave(); },
+   done: () => S.wave >= 1 && S.phase !== 'wave'},
+  {t:'합성', at:'btn-merge', sheet:'craft',
+   d:'같은 유닛 <b>3개</b>를 넣어뒀어요. <b>합성</b>을 눌러 한 단계 위 등급으로 바꿔보세요. 합성으로는 전설까지 나옵니다.',
+   setup(){ for (let i = 0; i < 3; i++) place('int', true); S.tut.n = cntStat('merged'); },
+   done: () => cntStat('merged') > S.tut.n},
+  {t:'판매', at:'btn-sell',
+   d:'필요 없는 유닛을 <b>눌러 선택</b>한 뒤 <b>판매</b>를 누르세요. 골드가 돌아옵니다. 영웅 이상은 두 번 눌러야 팔립니다.',
+   setup(){ S.tut.n = cntStat('sold'); },
+   done: () => cntStat('sold') > S.tut.n},
+  {t:'소환소 · 드래프트권', at:'btn-gacha', sheet:'gacha',
+   d:'<b>소환소</b>를 열고 <b>드래프트권</b>을 써보세요. 후보 3장 중 원하는 하나를 고를 수 있습니다. 드래프트권은 3웨이브마다 들어옵니다.',
+   setup(){ if (S.tk.draft < 1) S.tk.draft = 1; S.tut.n = S.tk.draft; SHEET.gtab = 'draft'; },
+   done: () => S.tk.draft < S.tut.n && !S.draft,
+   leave(){ S.draft = null; }},
+  {t:'조합 — 신화 만들기', at:'btn-craft', sheet:'craft',
+   d:'재료를 넣어뒀어요: <b>그래프 + 스택 + 재귀</b>. <b>조합</b>을 열어 <b>깊이우선탐색</b>을 만들어보세요. 신화는 합성으로는 안 나오고 이렇게 재료를 모아 만듭니다.',
+   setup(){ ['graph','stk','rec'].forEach(id => place(id, true)); S.tut.n = cntStat('myth'); SHEET.ctab = 'myth'; },
+   done: () => cntStat('myth') > S.tut.n},
+  {t:'연구소', at:'btn-lab', sheet:'lab',
+   d:'<b>연구소</b>에서 아무 연구나 한 번 사보세요. 골드로 모든 유닛을 강화합니다. 연구는 판이 끝나면 초기화됩니다.',
+   setup(){ S.gold = Math.max(S.gold, 4000); S.tut.n = resSum(); },
+   done: () => resSum() > S.tut.n},
+  {t:'다음 웨이브 미리보기', at:'s-next', parent:true, sheet:'wave',
+   d:'위쪽 <b>다음</b>을 눌러보세요. 다음 웨이브에 어떤 적이 몇 마리 오는지, 어떤 능력을 쓰는지 미리 볼 수 있습니다.',
+   done: () => SHEET.kind === 'wave'},
+  {t:'증강', at:'stagecard',
+   d:'특정 웨이브를 넘기면 <b>증강 3장 중 1장</b>을 고릅니다. 한 판에 5번, 고른 카드는 다시 나오지 않습니다. 하나 골라보세요.',
+   setup(){ closeSheet(); if (!offerAugment()) S.tut.noAug = true; },
+   done: () => S.augments.length >= 1 || !!S.tut.noAug,
+   leave(){ if (S.augmentAwait) pickAugment(0); }},
+  {t:'배속', at:'btn-speed',
+   d:'<b>배속</b> 버튼으로 게임 속도를 바꿀 수 있습니다. 한 번 눌러보세요.',
+   setup(){ S.tut.n = S.speed; },
+   done: () => S.speed !== S.tut.n},
+  {t:'준비 완료', at:null,
+   d:'이제 <b>새 판</b>이 시작됩니다. 튜토리얼에서 받은 골드와 유닛은 사라집니다.<br>'
+    + '처음 두 스테이지는 <b>2배속</b>, 3스테이지부터 <b>5배속</b>으로 진행되고, '
+    + '웨이브 97부터는 경로가 무너지는 <b>아레나</b>가 시작됩니다. 행운을 빕니다!'},
+];
+function showTutorial(done){
+  S.tut = {i:-1, ok:false, okT:0, hold:true, done};
+  S.gold = Math.max(S.gold, 5000);
+  setSpeed(1);
+  $('coach').classList.remove('hide');
+  tutGo(0);
+}
+function tutGo(i){
+  const T = S.tut; if (!T) return;
+  const prev = TUT_STEPS[T.i];
+  if (prev && prev.leave) prev.leave();
+  if (i >= TUT_STEPS.length) return endTutorial();
+  T.i = i; T.ok = false; T.okT = 0;
+  const c = TUT_STEPS[i];
+  if (c.setup) c.setup();
+  renderCoach(); sync();
+}
+// 매 프레임: 완료 판정 → 잠깐 '잘했어요' 를 보여준 뒤 다음 단계로
+function tutTick(dt){
+  const T = S.tut; if (!T) return;
+  const c = TUT_STEPS[T.i]; if (!c) return;
+  T.hold = !(c.fight && !T.ok);                    // 전투 단계가 끝나면 다시 붙잡습니다
+  if (!T.ok && c.done && c.done()){ T.ok = true; renderCoach(); SFX.click(); }
+  if (T.ok){ T.okT += dt; if (T.okT > 0.8) tutGo(T.i + 1); }
+  placeRing(c);
+}
+function renderCoach(){
+  const T = S.tut; if (!T) return;
+  const c = TUT_STEPS[T.i], last = T.i === TUT_STEPS.length - 1;
+  const pct = Math.round(100 * T.i / (TUT_STEPS.length - 1));
+  const el = $('coach');
+  el.classList.toggle('ok', !!T.ok);
+  el.innerHTML = '<div class="c-top"><span>TUTORIAL · ' + (T.i + 1) + ' / ' + TUT_STEPS.length + '</span>'
+    + '<span class="c-state">' + (T.ok ? '✔ 잘했어요' : (c.done ? '직접 해보세요' : '')) + '</span></div>'
+    + '<h4>' + c.t + '</h4><div class="c-d">' + c.d + '</div>'
+    + '<div class="c-bar"><i style="width:' + pct + '%"></i></div>'
+    + '<div class="c-btns">'
+    + (last ? '' : '<button id="c-end" class="tut-ghost">튜토리얼 건너뛰기</button>')
+    + (last ? '<button id="c-next" class="go">실전 시작</button>'
+            : (T.ok ? '' : '<button id="c-skip" class="tut-ghost">이 단계 넘기기</button>'))
+    + '</div>';
+  const e = $('c-end');  if (e) e.onclick = endTutorial;
+  const k = $('c-skip'); if (k) k.onclick = () => tutGo(T.i + 1);
+  const x = $('c-next'); if (x) x.onclick = endTutorial;
+}
+// 가리킬 곳 위에 빛나는 테두리를 얹습니다. 클릭은 막지 않습니다(pointer-events:none).
+function placeRing(c){
+  const r = $('coach-ring'); if (!r) return;
+  let box = null;
+  const sheetOpen = c.sheet && SHEET.kind === c.sheet && $('sheet').classList.contains('open');
+  if (sheetOpen){
+    const b = $('sheet').getBoundingClientRect(); box = {l:b.left, t:b.top, w:b.width, h:b.height};
+  } else if (c.at === 'unit' || c.at === 'board'){
+    const cr = cv.getBoundingClientRect(), k = cr.width / cv.width;
+    const u = c.at === 'unit' ? (S.sel || S.units[0]) : null;
+    box = u ? {l:cr.left + (u.x - TS*0.7)*k, t:cr.top + (u.y - TS*0.7)*k, w:TS*1.4*k, h:TS*1.4*k}
+            : {l:cr.left, t:cr.top, w:cr.width, h:cr.height};
+  } else if (c.at){
+    let el = $(c.at);
+    if (el && c.parent) el = el.parentElement;
+    if (el && !el.classList.contains('hide')){
+      const b = el.getBoundingClientRect(); box = {l:b.left - 4, t:b.top - 4, w:b.width + 8, h:b.height + 8};
+    }
+  }
+  if (!box || !box.w){ r.classList.add('hide'); return; }
+  r.classList.remove('hide');
+  r.style.left = box.l + 'px'; r.style.top = box.t + 'px';
+  r.style.width = box.w + 'px'; r.style.height = box.h + 'px';
+}
+function endTutorial(){
+  if (!S.tut) return;
+  const f = S.tut.done;
+  // 튜토리얼 동안 준 골드·유닛은 버리고 깨끗한 새 판으로 시작합니다
+  resetRun();
+  $('title').classList.add('hide');
+  closeSheet();
+  if (f) f();
 }
 const HOW_HTML = `
   <h5>기본</h5>

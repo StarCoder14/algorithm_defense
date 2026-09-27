@@ -1,0 +1,7 @@
+# OS · 편집기
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# 도구
+node_modules/
