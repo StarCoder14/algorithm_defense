@@ -1124,6 +1124,10 @@ const STAGE_LEN = 8;
 // 3스테이지(웨이브 17)부터 5배속으로 넘깁니다. 1배속 48분짜리를 부스에서 돌릴 수는 없으니까요.
 // 한 번만 올리고 잠그지는 않습니다 — 그 뒤엔 배속 버튼으로 자유롭게 바꿀 수 있습니다.
 const SPEED_START = 2, SPEED_FAST = 5, SPEED_FAST_STAGE = 3;
+// 한 판에 허용하는 실제 시간(초). 부스에서 한 사람이 자리를 오래 붙잡지 않게 합니다.
+// 0 으로 두면 무제한입니다. 튜토리얼 시간은 세지 않습니다.
+const SESSION_SEC = 15 * 60;
+const SESSION_WARN = [120, 60, 20];        // 남은 시간을 알리는 시점
 // 보스는 속박·감속에 완전 면역, 장갑이 두꺼운 적은 절반만 걸립니다.
 function ccMul(e){
   if (e.boss) return 0;
@@ -1288,7 +1292,7 @@ const S = {
   auto:false, over:false, units:[], enemies:[], fx:[], texts:[],
   queue:[], spawnT:0, spawnGap:0.32, waveN:0, waveT:0, rush:false, arena:false, holdArena:false, sel:null, cap: WIDE ? 26 : 22, killed:0, drag:null, t:0,
   picks:[0,0,0,0,0], named:{}, pity:0, sellArm:null, paused:false, autoPaused:false, draft:null, finalDown:false,
-  tut:null, snake:null, augments:[], augmentChoices:null, augmentAwait:false, augmentPlan:makeAugmentPlan(), augmentState:{
+  tut:null, snake:null, real:0, realWarn:1e9, augments:[], augmentChoices:null, augmentAwait:false, augmentPlan:makeAugmentPlan(), augmentState:{
     damage:0,single:0,aoe:0,speed:0,gold:0,cap:0,cost:0,summonGrowth:null,waveMem:0,waveGold:0,
     craftRefund:0,skill:1,armor:0,reveal:0,overload:0,roster:0,boss:0,normal:0,canary:0,waveShield:0,
     prep:0,leakGuard:0,regen:0,traffic:0,hp:0,progressive:0,arenaCap:0,threshold:Infinity,step:0,
@@ -2139,6 +2143,17 @@ function showSnakeCard(){
   showStageCard.t1 = setTimeout(() => { el.style.opacity = '0'; }, 4200);
   showStageCard.t2 = setTimeout(() => el.classList.add('hide'), 4800);
 }
+// 남은 시간을 보드 왼쪽 아래에 조용히 띄웁니다. 1분 아래로 내려가면 빨갛게 바뀝니다.
+function drawSessionTime(){
+  if (!SESSION_SEC || S.phase === 'idle' || S.tut) return;
+  const left = Math.max(0, SESSION_SEC - S.real);
+  const m = Math.floor(left / 60), sec = Math.floor(left % 60);
+  cx.save();
+  cx.font = 'bold 11px ' + MONO; cx.textAlign = 'left'; cx.textBaseline = 'bottom';
+  cx.fillStyle = left <= 60 ? '#ff7b72' : 'rgba(232,238,252,.45)';
+  cx.fillText(m + ':' + String(sec).padStart(2, '0'), 8, cv.height - 7);
+  cx.restore();
+}
 function drawSnake(){
   const s = S.snake;
   if (!s) return;
@@ -2248,7 +2263,7 @@ function resetRun(){
   // 앞 판에서 만진 토글·화면 상태는 전부 초기값으로 되돌립니다.
   // (부스 전시: 다음 사람이 앞사람 설정을 물려받으면 안 됩니다)
   S.auto = false; S.autoUlt = true; S.autoPaused = false;
-  S.tut = null; S.snake = null; $('coach').classList.add('hide'); $('coach-ring').classList.add('hide');
+  S.tut = null; S.snake = null; S.real = 0; S.realWarn = 1e9; $('coach').classList.add('hide'); $('coach-ring').classList.add('hide');
   SHEET.kind = null; SHEET.gtab = 'draft';
   MARK.merge.clear(); MARK.mat.clear();
   if (!SFX.enabled) SFX.toggle();              // 음소거도 판마다 풀립니다
@@ -2793,10 +2808,26 @@ function tick(now){
   const dt = Math.min(.05, (now-prev)/1000); prev = now;
   S.t += dt;
   tutTick(dt);
+  sessionTick(dt);
   // 어떤 창을 열어도 시간은 계속 흐릅니다. 멈추는 건 직접 누른 일시정지뿐.
   if (!S.over && !S.paused) for (let i=0;i<S.speed;i++) step(dt);
   sync();
   draw();
+}
+// 실제 시간으로 잽니다(배속과 무관). 타이틀·튜토리얼·종료 후에는 흐르지 않습니다.
+function sessionTick(dt){
+  if (!SESSION_SEC || S.over || S.tut || S.phase === 'idle') return;
+  S.real += dt;
+  const left = SESSION_SEC - S.real;
+  for (const w of SESSION_WARN){
+    if (left <= w && S.realWarn > w){
+      S.realWarn = w;
+      log('남은 시간 ' + w + '초', true);
+      TXT({x:cv.width/2, y:cv.height*0.3, v:'남은 시간 ' + w + '초', life:1.6, max:1.6, c:'#ffd76e'});
+      SFX.warn();
+    }
+  }
+  if (left <= 0) gameOver('시간이 다 됐습니다');
 }
 function step(dt){
   if (S.phase==='prep' && !S.holdArena && !(S.tut && S.tut.hold)){ S.prep -= dt; if (S.prep<=0) startWave(); }
@@ -2831,7 +2862,13 @@ function step(dt){
     for (const e of S.enemies){
       if (e.dead || e === a) continue;
       if ((e.x-a.x)**2 + (e.y-a.y)**2 > R*R) continue;
-      if (b.heal){ e.hp = Math.min(e.max, e.hp + e.max*b.heal.pct*dt); e.healAura = true; }
+      if (b.heal){
+        // 보스는 회복 오라를 받지 않습니다. 보스끼리 겹치면(아레나에서는 웨이브가 겹칩니다)
+        // 서로 최대 체력의 5%씩 채워 초당 수만~수십만이 되고, 단일 화력으로는 넘을 수 없습니다.
+        // 보스의 방어 수단은 장갑·보호막·부활로 충분합니다.
+        const amt = e.boss ? 0 : b.heal.pct * Math.min(e.max, a.max) * dt;
+        e.hp = Math.min(e.max, e.hp + amt); e.healAura = true;
+      }
       if (b.haste) e.spdMul = Math.max(e.spdMul, b.haste.mul);
       if (b.armorAura) e.auraArmor = Math.max(e.auraArmor, b.armorAura.v);
     }
@@ -2845,7 +2882,7 @@ function step(dt){
     if (e.flash > 0) e.flash -= dt;
     e.hpGhost = lerp(e.hpGhost, e.hp, Math.min(1, dt*4.5));   // 체력바가 부드럽게 따라옴
     e.bob += dt * 6;
-    const rg = ((b.regen||0) + S.mut.regen) * (1 - augState('regen'));
+    const rg = e.boss ? 0 : ((b.regen||0) + S.mut.regen) * (1 - augState('regen'));
     if (rg) e.hp = Math.min(e.max, e.hp + e.max*rg*dt);
     if (b.shieldRegen && e.shieldMax)                          // 보호막 자가 재생
       e.shield = Math.min(e.shieldMax, e.shield + e.shieldMax*b.shieldRegen*dt);
@@ -3056,6 +3093,7 @@ function draw(){
   }
   for (const u of S.units) if (!(S.drag && S.drag.u===u && S.drag.moved)) drawUnit(u, u.x, u.y);
   drawFX();
+  drawSessionTime();
   drawSnake();
   for (const e of S.enemies) if (!e.link) drawEnemy(e);
   for (const c of S.corpses){                                   // 사라지는 연출
