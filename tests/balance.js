@@ -63,7 +63,8 @@ function load(wide, tweaks) {
   const names = ['S','step','startWave','summon','summonCost','autoMerge','craft','recipeStatus',
     'transcend','transStatus','buyResearch','optimize','optLv','OPT_MAX','draftRoll','draftTake',
     'pickSummon','place','U','RESEARCH','COLS','ROWS','TS','pathSet','arenaBlockSet',
-    'ARENA_FROM','arenaCap','RECIPES','TRANS','pickAugment','AUGMENT_WAVES'];
+    'ARENA_FROM','arenaCap','RECIPES','TRANS','pickAugment','AUGMENT_WAVES',
+    'stageOf','SPEED_START','SPEED_FAST','SPEED_FAST_STAGE'];
   new Function('__x', src + '\n' + names.map(k => '__x.' + k + '=' + k + ';').join(''))(api);
   return api;
 }
@@ -195,6 +196,9 @@ function run(wide, tweaks) {
   const ranked = {normal: rankTiles(g, false), arena: rankTiles(g, true)};
   const waves = [];
   let peak = 0, prevWave = 0, wStart = 0, lifeAt = S.life, err = null, stall = 0, snakeAt = null;
+  // 게임이 준 골드와 소환권을 따로 셈. 봇이 쓰는 건 playTurn 에서만 일어나서 step 앞뒤 차이가 곧 수입임
+  let income = 0, tickets = 0;
+  const ticketCount = () => S.tk.draft + S.tk.tier + S.tk.named;
   g.startWave();
   // 한 웨이브가 STALL_LIMIT 초를 넘기면 교착으로 보고 그 판을 끊습니다.
   // (개편 전 수치의 아레나는 낙오자 하나 때문에 영원히 끝나지 않을 수 있습니다.)
@@ -209,12 +213,16 @@ function run(wide, tweaks) {
     if (S.wave !== prevWave) {
       if (prevWave) waves.push({w: prevWave, t: +(S.playT - wStart).toFixed(1), peak,
         units: S.units.length, myth: S.units.filter(u => g.U[u.id].t >= 5).length,
-        lost: lifeAt - S.life, life: S.life, gold: Math.round(S.gold)});
+        lost: lifeAt - S.life, life: S.life, gold: Math.round(S.gold),
+        income: Math.round(income), tickets});
       prevWave = S.wave; wStart = S.playT; peak = 0; lifeAt = S.life;
     }
     peak = Math.max(peak, S.enemies.length);
     if (S.snake && snakeAt === null) snakeAt = S.playT;
+    const goldBefore = S.gold, ticketsBefore = ticketCount();
     g.step(0.05);
+    income += Math.max(0, S.gold - goldBefore);
+    tickets += Math.max(0, ticketCount() - ticketsBefore);
     if (S.phase === 'prep') S.prep = 0;      // 준비 시간은 계측에서 뺍니다
     if (S.holdArena) S.holdArena = false;
   }
@@ -224,7 +232,11 @@ function run(wide, tweaks) {
             : !S.over ? '완주(생존)' : S.life <= 0 ? '메모리 소진'
             : S.enemies.length >= g.arenaCap(S.wave) * 0.9 ? '아레나 포화'
             : (S.wave >= S.maxWave ? '최종 보스 놓침' : '기타');
-  return {reached: S.wave, over: S.over, life: S.life, waves, err, why, wide,
+  // 부스 배속으로 바꾼 실제 시간. 처음 두 스테이지는 2배속, 그 뒤는 5배속, 뱀은 2배속으로 늦춰짐
+  const speedAt = w => g.stageOf(w) < g.SPEED_FAST_STAGE - 1 ? g.SPEED_START : g.SPEED_FAST;
+  let boothSec = waves.reduce((sum, w) => sum + w.t / speedAt(w.w), 0);
+  if (S.snake) boothSec += (S.playT - snakeAt) / 2;
+  return {reached: S.wave, over: S.over, life: S.life, waves, err, why, wide, boothSec,
           augs: S.augments.length, augList: S.augments.map(a => a.n),
           snake: S.snake ? {won: !!S.snake.dead, t: S.playT - snakeAt, lap: S.snake.lap,
                             left: S.snake.hp / S.snake.max, N: S.snake.N} : null,
@@ -252,6 +264,18 @@ function report(name, runs) {
       + ' | ' + med(all.map(w => w.peak))
       + ' | ' + Math.max(...all.map(w => w.peak))
       + ' | ' + (all.reduce((s, w) => s + w.lost, 0) / all.length).toFixed(2));
+  }
+  const cleared = runs.filter(r => r.why === '★클리어');
+  console.log('  부스 실제 시간(분): 전체 중앙 ' + (med(runs.map(r => r.boothSec)) / 60).toFixed(1)
+    + (cleared.length ? ' · 클리어한 판 중앙 ' + (med(cleared.map(r => r.boothSec)) / 60).toFixed(1) : ''));
+  // 웨이브 번호는 옛날 기준 그대로라서, 같은 웨이브에서 모은 골드·소환권을 바로 비교할 수 있음
+  console.log('  누적 수입 (골드 / 소환권) — 해당 웨이브를 넘긴 판의 중앙');
+  for (const at of [24, 48, 72, 96]) {
+    const passed = runs.map(r => r.waves.filter(w => w.w <= at).pop())
+                       .filter(w => w && w.w >= at - 3);
+    if (!passed.length) { console.log('  w' + at + ' | (도달 못함)'); continue; }
+    console.log('  w' + at + ' | ' + med(passed.map(w => w.income)).toLocaleString()
+      + 'G / ' + med(passed.map(w => w.tickets)) + '장');
   }
 }
 
