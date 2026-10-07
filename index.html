@@ -841,7 +841,7 @@ const AUGMENTS = [
   {id:'auto-vectorization',ns:'build',grade:2,n:'자동 벡터화',d:'광역 계열 피해 +30%.',key:'aoe',e:{aoe:.30}},
   {id:'lock-escalation',ns:'build',grade:2,n:'잠금 승격',d:'잠금·감속 지속 +40%.',key:'lockSlow',e:{lockSlow:.40}},
   {id:'symbol-table',ns:'build',grade:2,n:'심볼 테이블',d:'은신 지속 시간이 40% 짧아집니다.',key:'stealth',e:{stealth:.40}},
-  {id:'incremental-build',ns:'build',grade:2,n:'증분 빌드',d:'2웨이브마다 드래프트권 1장 추가.',key:'tickets',e:{tickets:1}},
+  {id:'incremental-build',ns:'build',grade:2,n:'증분 빌드',d:'스테이지마다 드래프트권 4장 추가.',key:'tickets',e:{tickets:1}},
   {id:'artifact-cache',ns:'build',grade:2,n:'아티팩트 캐시',d:'복잡도 최적화 비용 −40%.',key:'optCost',e:{optCost:.40}},
   {id:'cross-compilation',ns:'build',grade:2,n:'크로스 컴파일',d:'합성 시 한 등급 더 오를 확률 15%.',key:'merge',e:{merge:.15},window:{min:1,max:40}},
   {id:'blue-green',ns:'deploy',grade:3,n:'블루-그린',d:'메모리 소진 시 1회 버티고 20 회복.',key:'blueGreen',e:{blueGreen:20}},
@@ -1043,7 +1043,7 @@ Object.assign(ENEMY, {
 });
 // 마지막 웨이브 뒤에 나오는 뱀. 마디 하나하나가 이 적이지만 체력은 한 몸(S.snake)에 모여 있습니다.
 ENEMY.ouro = {n:'우로보로스', hp:1, sp:40, r:13, gold:0, c:'#ff6bd6', shape:'circle', boss:true,
-  ab:'웨이브 120 뒤에 나타나 트랙 한 바퀴를 통째로 감습니다. 어느 마디를 때려도 한 몸의 체력이 깎이고, 한 바퀴 돌 때마다 메모리를 삼킵니다.'};
+  ab:'마지막 웨이브 뒤에 나타나 트랙 한 바퀴를 통째로 감습니다. 어느 마디를 때려도 한 몸의 체력이 깎이고, 한 바퀴 돌 때마다 메모리를 삼킵니다.'};
 
 // ── 스테이지 정의
 const STAGES = [
@@ -1204,6 +1204,29 @@ const spawnGapForRun = q => S.arena ? (1 + augState('traffic')) / ARENA_BURST_RA
 const arenaGapFor = (q, w) => Math.max(0.6, q * (1/arenaInflow(w) - 1/ARENA_BURST_RATE));
 const stageOf = w => Math.min(STAGES.length-1, Math.floor((w-1) / STAGE_LEN));
 const stageWave = w => ((w-1) % STAGE_LEN) + 1;
+// ── 스테이지당 6웨이브 ──────────────────────────────────────────────
+// 부스에서 한 판을 줄이려고 스테이지마다 4·7번째 웨이브를 건너뜀.
+// 웨이브 번호(S.wave)는 옛 120웨이브 기준 그대로 둠. 책에서 쪽을 찢어도 쪽 번호는 안 고치는 것과 같음.
+// 그래서 체력 곡선, 보스(3·6·8), 증강(8의 배수), 아레나(97), 마지막 웨이브(120)가 전부 원래 자리에 남음
+const SKIPPED_SLOTS = [4, 7];
+const PLAYED_PER_STAGE = STAGE_LEN - SKIPPED_SLOTS.length;
+const isPlayedWave = w => !SKIPPED_SLOTS.includes(stageWave(w));
+function nextWaveAfter(w){
+  let next = w + 1;
+  while (!isPlayedWave(next)) next++;
+  return next;
+}
+// 이 웨이브를 끝내면 바로 앞에서 건너뛴 웨이브 몫의 보상까지 같이 받음
+function wavesPaidAt(w){
+  const paid = [w];
+  for (let past = w - 1; past >= 1 && !isPlayedWave(past); past--) paid.push(past);
+  return paid;
+}
+// 건너뛴 웨이브의 적을 못 잡은 만큼 처치 골드를 더 줌
+const KILL_GOLD_MUL = STAGE_LEN / PLAYED_PER_STAGE;
+// 화면에 보이는 번호는 실제로 치른 순서로 셈. 스테이지 안에서 1~6, 판 전체로 1~90
+const playedSlotOf = w => stageWave(w) - SKIPPED_SLOTS.filter(slot => slot < stageWave(w)).length;
+const playedWaveOf = w => stageOf(w) * PLAYED_PER_STAGE + playedSlotOf(w);
 
 
 // ═══════════════════════════════ 맵 — 화면에 맞춰 세로/가로를 고릅니다
@@ -1838,7 +1861,7 @@ const MUTATORS = [
   {k:'elite',  n:'정예화',   c:'#ff7b72', d:'적 수 30% 감소, 체력 65% 증가',
    hint:'단일 화력이 강해집니다'},
 ];
-// 스테이지가 바뀔 때 한 번만 굴리고, 그 스테이지 10웨이브 내내 유지됩니다.
+// 스테이지가 바뀔 때 한 번만 굴리고, 그 스테이지 내내 유지됩니다.
 function rollMutators(w){
   const st = stageOf(w);
   if (st === 0) return [];                       // 첫 스테이지는 규칙을 배우는 구간
@@ -1942,7 +1965,7 @@ function bindStageCardClose(el){
   };
 }
 function startWave(){
-  S.wave++;
+  S.wave = nextWaveAfter(S.wave);
   if (S.wave > S.maxWave) return victory();
   const wasArena = S.arena;
   if (stageWave(S.wave) === 1){
@@ -1963,7 +1986,7 @@ function startWave(){
   }
   $('btn-skip').classList.add('hide');
   SFX.wave();
-  log(`── WAVE ${S.wave} 실행 (적 ${S.queue.length}) ──`, true);
+  log(`── WAVE ${playedWaveOf(S.wave)} 실행 (적 ${S.queue.length}) ──`, true);
   if (stageWave(S.wave) === 1)
     for (const m of S.mut.list) log(`변이 · ${m.n} — ${m.d}`, true);
   sync();
@@ -1973,16 +1996,24 @@ function startWave(){
 const waveCleared = () => !S.queue.length &&
   (!S.enemies.length || (S.arena && S.wave < S.maxWave));
 function endWave(){
-  const bonus = Math.max(0, Math.round((70 + S.wave*14) * (1 + augState('waveGold'))));
+  const paid = wavesPaidAt(S.wave);
+  const baseBonus = paid.reduce((sum, w) => sum + 70 + w*14, 0);
+  const bonus = Math.max(0, Math.round(baseBonus * (1 + augState('waveGold'))));
   S.gold += bonus;
   if (augState('waveMem')) S.life = Math.min(S.maxLife, S.life + augState('waveMem'));
   if (augState('waveShield')) S.life = Math.min(S.maxLife, S.life + augState('waveShield'));
   const got = [];
-  if (S.wave % 3 === 0){ grantTicket('draft', 1); got.push('드래프트권'); }
-  if (augState('tickets') && S.wave % 2 === 0){ grantTicket('draft', augState('tickets')); got.push('증분 드래프트권'); }
-  if (S.wave % 6 === 0){ grantTicket('tier', 1);  got.push('등급권'); }
-  if (S.wave % 8 === 0){ grantTicket('named', 1); got.push('지목권'); }
-  log(`WAVE ${S.wave} 클리어 · +${bonus}G` + (got.length ? ' · ' + got.join(', ') : ''));
+  // 소환권은 옛 웨이브 번호의 배수마다 나옴. 건너뛴 웨이브가 배수였으면 여기서 같이 줌
+  const paidOn = every => paid.filter(w => w % every === 0).length;
+  const withCount = (label, count) => count > 1 ? label + ' ×' + count : label;
+  const draftTickets = paidOn(3);
+  const extraDraftTickets = augState('tickets') ? paidOn(2) * augState('tickets') : 0;
+  const tierTickets = paidOn(6), namedTickets = paidOn(8);
+  if (draftTickets){ grantTicket('draft', draftTickets); got.push(withCount('드래프트권', draftTickets)); }
+  if (extraDraftTickets){ grantTicket('draft', extraDraftTickets); got.push(withCount('증분 드래프트권', extraDraftTickets)); }
+  if (tierTickets){ grantTicket('tier', tierTickets); got.push(withCount('등급권', tierTickets)); }
+  if (namedTickets){ grantTicket('named', namedTickets); got.push(withCount('지목권', namedTickets)); }
+  log(`WAVE ${playedWaveOf(S.wave)} 클리어 · +${bonus}G` + (got.length ? ' · ' + got.join(', ') : ''));
   if (S.wave >= S.maxWave){
     // 최종 보스를 잡지 못한 채 웨이브가 끝났다면 승리가 아닙니다
     if (!S.finalDown) return gameOver('최종 보스를 놓쳤습니다');
@@ -1994,7 +2025,7 @@ function endWave(){
     sync();
     return;
   }
-  if (arenaWave(S.wave + 1) && !S.arena){             // 지형이 바뀌기 직전 — 정비 시간
+  if (arenaWave(nextWaveAfter(S.wave)) && !S.arena){             // 지형이 바뀌기 직전 — 정비 시간
     S.holdArena = true;
     showArenaCard();
     SFX.warn();
@@ -2222,14 +2253,14 @@ function victory(){
   if (S.over) return;
   S.over = true; S.phase='done';
   SFX.win();
-  banner('BUILD SUCCESSFUL', `${STAGES.length}개 스테이지 ${S.maxWave}웨이브를 모두 방어하고, 우로보로스의 순환 참조를 끊어냈습니다.`, true);
+  banner('BUILD SUCCESSFUL', `${STAGES.length}개 스테이지 ${playedWaveOf(S.maxWave)}웨이브를 모두 방어하고, 우로보로스의 순환 참조를 끊어냈습니다.`, true);
 }
 function gameOver(reason){
   if (S.over) return;
   S.over = true; S.phase='done';
   SFX.over();
   banner('SEGMENTATION FAULT',
-    reason || `WAVE ${S.wave}에서 메모리가 모두 소진됐습니다`, false);
+    reason || `WAVE ${playedWaveOf(S.wave)}에서 메모리가 모두 소진됐습니다`, false);
 
 }
 // 배속은 값과 버튼 표기를 항상 함께 바꿉니다(리셋 후 표기가 어긋나는 것을 막습니다)
@@ -2300,8 +2331,8 @@ function banner(title, html, win){
       <h2 style="color:${win?'#7ee787':'#ff7b72'}">${title}</h2>
       <p>${html}</p>
       <div class="rs-g">
-        ${cell('도달', `${st+1}-${stageWave(Math.max(1,S.wave))}`, newWave)}
-        ${cell('웨이브', `${S.wave} / ${S.maxWave}`, newWave)}
+        ${cell('도달', `${st+1}-${playedSlotOf(Math.max(1,S.wave))}`, newWave)}
+        ${cell('웨이브', `${S.wave ? playedWaveOf(S.wave) : 0} / ${playedWaveOf(S.maxWave)}`, newWave)}
         ${cell('처치', S.killed.toLocaleString(), newKill)}
         ${cell('남은 메모리', S.life)}
         ${cell('플레이 시간', `${mm}분 ${ss}초`)}
@@ -2430,7 +2461,7 @@ function dmgTo(e, amount, color, big){
   }
   if (e.hp <= 0 && !e.dead){
     e.dead = true;
-    const g = Math.round(b.gold * (1 + S.wave*0.05) * (1 + 0.08*S.res.gold));
+    const g = Math.round(b.gold * (1 + S.wave*0.05) * (1 + 0.08*S.res.gold) * KILL_GOLD_MUL);
     S.gold += g; S.stat.earned += g;
     S.killed++;
     SFX.kill();
@@ -3818,7 +3849,7 @@ function htmlGacha(){
   }).join('');
 
   let h = `<p class="gnote" style="margin:0 0 9px">소환소는 골드를 쓰지 않고 <b>소환권</b>으로만 굴립니다.
-      3웨이브마다 드래프트권, 6웨이브마다 등급권, 8웨이브와 보스 격파 시 지목권이 들어옵니다.</p>
+      스테이지마다 드래프트권 2~3장과 등급권 1~2장, 스테이지 마지막 웨이브와 보스 격파 시 지목권이 들어옵니다.</p>
     <div class="seg">${seg}</div>`;
 
   if (g === 'draft'){
@@ -3945,7 +3976,7 @@ function bindLab(b){
 
 // ── 다음 웨이브 미리보기
 function htmlWave(){
-  const w = S.wave + (S.phase === 'wave' ? 0 : 1);
+  const w = S.phase === 'wave' ? S.wave : nextWaveAfter(S.wave);
   if (w > S.maxWave) return '<p class="empty">마지막 웨이브까지 끝났습니다.</p>';
   const q = (S.phase === 'wave') ? S.queue.slice() : buildWave(w);
   if (!q.length) return '<p class="empty">남은 적이 없습니다.</p>';
@@ -3956,7 +3987,7 @@ function htmlWave(){
     m[it.type].hp = Math.round(ENEMY[it.type].hp * it.hpMul);
   }
   const total = Object.values(m).reduce((s,v) => s + v.n*v.hp, 0);
-  let h = `<p class="gnote" style="margin:0 0 10px">WAVE ${w} · 남은 적 ${q.length}마리 ·
+  let h = `<p class="gnote" style="margin:0 0 10px">WAVE ${playedWaveOf(w)} · 남은 적 ${q.length}마리 ·
     총 체력 ${total.toLocaleString()}</p>`;
   if (arenaWave(w)) h += `<div class="gate bad" style="border-color:#ff6bd6">
     <b style="color:#ff6bd6">아레나</b>
@@ -4011,9 +4042,9 @@ function htmlDex(){
   add('함수','공격 대신 인접 8칸 아군을 +30% 강화합니다. 신화 옆에 두세요.');
   add('판매','영웅 이상은 실수 방지를 위해 두 번 눌러야 팔립니다.');
   add('속박 저항','보스는 정지·감속에 완전히 면역입니다. 장갑 24 이상인 적은 지속시간이 절반만 적용됩니다.');
-  add('아레나','웨이브 105부터 지형이 무너져 경로가 사라집니다. 적은 빠져나가지 않고 중앙으로 몰리며, 메모리 대신 필드의 적 수가 승패를 가릅니다. 100마리를 넘기면 즉시 패배합니다. 가비지 컬렉터로 버티는 전략이 통하지 않습니다.');
+  add('아레나','스테이지 13부터 지형이 무너져 경로가 사라집니다. 적은 빠져나가지 않고 트랙을 돌며, 메모리 대신 필드의 적 수가 승패를 가릅니다. 필드가 포화 상한을 넘기면 즉시 패배합니다(상한은 웨이브마다 올라갑니다). 가비지 컬렉터로 버티는 전략이 통하지 않습니다.');
   add('웨이브 제한','한 웨이브가 120초를 넘기면 남은 적이 속박을 끊고 점점 빨라지며 출구로 돌진합니다. 붙잡아 두기만 해서는 웨이브를 끝낼 수 없습니다.');
-  add('스테이지 변이','스테이지 2부터 변이가 붙고, 그 스테이지 10웨이브 내내 유지됩니다. 스테이지 10부터는 두 개가 겹칩니다. 스테이지가 바뀔 때 판을 갈아엎으세요.');
+  add('스테이지 변이','스테이지 2부터 변이가 붙고, 그 스테이지 내내 유지됩니다. 스테이지 10부터는 두 개가 겹칩니다. 스테이지가 바뀔 때 판을 갈아엎으세요.');
   add('신화 슬롯','보드에 올릴 수 있는 신화 수에는 한계가 있습니다. 연구소에서 늘릴 수 있고, 어떤 신화를 남길지가 핵심 선택입니다.');
   return h + '</div>';
 }
@@ -4057,7 +4088,7 @@ function sync(){
     setTimeout(() => chip.classList.remove('hurt'), 420);
   }
   lastLife = S.life;
-  $('s-wave').textContent = S.wave ? (stageOf(S.wave)+1) + '-' + stageWave(S.wave) : '0-0';
+  $('s-wave').textContent = S.wave ? (stageOf(S.wave)+1) + '-' + playedSlotOf(S.wave) : '0-0';
   $('s-unit').textContent = S.units.length + '/' + unitCap();
   $('s-opt').textContent = S.optTk;
   $('s-opt').style.color = S.optTk > 0 ? '#ffd76e' : '';
@@ -4294,7 +4325,7 @@ const TUT_STEPS = [
    setup(){ S.tut.n = cntStat('sold'); },
    done: () => cntStat('sold') > S.tut.n},
   {t:'소환소 · 드래프트권', at:'btn-gacha', sheet:'gacha',
-   d:'<b>소환소</b>를 열고 <b>드래프트권</b>을 써보세요. 후보 3장 중 원하는 하나를 고를 수 있습니다. 드래프트권은 3웨이브마다 들어옵니다.',
+   d:'<b>소환소</b>를 열고 <b>드래프트권</b>을 써보세요. 후보 3장 중 원하는 하나를 고를 수 있습니다. 드래프트권은 2~3웨이브마다 들어옵니다.',
    setup(){ if (S.tk.draft < 1) S.tk.draft = 1; S.tut.n = S.tk.draft; SHEET.gtab = 'draft'; },
    done: () => S.tk.draft < S.tut.n && !S.draft,
    leave(){ S.draft = null; }},
@@ -4334,7 +4365,7 @@ const TUT_STEPS = [
   {t:'준비 완료', at:null,
    d:'이제 <b>새 판</b>이 시작됩니다. 튜토리얼에서 받은 골드와 유닛은 사라집니다.<br>'
     + '처음 두 스테이지는 <b>2배속</b>, 3스테이지부터 <b>5배속</b>으로 진행되고, '
-    + '웨이브 97부터는 경로가 무너지는 <b>아레나</b>가 시작됩니다. 행운을 빕니다!'},
+    + '13스테이지부터는 경로가 무너지는 <b>아레나</b>가 시작됩니다. 행운을 빕니다!'},
 ];
 function showTutorial(done){
   S.tut = {i:-1, ok:false, okT:0, hold:true, done};
