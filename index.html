@@ -1126,7 +1126,8 @@ const STAGE_LEN = 8;
 const SPEED_START = 2, SPEED_FAST = 5, SPEED_FAST_STAGE = 3;
 // 한 판에 허용하는 실제 시간(초). 부스에서 한 사람이 자리를 오래 붙잡지 않게 합니다.
 // 0 으로 두면 무제한입니다. 튜토리얼 시간은 세지 않습니다.
-const SESSION_SEC = 15 * 60;
+// 6웨이브로 줄인 뒤 클리어까지 봇 기준 약 8분이라, 고민하는 시간을 조금 얹어 10분으로 줄임
+const SESSION_SEC = 10 * 60;
 const SESSION_WARN = [120, 60, 20];        // 남은 시간을 알리는 시점
 // 보스는 속박·감속에 완전 면역, 장갑이 두꺼운 적은 절반만 걸립니다.
 function ccMul(e){
