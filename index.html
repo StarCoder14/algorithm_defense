@@ -4265,6 +4265,7 @@ function bindTitle(){
 //           fight 이 단계에서만 웨이브 진행을 허용
 const cntStat = k => S.stat[k] || 0;
 const resSum = () => Object.values(S.res).reduce((a, b) => a + b, 0);
+const optimizedLevels = () => S.units.reduce((sum, u) => sum + (u.opt || 0), 0);
 const TUT_STEPS = [
   {t:'소환', at:'btn-summon',
    d:'아래 <b>소환</b> 버튼을 눌러 첫 유닛을 뽑아보세요. 소환은 완전 랜덤입니다.',
@@ -4301,6 +4302,19 @@ const TUT_STEPS = [
    d:'재료를 넣어뒀어요: <b>그래프 + 스택 + 재귀</b>. <b>조합</b>을 열어 <b>깊이우선탐색</b>을 만들어보세요. 신화는 합성으로는 안 나오고 이렇게 재료를 모아 만듭니다.',
    setup(){ ['graph','stk','rec'].forEach(id => place(id, true)); S.tut.n = cntStat('myth'); SHEET.ctab = 'myth'; },
    done: () => cntStat('myth') > S.tut.n},
+  // 바로 앞 단계에서 만든 신화로 해보게 함. 토큰은 보스를 잡아야 생겨서 튜토리얼에선 하나 쥐여줌
+  {t:'토큰 · 복잡도 최적화', at:'unit', sheet:'unit',
+   d:'보스를 잡으면 <b>최적화 토큰</b>을 하나 얻습니다(위쪽 <b>토큰</b>). '
+    + '토큰 1개와 골드로 <b>신화·초월</b> 유닛의 복잡도를 O(n²)→O(1)까지 줄여 공격력과 공속을 올립니다. '
+    + '방금 만든 <b>깊이우선탐색</b>의 정보창에서 <b>최적화</b>를 눌러보세요.',
+   setup(){
+     S.optTk = Math.max(S.optTk, 1);
+     S.gold = Math.max(S.gold, optCost(0) + 2000);
+     const myth = S.units.find(u => canOptimize(U[u.id].t));
+     if (myth){ S.sel = myth; openSheet('unit', '유닛 정보'); }
+     S.tut.n = optimizedLevels();
+   },
+   done: () => optimizedLevels() > S.tut.n},
   {t:'연구소', at:'btn-lab', sheet:'lab',
    d:'<b>연구소</b>에서 아무 연구나 한 번 사보세요. 골드로 모든 유닛을 강화합니다. 연구는 판이 끝나면 초기화됩니다.',
    setup(){ S.gold = Math.max(S.gold, 4000); S.tut.n = resSum(); },

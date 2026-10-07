@@ -36,7 +36,7 @@ global.setTimeout = f => { if (typeof f === 'function') f(); return 0; }; global
 const g = {};
 new Function('__x', src + '\n' + ['S','SHEET','TUT_STEPS','showTutorial','tutTick','tutGo','endTutorial','step',
   'summon','mergeOnce','sellSelected','draftRoll','draftTake','craft','RECIPES','buyResearch','openSheet',
-  'pickAugment','setSpeed','freeTiles','U','startWave'].map(k => '__x.' + k + '=' + k + ';').join(''))(g);
+  'pickAugment','setSpeed','freeTiles','U','startWave','optimize'].map(k => '__x.' + k + '=' + k + ';').join(''))(g);
 const S = g.S;
 
 let fails = 0;
@@ -60,6 +60,7 @@ const ACT = {
   '판매':               () => { S.sel = S.units[S.units.length - 1]; g.sellSelected(); g.sellSelected(); },
   '소환소 · 드래프트권':  () => { g.draftRoll(); g.draftTake(0); },
   '조합 — 신화 만들기':   () => g.craft(g.RECIPES.findIndex(r => r.id === 'dfs')),
+  '토큰 · 복잡도 최적화': () => g.optimize(S.sel),                    // 단계가 신화를 골라 정보창을 열어 둠
   '연구소':             () => g.buyResearch('atk'),
   '다음 웨이브 미리보기':  () => g.openSheet('wave', '웨이브 정보'),
   '증강':               () => g.pickAugment(0),
@@ -88,6 +89,9 @@ for (let i = 0; i < g.TUT_STEPS.length - 1; i++){
     ok(S.wave === w, '    전투 단계가 끝나면 다음 웨이브가 저절로 시작되지 않습니다');
   }
 }
+
+console.log('\n── 토큰 단계가 실제로 신화를 최적화하게 했는가');
+ok(S.units.some(u => g.U[u.id].t === 5 && u.opt === 1), '깊이우선탐색이 O(n²)에서 한 단계 줄었음');
 
 console.log('\n── 마지막 단계 → 실전 시작');
 ok(S.tut && S.tut.i === g.TUT_STEPS.length - 1, '마지막 단계(준비 완료)에 도착');
