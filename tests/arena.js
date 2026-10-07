@@ -8,12 +8,12 @@ let fails = 0;
 const ok = (cond, msg) => { if (!cond){ fails++; console.log('  ✗ ' + msg); } else console.log('  ✓ ' + msg); };
 
 function load(wide){
-  const labels = {};
+  const labels = {}, texts = {};
   const mk = id => ({classList:{add(){},remove(){},toggle(){},contains:()=>false},style:{},
     appendChild(){},removeChild(){},remove(){},querySelector:()=>null,querySelectorAll:()=>[],
     addEventListener(){},getContext:()=>ctx,getBoundingClientRect:()=>({left:0,top:0,width:1,height:1}),
     set innerHTML(v){ labels[id] = v; }, get innerHTML(){ return labels[id] || ''; },
-    textContent:'', children:[], parentElement:{style:{},onclick:null,classList:{add(){},remove(){},toggle(){},contains:()=>false}},
+    set textContent(v){ texts[id] = v; }, get textContent(){ return texts[id] || ''; }, children:[], parentElement:{style:{},onclick:null,classList:{add(){},remove(){},toggle(){},contains:()=>false}},
     scrollTop:0,scrollHeight:0,offsetWidth:0,dataset:{},disabled:false,onclick:null});
   const ctx = new Proxy({}, {get:(t,k)=>k==='canvas'?{width:768,height:432}:(typeof k==='string'?()=>{}:undefined), set:()=>true});
   global.document = {getElementById:mk, createElement:mk, querySelectorAll:()=>[], querySelector:()=>null, addEventListener(){}, body:mk()};
@@ -25,9 +25,9 @@ function load(wide){
   new Function('__x', src + '\n' + [
     'S','WP','COLS','ROWS','TS','px','pathSet','ARENA_LOOP','ARENA_WAY','arenaLoopSet','arenaEntrySet',
     'arenaBlockSet','buildable','occupied','nodeAt','scatterUnits','place','resetRun','setSpeed',
-    'spawn','step','draw','ENEMY','U','startWave','ARENA_FROM','SPEED_START','SPEED_FAST','SPEED_FAST_STAGE','stageOf','setSpeed',
+    'spawn','step','draw','sync','WAVE_LIMIT','ENEMY','U','startWave','ARENA_FROM','SPEED_START','SPEED_FAST','SPEED_FAST_STAGE','stageOf','setSpeed',
   ].map(k => `__x.${k}=${k};`).join(''))(a);
-  a.labels = labels;
+  a.labels = labels; a.texts = texts;
   return a;
 }
 
@@ -122,6 +122,17 @@ for (const [name, wide] of [['세로(9x12)', false], ['가로(16x9)', true]]){
   catch(e){ ran = false; console.log('    오류: ' + e.message); }
   ok(ran, '아레나 3000틱 진행 + 렌더 정상');
   ok(S.life === 20, '아레나 진행 중 메모리 손실 없음 (' + S.life + ')');
+
+  // 6c) 아레나엔 웨이브 제한이 없으니 상단에 남은 초가 뜨면 안 됨. 예전엔 0을 지나 마이너스로 내려갔음
+  S.phase = 'wave'; S.waveT = g.WAVE_LIMIT + 80; S.rush = false;
+  g.sync();
+  const nextText = g.texts['s-next'];
+  ok(!/초/.test(nextText) && !/-/.test(nextText), '아레나에서 웨이브 제한 시계가 안 뜸 (' + nextText + ')');
+  ok(!S.rush, '아레나에서는 돌진이 안 걸림');
+  S.arena = false; S.waveT = g.WAVE_LIMIT - 20;
+  g.sync();
+  ok(g.texts['s-next'] === '20초', '평상시엔 남은 초가 그대로 뜸 (' + g.texts['s-next'] + ')');
+  S.arena = true;
 
   // 7) 리셋 — 배속 표기 / 칸 수 / 아레나 플래그
   g.setSpeed(5);

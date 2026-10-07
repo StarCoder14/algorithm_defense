@@ -1170,6 +1170,9 @@ const arenaInflow = w => ARENA_INFLOW_FROM + (ARENA_INFLOW_TO - ARENA_INFLOW_FRO
   * Math.min(1, Math.max(0, (w - ARENA_FROM) / (120 - ARENA_FROM)));
 const arenaWave = w => w >= ARENA_FROM;
 const WAVE_LIMIT = 120;      // 한 웨이브 제한 시간(초). 정상 웨이브는 최장 65초입니다.
+// 아레나와 뱀은 포화로 승부가 나서 웨이브 제한이 없음.
+// 돌진 규칙과 상단 남은 초 표시가 같은 판단을 써야 함. 따로 두었더니 아레나에서 시계만 마이너스로 내려갔음
+const waveLimitApplies = () => !S.arena;
 // ── 난이도 축 ────────────────────────────────────────────────────────────
 // 후반 난이도를 '한 마리를 오래 때리기'가 아니라 '많은 수를 빠르게 처리하기'로 둡니다.
 // 마리 수는 끝까지 자라고(w1 7 → w120 158), 그만큼 마리당 체력 성장을 눌렀습니다(w120 기준 0.24배).
@@ -2838,7 +2841,7 @@ function step(dt){
     if (S.arena && S.enemies.length > cap){           // 포화 = 즉시 패배
       return gameOver(`필드가 ${cap}마리로 포화됐습니다`);
     }
-    if (!S.arena && !S.rush && S.waveT > WAVE_LIMIT){          // 교착 방지 — 남은 적이 출구로 돌진합니다
+    if (waveLimitApplies() && !S.rush && S.waveT > WAVE_LIMIT){          // 교착 방지 — 남은 적이 출구로 돌진합니다
       S.rush = true;
       for (const e of S.enemies){ e.frozen = 0; e.slow = 0; }
       SFX.warn();
@@ -4062,9 +4065,10 @@ function sync(){
   myEl.textContent = my + '/' + S.mythCap;
   myEl.style.color = my >= S.mythCap ? '#ffd76e' : '';
   const nx = $('s-next');
-  nx.style.color = (S.phase === 'wave' && S.waveT > WAVE_LIMIT - 30)
+  const limitNear = S.phase === 'wave' && waveLimitApplies() && S.waveT > WAVE_LIMIT - 30;
+  nx.style.color = limitNear
     ? (S.rush ? '#ff4d4d' : '#ffd76e') : '';
-  nx.textContent = (S.phase === 'wave' && S.waveT > WAVE_LIMIT - 30)
+  nx.textContent = limitNear
     ? (S.rush ? '돌진!' : Math.ceil(WAVE_LIMIT - S.waveT) + '초')
     : S.phase === 'wave' ? (S.enemies.length + S.queue.length) + '마리'
     : S.phase === 'prep' ? S.prep.toFixed(1) + 's' : '대기';
