@@ -2384,6 +2384,9 @@ function banner(title, html, win){
 // ═══════════════════════════════ 오락실 순위판 (부스 컴퓨터 한 대에 로컬 저장)
 const LB_KEY = 'algodef_scores_v1';
 const LB_MAX = 10;
+// 기록판 초기화용 관리자 비밀번호. 정적 사이트라 소스에 보이는 수준의 가벼운 잠금임(부스 방문자가 함부로 못 지우게).
+// 바꾸고 싶으면 이 값만 고치면 됨.
+const LB_ADMIN_PW = 'semicolon';
 function lbLoad(){ try { const a = JSON.parse(localStorage.getItem(LB_KEY)); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
 function lbSave(a){ try { localStorage.setItem(LB_KEY, JSON.stringify(a)); } catch(e){} }
 function lbQualifies(score){ const a = lbLoad(); return score > 0 && (a.length < LB_MAX || score > a[a.length-1].score); }
@@ -4175,7 +4178,7 @@ function htmlMenu(){
     <button data-go="log">기록<small>소환·합성·침투 로그</small></button>
     <button class="${SFX.enabled?'on':''}" data-act="sound">효과음 ${SFX.enabled?'ON':'OFF'}<small>소환·전투·보스 연출음</small></button>
     <button class="danger" data-act="restart">처음부터 다시<small>진행 상황이 사라집니다</small></button>
-    <button class="danger" data-act="lbreset">기록판 초기화<small>부스 운영용 · 상위 점수 전부 삭제</small></button>
+    <button class="danger" data-act="lbreset">기록판 초기화<small>부스 운영용 · 관리자 비밀번호 필요</small></button>
   </div>`;
 }
 function bindMenu(b){
@@ -4188,7 +4191,12 @@ function bindMenu(b){
   const rs = b.querySelector('[data-act=restart]');
   if (rs) rs.onclick = () => { closeSheet(); resetRun(); };
   const lr = b.querySelector('[data-act=lbreset]');
-  if (lr) lr.onclick = () => { if (confirm('기록판을 전부 지울까요? 되돌릴 수 없습니다.')){ lbSave([]); renderSheet(); } };
+  if (lr) lr.onclick = () => {
+    const pw = prompt('관리자 비밀번호를 입력하세요');
+    if (pw === null) return;                              // 취소
+    if (pw !== LB_ADMIN_PW){ alert('비밀번호가 틀렸습니다.'); return; }
+    lbSave([]); renderSheet(); alert('기록판을 초기화했습니다.');
+  };
   const ps = b.querySelector('[data-act=pause]');
   if (ps) ps.onclick = () => { S.paused = !S.paused; S.autoPaused = false; renderSheet(); };
 }
