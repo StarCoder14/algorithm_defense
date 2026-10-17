@@ -364,8 +364,8 @@
   #stagecard .sc-s{font-size:10.5px;color:var(--dim)}
   #stagecard .sc-d{font-size:10.5px;color:var(--dim);line-height:1.7;margin-top:9px;
     border-top:1px solid var(--line);padding-top:9px}
-  .banner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    background:rgba(9,12,21,.94);text-align:center;gap:13px;padding:26px;z-index:6}
+  .banner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;
+    background:rgba(9,12,21,.94);text-align:center;gap:13px;padding:26px;z-index:6;overflow-y:auto}
   .rs{width:100%;max-width:400px}
   .rs h2{margin:0 0 6px}
   .rs>p{color:var(--dim);font-size:11.5px;line-height:1.7;margin:0 0 14px}
@@ -376,6 +376,29 @@
   .rs-c b.hi{color:#ffd76e}
   .rs-b{font-size:10px;color:var(--dim);margin-top:10px;line-height:1.6}
   .rs-n{font-size:9.5px;color:#5f6b82;margin:8px 0 0;line-height:1.6}
+  /* 오락실 순위판 */
+  .lb-area{width:100%;max-width:400px;margin-top:16px}
+  .lb-title{font-size:12px;color:var(--dim);margin:0 0 9px;text-align:center}
+  .lb-title b{color:#ffd76e;font-size:15px}
+  .lb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+  .lb-list li{display:grid;grid-template-columns:26px 1fr auto auto;align-items:center;gap:9px;
+    background:#121726;border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-size:12px}
+  .lb-list li.me{border-color:#ffd76e;background:#1c1b12}
+  .lb-rank{color:var(--dim);font-weight:700;text-align:center}
+  .lb-name{font-family:ui-monospace,monospace;letter-spacing:2px;font-weight:700;color:var(--txt)}
+  .lb-score{color:#7ee787;font-weight:700}
+  .lb-sub{color:var(--dim);font-size:10px}
+  .lb-empty{color:var(--dim);font-size:12px;text-align:center;padding:12px}
+  .lb-entry{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px 0}
+  .lb-entry>span{font-size:11px;color:var(--dim)}
+  #lb-slots{display:flex;gap:10px}
+  .lb-slot{display:flex;flex-direction:column;align-items:center;gap:4px}
+  .lb-slot .lb-ch{font-family:ui-monospace,monospace;font-size:28px;font-weight:800;width:34px;text-align:center;
+    color:var(--txt);border-bottom:2px solid var(--line);cursor:pointer}
+  .lb-slot.cur .lb-ch{color:#ffd76e;border-color:#ffd76e}
+  .lb-slot button{background:#1a2133;border:1px solid var(--line);color:var(--dim);border-radius:5px;
+    width:30px;height:22px;font-size:11px;cursor:pointer;line-height:1;min-height:0;padding:0}
+  .lb-slot button:hover{color:var(--txt);border-color:#ffd76e}
   .banner h2{font-family:var(--disp);font-size:21px;margin:0}
   .banner p{color:var(--dim);font-size:11.5px;margin:0;line-height:1.85}
   .banner button{min-height:44px;padding:10px 22px}
@@ -512,6 +535,7 @@
           <button id="t-dex">유닛 도감</button>
           <button id="t-how">플레이 방법</button>
         </div>
+        <button id="t-rank">기록판<small>부스 최고 점수 TOP 10</small></button>
       </div>
     </div>
   </div>
@@ -2350,11 +2374,100 @@ function banner(title, html, win){
         ${newWave && prev.wave ? ' <b style="color:#ffd76e">신기록!</b>' : ''}</div>
       <p class="rs-n">연구 · 소환권 · 유닛은 이번 판 한정입니다. 처음부터 다시 쌓아야 합니다.</p>
     </div>`;
-  const bt = document.createElement('button');
-  bt.className = 'go'; bt.textContent = '메인으로';
-  bt.onclick = resetRun;
-  $('banner').appendChild(bt);
+  // 점수 = 도달 웨이브 × 100000 + 처치 수. 멀리 간 사람이 무조건 위, 같은 웨이브면 많이 잡은 사람이 위.
+  const reachedWave = S.wave ? playedWaveOf(Math.min(S.wave, S.maxWave)) : 0;
+  const score = reachedWave * 100000 + S.killed;
+  renderEndLeaderboard(score, reachedWave);
   $('banner').classList.remove('hide');
+}
+
+// ═══════════════════════════════ 오락실 순위판 (부스 컴퓨터 한 대에 로컬 저장)
+const LB_KEY = 'algodef_scores_v1';
+const LB_MAX = 10;
+function lbLoad(){ try { const a = JSON.parse(localStorage.getItem(LB_KEY)); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
+function lbSave(a){ try { localStorage.setItem(LB_KEY, JSON.stringify(a)); } catch(e){} }
+function lbQualifies(score){ const a = lbLoad(); return score > 0 && (a.length < LB_MAX || score > a[a.length-1].score); }
+function lbInsert(entry){
+  const a = lbLoad();
+  a.push(entry);
+  a.sort((x,y) => y.score - x.score);
+  if (a.length > LB_MAX) a.length = LB_MAX;
+  lbSave(a);
+  return a.indexOf(entry);
+}
+function lbBoardHTML(highlight){
+  const a = lbLoad();
+  if (!a.length) return '<div class="lb-empty">아직 기록이 없습니다</div>';
+  return '<ol class="lb-list">' + a.map((e,i) =>
+    `<li class="${i===highlight?'me':''}"><span class="lb-rank">${i+1}</span>` +
+    `<span class="lb-name">${esc(e.name)}</span>` +
+    `<span class="lb-score">${e.score.toLocaleString()}</span>` +
+    `<span class="lb-sub">${e.wave}웨이브</span></li>`).join('') + '</ol>';
+}
+
+// 결과창 맨 아래에 순위판을 붙임. 10등 안이면 3글자 이름을 받고, 아니면 보드만 보여줌.
+function renderEndLeaderboard(score, wave){
+  if (typeof localStorage === 'undefined') return;   // 헤드리스 테스트(Node)에는 저장소가 없음
+  const area = document.createElement('div');
+  area.className = 'lb-area';
+  $('banner').appendChild(area);
+
+  const addMainButton = () => {
+    const bt = document.createElement('button');
+    bt.className = 'go'; bt.textContent = '메인으로';
+    bt.onclick = resetRun;
+    $('banner').appendChild(bt);
+  };
+
+  if (lbQualifies(score)){
+    area.innerHTML =
+      `<div class="lb-title">순위 진입 &middot; <b>${score.toLocaleString()}</b>점</div>` +
+      `<div class="lb-entry"><span>이름 3글자</span><div id="lb-slots"></div></div>` +
+      `<button class="go" id="lb-ok">기록하기</button>`;
+    setupNameEntry(area.querySelector('#lb-slots'), area.querySelector('#lb-ok'), name => {
+      const rank = lbInsert({ name, score, wave, killed:S.killed, t:Date.now() });
+      area.innerHTML = `<div class="lb-title"><b>${rank+1}위</b>에 기록됐습니다</div>` + lbBoardHTML(rank);
+      addMainButton();
+    });
+  } else {
+    area.innerHTML =
+      `<div class="lb-title">이번 점수 <b>${score.toLocaleString()}</b> &middot; 순위 밖</div>` +
+      lbBoardHTML(-1);
+    addMainButton();
+  }
+}
+
+// 3글자 영어 이름 입력. 키보드 타이핑(A~Z)과 화면 ▲▼ 버튼 둘 다 됨.
+function setupNameEntry(host, okBtn, onConfirm){
+  const letters = ['A','A','A'];
+  let cur = 0;
+  function draw(){
+    host.innerHTML = letters.map((ch, i) =>
+      `<div class="lb-slot ${i===cur?'cur':''}" data-i="${i}">` +
+      `<button data-i="${i}" data-d="1">&#9650;</button>` +
+      `<span class="lb-ch" data-i="${i}">${ch}</span>` +
+      `<button data-i="${i}" data-d="-1">&#9660;</button></div>`).join('');
+    host.querySelectorAll('.lb-ch').forEach(s => s.onclick = () => { cur = +s.dataset.i; draw(); });
+    host.querySelectorAll('button[data-d]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.i, d = +b.dataset.d;
+      letters[i] = String.fromCharCode(65 + (letters[i].charCodeAt(0) - 65 + d + 26) % 26);
+      cur = i; draw();
+    });
+  }
+  function bump(d){ letters[cur] = String.fromCharCode(65 + (letters[cur].charCodeAt(0) - 65 + d + 26) % 26); draw(); }
+  function onKey(e){
+    if (e.key === 'Enter'){ finish(); return; }
+    if (e.key === 'Backspace'){ letters[cur] = 'A'; cur = Math.max(0, cur - 1); draw(); e.preventDefault(); return; }
+    if (e.key === 'ArrowLeft'){ cur = Math.max(0, cur - 1); draw(); return; }
+    if (e.key === 'ArrowRight'){ cur = Math.min(2, cur + 1); draw(); return; }
+    if (e.key === 'ArrowUp'){ bump(1); e.preventDefault(); return; }
+    if (e.key === 'ArrowDown'){ bump(-1); e.preventDefault(); return; }
+    if (/^[a-zA-Z]$/.test(e.key)){ letters[cur] = e.key.toUpperCase(); cur = Math.min(2, cur + 1); draw(); }
+  }
+  function finish(){ document.removeEventListener('keydown', onKey); onConfirm(letters.join('')); }
+  document.addEventListener('keydown', onKey);
+  okBtn.onclick = finish;
+  draw();
 }
 
 // ═══════════════════════════════ 이펙트 헬퍼
@@ -3624,9 +3737,9 @@ function endDrag(){
   const d = S.drag; if (!d) return;
   S.drag = null; cv.classList.remove('grabbing');
   const u = d.u;
-  if (!d.moved){ S.sel = u; sync(); return; }
+  if (!d.moved){ S.sel = u; sync(); revealUnit(); return; }
   const tx = Math.floor(d.x/TS), ty = Math.floor(d.y/TS);
-  if (!buildable(tx,ty)){ S.sel = u; sync(); return; }
+  if (!buildable(tx,ty)){ S.sel = u; sync(); revealUnit(); return; }
   const other = S.units.find(o => o.tx===tx && o.ty===ty);
   if (other && other !== u){
     const ox=u.tx, oy=u.ty;
@@ -3636,7 +3749,7 @@ function endDrag(){
     u.tx=tx; u.ty=ty; u.x=px(tx); u.y=px(ty);
   }
   u.ramp = 0; u.last = null;
-  S.sel = u; sync();
+  S.sel = u; sync(); revealUnit();
 }
 cv.addEventListener('pointerup', endDrag);
 cv.addEventListener('pointercancel', endDrag);
@@ -3666,6 +3779,9 @@ function openSheet(kind, title){
   $('scrim').classList.add('open');
   renderSheet();
 }
+// 보드에서 유닛을 고르면, 다른 창이 떠 있어도 유닛 정보로 바꿔 보여줌.
+// 아무 창도 안 떠 있던(모바일) 상태면 건드리지 않고 기존처럼 스트립만 갱신함.
+function revealUnit(){ if (SHEET.kind && SHEET.kind !== 'unit') openSheet('unit', '유닛 정보'); }
 function closeSheet(){
   if (isDesk()){ openSheet('unit', '유닛 정보'); return; }   // PC에선 패널이 늘 떠 있습니다
   SHEET.kind = null;
@@ -4059,6 +4175,7 @@ function htmlMenu(){
     <button data-go="log">기록<small>소환·합성·침투 로그</small></button>
     <button class="${SFX.enabled?'on':''}" data-act="sound">효과음 ${SFX.enabled?'ON':'OFF'}<small>소환·전투·보스 연출음</small></button>
     <button class="danger" data-act="restart">처음부터 다시<small>진행 상황이 사라집니다</small></button>
+    <button class="danger" data-act="lbreset">기록판 초기화<small>부스 운영용 · 상위 점수 전부 삭제</small></button>
   </div>`;
 }
 function bindMenu(b){
@@ -4070,6 +4187,8 @@ function bindMenu(b){
   if (sd) sd.onclick = () => { SFX.toggle(); renderSheet(); };
   const rs = b.querySelector('[data-act=restart]');
   if (rs) rs.onclick = () => { closeSheet(); resetRun(); };
+  const lr = b.querySelector('[data-act=lbreset]');
+  if (lr) lr.onclick = () => { if (confirm('기록판을 전부 지울까요? 되돌릴 수 없습니다.')){ lbSave([]); renderSheet(); } };
   const ps = b.querySelector('[data-act=pause]');
   if (ps) ps.onclick = () => { S.paused = !S.paused; S.autoPaused = false; renderSheet(); };
 }
@@ -4285,6 +4404,7 @@ function bindTitle(){
   };
   $('t-dex').onclick = () => titleSub('유닛 도감', htmlDex());
   $('t-how').onclick = () => titleSub('플레이 방법', HOW_HTML);
+  $('t-rank').onclick = () => titleSub('기록판', `<div class="lb-area" style="margin-top:0">${lbBoardHTML(-1)}</div>`);
 }
 // ── 부스 전시용 튜토리얼 (직접 해보기) ─────────────────────────────
 // 읽고 넘기는 카드가 아니라, 실제로 조작해야 다음 단계로 넘어갑니다.

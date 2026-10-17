@@ -5,3 +5,6 @@ desktop.ini
 
 # 도구
 node_modules/
+
+# 게임과 무관한 옛날 백업 (로컬에만 둠)
+구버전_defense/
