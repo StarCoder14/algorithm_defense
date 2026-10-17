@@ -380,7 +380,7 @@
   .lb-area{width:100%;max-width:400px;margin-top:16px}
   .lb-title{font-size:12px;color:var(--dim);margin:0 0 9px;text-align:center}
   .lb-title b{color:#ffd76e;font-size:15px}
-  .lb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+  .lb-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;max-height:54vh;overflow-y:auto}
   .lb-list li{display:grid;grid-template-columns:26px 1fr auto auto;align-items:center;gap:9px;
     background:#121726;border:1px solid var(--line);border-radius:7px;padding:6px 10px;font-size:12px}
   .lb-list li.me{border-color:#ffd76e;background:#1c1b12}
@@ -2383,18 +2383,22 @@ function banner(title, html, win){
 
 // ═══════════════════════════════ 오락실 순위판 (부스 컴퓨터 한 대에 로컬 저장)
 const LB_KEY = 'algodef_scores_v1';
-const LB_MAX = 10;
+const LB_SHOW = 50;   // 기록판에 보여주고 저장하는 최대 개수
+const LB_NAME = 10;   // 이 등수 안에 들면 직접 이름을 입력함. 11~50위는 이름 없이 자동 기록됨.
 // 기록판 초기화용 관리자 비밀번호. 정적 사이트라 소스에 보이는 수준의 가벼운 잠금임(부스 방문자가 함부로 못 지우게).
 // 바꾸고 싶으면 이 값만 고치면 됨.
 const LB_ADMIN_PW = 'semicolon';
 function lbLoad(){ try { const a = JSON.parse(localStorage.getItem(LB_KEY)); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
 function lbSave(a){ try { localStorage.setItem(LB_KEY, JSON.stringify(a)); } catch(e){} }
-function lbQualifies(score){ const a = lbLoad(); return score > 0 && (a.length < LB_MAX || score > a[a.length-1].score); }
+// 이 점수가 들어갈 등수(0부터). 현재 기록 중 더 높은 점수의 개수를 셈.
+function lbRankFor(score){ const a = lbLoad(); let r = 0; for (const e of a) if (e.score > score) r++; return r; }
+function lbQualifies(score){ return score > 0 && lbRankFor(score) < LB_SHOW; }   // 50등 안이면 기록판에 오름
+function lbCanName(score){ return score > 0 && lbRankFor(score) < LB_NAME; }      // 10등 안이면 이름 입력 대상
 function lbInsert(entry){
   const a = lbLoad();
   a.push(entry);
   a.sort((x,y) => y.score - x.score);
-  if (a.length > LB_MAX) a.length = LB_MAX;
+  if (a.length > LB_SHOW) a.length = LB_SHOW;
   lbSave(a);
   return a.indexOf(entry);
 }
@@ -2422,7 +2426,16 @@ function renderEndLeaderboard(score, wave){
     $('banner').appendChild(bt);
   };
 
-  if (lbQualifies(score)){
+  if (!lbQualifies(score)){
+    // 50등 밖 — 기록 안 함
+    area.innerHTML =
+      `<div class="lb-title">이번 점수 <b>${score.toLocaleString()}</b> &middot; 순위 밖</div>` +
+      lbBoardHTML(-1);
+    addMainButton();
+    return;
+  }
+  if (lbCanName(score)){
+    // 10등 안 — 직접 이름 입력
     area.innerHTML =
       `<div class="lb-title">순위 진입 &middot; <b>${score.toLocaleString()}</b>점</div>` +
       `<div class="lb-entry"><span>이름 3글자</span><div id="lb-slots"></div></div>` +
@@ -2433,9 +2446,9 @@ function renderEndLeaderboard(score, wave){
       addMainButton();
     });
   } else {
-    area.innerHTML =
-      `<div class="lb-title">이번 점수 <b>${score.toLocaleString()}</b> &middot; 순위 밖</div>` +
-      lbBoardHTML(-1);
+    // 11~50등 — 이름 입력 없이 자동 기록
+    const rank = lbInsert({ name:'---', score, wave, killed:S.killed, t:Date.now() });
+    area.innerHTML = `<div class="lb-title"><b>${rank+1}위</b>에 기록됐습니다 &middot; ${score.toLocaleString()}점</div>` + lbBoardHTML(rank);
     addMainButton();
   }
 }
