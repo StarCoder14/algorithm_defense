@@ -2374,9 +2374,15 @@ function banner(title, html, win){
         ${newWave && prev.wave ? ' <b style="color:#ffd76e">신기록!</b>' : ''}</div>
       <p class="rs-n">연구 · 소환권 · 유닛은 이번 판 한정입니다. 처음부터 다시 쌓아야 합니다.</p>
     </div>`;
-  // 점수 = 도달 웨이브 × 100000 + 처치 수. 멀리 간 사람이 무조건 위, 같은 웨이브면 많이 잡은 사람이 위.
+  // 점수 = 도달 웨이브(주) + 보유 초월·신화, 처치, 소환 횟수(보조).
+  // 가중치는 얻기 어렵고 가치 높은 순. 웨이브가 제일 커서 멀리 간 사람이 위, 같은 웨이브면 아래 항목으로 갈림.
+  // 소환은 가중치가 낮아 남발만으로는 순위가 안 오름.
   const reachedWave = S.wave ? playedWaveOf(Math.min(S.wave, S.maxWave)) : 0;
-  const score = reachedWave * 100000 + S.killed;
+  const score = reachedWave * 100000   // 도달 웨이브
+              + trans      * 6000      // 보유 초월
+              + myth       * 2000      // 보유 신화
+              + S.killed   * 1         // 처치 수
+              + S.summons  * 15;       // 소환 횟수
   renderEndLeaderboard(score, reachedWave);
   $('banner').classList.remove('hide');
 }
