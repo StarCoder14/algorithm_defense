@@ -338,22 +338,21 @@
   #title.sub{display:block;overflow-y:auto;align-items:stretch}
 
   /* ── 스테이지 진입 카드 */
-  #coach{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:50;
-    max-height:44vh;overflow-y:auto;
-    width:min(430px,calc(100% - 20px));background:rgba(18,23,37,.97);border:1px solid #ffd76e;
+  #coach{position:fixed;left:50%;top:auto;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;
+    max-height:44vh;max-height:44dvh;overflow-y:auto;
+    width:min(760px,calc(100% - 20px));background:rgba(18,23,37,.97);border:1px solid #ffd76e;
     border-radius:14px;padding:11px 14px 10px;box-shadow:0 10px 32px rgba(0,0,0,.55);text-align:left}
   #coach.ok{border-color:#7ee787}
-  #coach.low{top:auto;bottom:calc(10px + env(safe-area-inset-bottom))}   /* 위쪽을 가리킬 때 */
   #coach.hide,#coach-ring.hide{display:none}
-  #coach .c-top{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1.5px;color:#ffd76e}
+  #coach .c-top{display:flex;justify-content:space-between;font-size:12px;letter-spacing:1.5px;color:#ffd76e}
   #coach.ok .c-state{color:#7ee787}
-  #coach h4{margin:5px 0 4px;font-size:15px;font-family:var(--disp)}
-  #coach .c-d{font-size:12px;line-height:1.75;color:var(--dim)}
+  #coach h4{margin:6px 0 5px;font-size:18px;font-family:var(--disp)}
+  #coach .c-d{font-size:15px;line-height:1.7;color:var(--dim)}
   #coach .c-bar{height:3px;background:#243049;border-radius:2px;margin:9px 0 8px;overflow:hidden}
   #coach .c-bar i{display:block;height:100%;background:#ffd76e;transition:width .3s}
   #coach .c-btns{display:flex;gap:6px;justify-content:flex-end}
-  #coach .c-btns .go{min-height:32px;padding:0 16px}
-  .tut-ghost{min-height:32px;padding:0 11px;font-size:11px;color:var(--dim);
+  #coach .c-btns .go{min-height:38px;padding:0 18px;font-size:13px}
+  .tut-ghost{min-height:38px;padding:0 13px;font-size:12px;color:var(--dim);
     background:transparent;border:1px solid var(--line,#243049);border-radius:9px}
   #coach-ring{position:fixed;z-index:49;pointer-events:none;border:2px solid #ffd76e;border-radius:12px;
     box-shadow:0 0 0 4px rgba(255,215,110,.16),0 0 22px rgba(255,215,110,.45);
@@ -4563,7 +4562,6 @@ function renderCoach(){
   const pct = Math.round(100 * T.i / (TUT_STEPS.length - 1));
   const el = $('coach');
   el.classList.toggle('ok', !!T.ok);
-  el.classList.toggle('low', !!c.low);      // 위쪽(HUD)을 가리키는 단계에서는 말풍선이 아래로
   el.innerHTML = '<div class="c-top"><span>TUTORIAL · ' + (T.i + 1) + ' / ' + TUT_STEPS.length + '</span>'
     + '<span class="c-state">' + (T.ok ? '✔ 잘했어요' : (c.done ? '직접 해보세요' : '')) + '</span></div>'
     + '<h4>' + c.t + '</h4><div class="c-d">' + c.d + '</div>'
