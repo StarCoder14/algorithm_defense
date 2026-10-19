@@ -41,6 +41,11 @@ const S = g.S;
 
 let fails = 0;
 const ok = (c, m) => { if (!c) fails++; console.log('  ' + (c ? '✓' : '✗') + ' ' + m); };
+const coachCss = html.match(/#coach\{([^}]*)\}/);
+const coachButtonCss = html.match(/#coach button\{([^}]*)\}/);
+ok(!!coachCss && /pointer-events\s*:\s*none/.test(coachCss[1])
+  && !!coachButtonCss && /pointer-events\s*:\s*auto/.test(coachButtonCss[1]),
+  '튜토리얼 안내는 뒤 UI 클릭을 통과시키고 안내 버튼은 계속 누를 수 있음');
 // 한 프레임 = 튜토리얼 판정 + (멈춰 있지 않으면) 게임 진행
 const frame = (dt = 0.05) => { g.tutTick(dt); if (!S.over && !S.paused) for (let i = 0; i < S.speed; i++) g.step(dt); };
 // 조작 후 단계가 넘어갈 때까지 기다립니다

@@ -21,12 +21,30 @@ global.setTimeout = () => 0; global.clearTimeout = () => {};
 
 const g = {};
 new Function('__x', src + '\n' + ['S','startWave','endWave','nextWaveAfter','wavesPaidAt','playedWaveOf','playedSlotOf',
-  'stageOf','stageWave','STAGES','STAGE_LEN','PLAYED_PER_STAGE','AUGMENT_WAVES','ARENA_FROM','BOSS_SLOT','offerAugment']
+  'stageOf','stageWave','STAGES','STAGE_LEN','PLAYED_PER_STAGE','AUGMENT_WAVES','ARENA_FROM','BOSS_SLOT','offerAugment',
+  'buildWave','SESSION_SEC','SESSION_WARN','BOOTH_HARD_AT','SPEED_FAST','SPEED_OPTIONS','nextSpeed']
   .map(k => '__x.' + k + '=' + k + ';').join(''))(g);
 const S = g.S;
 
 let fails = 0;
 const ok = (c, m) => { if (!c) fails++; console.log('  ' + (c ? '✓' : '✗') + ' ' + m); };
+
+console.log('── 부스 제한시간·난이도·배속');
+ok(g.SESSION_SEC === 6 * 60, '한 판 제한은 6분');
+ok(g.BOOTH_HARD_AT === 2 * 60, '난이도 상승은 플레이 2분 시점부터');
+ok(g.SESSION_WARN.includes(g.SESSION_SEC - g.BOOTH_HARD_AT), '난이도 상승 시점에 안내 표시');
+ok(g.SPEED_FAST === 8, '3스테이지부터 자동 8배속');
+ok(g.SPEED_OPTIONS.join(',') === '1,2,3,5,8', '배속 선택에 8배속 포함');
+ok(g.SPEED_OPTIONS.every((speed, i) => g.nextSpeed(speed) === g.SPEED_OPTIONS[(i + 1) % g.SPEED_OPTIONS.length]),
+   '배속 버튼이 1→2→3→5→8→1 순환');
+S.real = g.BOOTH_HARD_AT - 1;
+const easyWave = g.buildWave(1);
+S.real = g.BOOTH_HARD_AT;
+const hardWave = g.buildWave(1);
+const avgHp = wave => wave.reduce((sum, enemy) => sum + enemy.hpMul, 0) / wave.length;
+ok(hardWave.length > easyWave.length, '2분 이후 웨이브부터 적 수 증가 (' + easyWave.length + '→' + hardWave.length + ')');
+ok(avgHp(hardWave) > avgHp(easyWave), '2분 이후 웨이브부터 적 체력 증가');
+S.real = 0;
 
 console.log('── 치르는 웨이브 목록');
 const played = [];

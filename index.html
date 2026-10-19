@@ -338,16 +338,16 @@
   #title.sub{display:block;overflow-y:auto;align-items:stretch}
 
   /* ── 스테이지 진입 카드 */
-  #coach{position:fixed;left:50%;top:auto;bottom:calc(10px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;
-    max-height:44vh;max-height:44dvh;overflow-y:auto;
+  #coach{position:fixed;left:50%;top:auto;bottom:calc(105px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:50;
     width:min(760px,calc(100% - 20px));background:rgba(18,23,37,.97);border:1px solid #ffd76e;
-    border-radius:14px;padding:11px 14px 10px;box-shadow:0 10px 32px rgba(0,0,0,.55);text-align:left}
+    border-radius:14px;padding:13px 16px 12px;box-shadow:0 10px 32px rgba(0,0,0,.55);text-align:left;pointer-events:none}
+  #coach button{pointer-events:auto}
   #coach.ok{border-color:#7ee787}
   #coach.hide,#coach-ring.hide{display:none}
-  #coach .c-top{display:flex;justify-content:space-between;font-size:12px;letter-spacing:1.5px;color:#ffd76e}
+  #coach .c-top{display:flex;justify-content:space-between;font-size:13px;letter-spacing:1.5px;color:#ffd76e}
   #coach.ok .c-state{color:#7ee787}
-  #coach h4{margin:6px 0 5px;font-size:18px;font-family:var(--disp)}
-  #coach .c-d{font-size:15px;line-height:1.7;color:var(--dim)}
+  #coach h4{margin:7px 0 6px;font-size:20px;font-family:var(--disp)}
+  #coach .c-d{font-size:16px;line-height:1.7;color:var(--dim)}
   #coach .c-bar{height:3px;background:#243049;border-radius:2px;margin:9px 0 8px;overflow:hidden}
   #coach .c-bar i{display:block;height:100%;background:#ffd76e;transition:width .3s}
   #coach .c-btns{display:flex;gap:6px;justify-content:flex-end}
@@ -475,6 +475,7 @@
     .t-chip{font-size:19px}
     #t-start{min-height:60px;font-size:15px}
     #stagecard{left:50%;transform:translate(-50%,-50%);width:420px;right:auto;pointer-events:auto}
+    #coach{bottom:78px}
     @keyframes cardIn{from{opacity:0;transform:translate(-50%,-40%) scale(.94)}
       to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
     button:hover:not(:disabled){background:#1b2338;border-color:#3d4b6e}
@@ -1153,14 +1154,18 @@ const SNAKE_DPS_CAP  = 0.025;  // 최대 체력의 2.5%/초 → 최소 40초    
 const STAGE_LEN = 8;
 // ── 부스 전시용 배속 ──────────────────────────────────────────────────
 // 처음 두 스테이지는 2배속으로 보여주고(규칙을 눈으로 익히는 구간),
-// 3스테이지(웨이브 17)부터 5배속으로 넘깁니다. 1배속 48분짜리를 부스에서 돌릴 수는 없으니까요.
+// 3스테이지(웨이브 17)부터 8배속으로 넘깁니다. 배속 버튼으로 속도를 자유롭게 바꿀 수 있습니다.
 // 한 번만 올리고 잠그지는 않습니다 — 그 뒤엔 배속 버튼으로 자유롭게 바꿀 수 있습니다.
-const SPEED_START = 2, SPEED_FAST = 5, SPEED_FAST_STAGE = 3;
+const SPEED_START = 2, SPEED_FAST = 8, SPEED_FAST_STAGE = 3;
+const SPEED_OPTIONS = [1, 2, 3, 5, 8];
+const nextSpeed = current => SPEED_OPTIONS[(SPEED_OPTIONS.indexOf(current) + 1) % SPEED_OPTIONS.length];
 // 한 판에 허용하는 실제 시간(초). 부스에서 한 사람이 자리를 오래 붙잡지 않게 합니다.
 // 0 으로 두면 무제한입니다. 튜토리얼 시간은 세지 않습니다.
-// 부스 회전율을 위해 한 판 제한을 3분으로 설정합니다.
-const SESSION_SEC = 3 * 60;
-const SESSION_WARN = [120, 60, 20];        // 남은 시간을 알리는 시점
+const SESSION_SEC = 6 * 60;
+const BOOTH_HARD_AT = 2 * 60;
+const BOOTH_EARLY_COUNT = 0.75, BOOTH_EARLY_HP = 0.8;
+const BOOTH_HARD_COUNT = 1.35, BOOTH_HARD_HP = 1.4;
+const SESSION_WARN = [240, 180, 120, 60, 20]; // 남은 시간 및 난이도 상승을 알리는 시점
 // 보스는 속박·감속에 완전 면역, 장갑이 두꺼운 적은 절반만 걸립니다.
 function ccMul(e){
   if (e.boss) return 0;
@@ -1926,17 +1931,20 @@ const mythCount = () => S.units.filter(u => U[u.id].t === 5).length;
 
 function buildWave(w){
   const q = [];
+  const hard = S.real >= BOOTH_HARD_AT;
+  const countScale = hard ? BOOTH_HARD_COUNT : BOOTH_EARLY_COUNT;
+  const hpScale = hard ? BOOTH_HARD_HP : BOOTH_EARLY_HP;
   // 잡몹 성장은 마리 수 증가분만큼 낮췄습니다(위 '난이도 축' 참고).
   // 보스는 한 웨이브에 한 기뿐이라 마리 수와 무관 — 기존 곡선을 그대로 둡니다.
   const hw = mobHpWave(w);                            // 잡몹 체력 기준 웨이브 (후반·아레나에서 눌림)
-  const baseMul  = growth(hw, 1.0115, 1.13340);
-  const eliteMul = growth(hw, 1.0095, 1.11142);
-  const bossMul  = growth(w,  1.018,  1.1212);
+  const baseMul  = growth(hw, 1.0115, 1.13340) * hpScale;
+  const eliteMul = growth(hw, 1.0095, 1.11142) * hpScale;
+  const bossMul  = growth(w,  1.018,  1.1212) * hpScale;
   const ELITE = {leak:1, inf:1, fork:1, gc:1, miss:1, opt:1, child:1,
                  thread:1, sema:1, packet:1, retry:1, page:1, zombie:1,
                  overrun:1, inject:1, phantom:1, hypercall:1, retrans:1,
                  grad:1, collide:1, qubit:1, bitflip:1};
-  const count = Math.max(3, Math.round(waveCount(w) * S.mut.count));
+  const count = Math.max(3, Math.round(waveCount(w) * S.mut.count * countScale));
   const add = (t, f) => {
     const n = Math.floor(count*f);
     for (let i=0;i<n;i++) q.push({type:t, hpMul: ELITE[t] ? eliteMul : baseMul});
@@ -2218,7 +2226,7 @@ function drawSessionTime(){
   const label = m + ':' + String(sec).padStart(2, '0');
   cx.save();
   cx.font = 'bold 16px ' + MONO; cx.textAlign = 'left'; cx.textBaseline = 'bottom';
-  const x = 8, y = cv.height - 9, width = cx.measureText(label).width + 12;
+  const x = 8, y = cv.height - 9, width = 58;
   cx.fillStyle = 'rgba(5,7,12,.82)';
   cx.fillRect(x, cv.height - 34, width, 28);
   cx.strokeStyle = 'rgba(125,138,163,.55)';
@@ -3006,8 +3014,11 @@ function sessionTick(dt){
   for (const w of SESSION_WARN){
     if (left <= w && S.realWarn > w){
       S.realWarn = w;
-      log('남은 시간 ' + w + '초', true);
-      TXT({x:cv.width/2, y:cv.height*0.3, v:'남은 시간 ' + w + '초', life:1.6, max:1.6, c:'#ffd76e'});
+      const msg = w === BOOTH_HARD_AT
+        ? '난이도 상승 — 다음 웨이브부터 적이 강해집니다'
+        : '남은 시간 ' + w + '초';
+      log(msg, true);
+      TXT({x:cv.width/2, y:cv.height*0.3, v:msg, life:1.6, max:1.6, c:'#ffd76e'});
       SFX.warn();
     }
   }
@@ -4384,7 +4395,7 @@ $('s-gold').parentElement.style.cursor = 'pointer';
 $('sheet-close').onclick = closeSheet;
 $('scrim').onclick = closeSheet;
 $('btn-speed').onclick = () => {
-  setSpeed(S.speed === 1 ? 2 : S.speed === 2 ? 3 : S.speed === 3 ? 5 : 1);
+  setSpeed(nextSpeed(S.speed));
 };
 $('btn-skip').onclick = () => {
   if (S.holdArena){ S.holdArena = false; S.prep = 0; $('stagecard').classList.add('hide'); return; }
@@ -4527,7 +4538,8 @@ const TUT_STEPS = [
    done: () => S.speed !== S.tut.n},
   {t:'준비 완료', at:null,
    d:'이제 <b>새 판</b>이 시작됩니다. 튜토리얼에서 받은 골드와 유닛은 사라집니다.<br>'
-    + '처음 두 스테이지는 <b>2배속</b>, 3스테이지부터 <b>5배속</b>으로 진행되고, '
+    + '처음 두 스테이지는 <b>2배속</b>, 3스테이지부터 <b>8배속</b>으로 진행됩니다. '
+    + '배속 버튼으로 속도를 바꿀 수 있고, 실제 플레이 2분 뒤부터 적이 크게 강해집니다. '
     + '13스테이지부터는 경로가 무너지는 <b>아레나</b>가 시작됩니다. 행운을 빕니다!'},
 ];
 function showTutorial(done){
