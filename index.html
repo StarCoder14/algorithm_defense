@@ -2118,7 +2118,7 @@ function startWave(){
     applyMutators(rollMutators(S.wave), S.wave);  // 스테이지 시작에만 갱신
     showStageCard(S.wave);
     // 정해진 스테이지에 닿으면 한 번만 배속을 올립니다
-    if (Math.floor((S.wave-1) / STAGE_LEN) === SPEED_FAST_STAGE - 1 && S.speed < SPEED_FAST) setSpeed(SPEED_FAST);
+    if (!S.endless && Math.floor((S.wave-1) / STAGE_LEN) === SPEED_FAST_STAGE - 1 && S.speed < SPEED_FAST) setSpeed(SPEED_FAST);
   }
   S.queue = buildWave(S.wave);
   S.phase = 'wave'; S.spawnT = 0; S.waveT = 0; S.rush = false;
@@ -2222,7 +2222,7 @@ function startSnake(){
              spawned: 0, segs: [], lap: 0, dead: false, deadT: 0,
              castId: -1, castDealt: 0, castMsg: false, bucket: hp * SNAKE_CAST_CAP};
   S.phase = 'wave'; S.queue = []; S.waveT = 0;
-  if (S.speed > 2) setSpeed(2);             // 피날레는 눈으로 보게 한 단계 늦춥니다(잠그지는 않습니다)
+  if (!S.endless && S.speed > 2) setSpeed(2);   // 무한 모드는 배속을 건드리지 않습니다. 피날레는 눈으로 보게 한 단계 늦춥니다(잠그지는 않습니다)
   showSnakeCard(); SFX.bossIn();
   S.snakeCount = (S.snakeCount || 0) + 1;
   log(S.endless ? `◆ 우로보로스 #${S.snakeCount} — 순환 참조가 다시 트랙을 감습니다 ◆`
@@ -4676,11 +4676,19 @@ const TUT_STEPS = [
    d:'<b>배속</b> 버튼으로 게임 속도를 바꿀 수 있습니다. 한 번 눌러보세요.',
    setup(){ S.tut.n = S.speed; },
    done: () => S.speed !== S.tut.n},
-  {t:'준비 완료', at:null,
-   d:'이제 <b>새 판</b>이 시작됩니다. 튜토리얼에서 받은 골드와 유닛은 사라집니다.<br>'
-    + '처음 두 스테이지는 <b>2배속</b>, 3스테이지부터 <b>8배속</b>으로 진행됩니다. '
-    + '배속 버튼으로 속도를 바꿀 수 있고, 실제 플레이 2분 뒤부터 적이 크게 강해집니다. '
-    + '13스테이지부터는 경로가 무너지는 <b>아레나</b>가 시작됩니다. 행운을 빕니다!'},
+  // 마지막 단계만 모드에 따라 문구가 다릅니다(PENDING_ENDLESS 는 타이틀에서 고른 모드)
+  {get t(){ return PENDING_ENDLESS ? '무한 모드 시작' : '준비 완료'; }, at:null,
+   get d(){ return PENDING_ENDLESS
+    ? '이제 <b>새 판</b>이 시작됩니다. 튜토리얼에서 받은 골드와 유닛은 사라집니다.<br>'
+      + '<b>시간 제한이 없고</b>, 메모리가 바닥나거나 아레나가 포화되면 끝납니다. 기록판에는 남지 않습니다. '
+      + '배속은 자동으로 바뀌지 않으니 <b>배속 버튼</b>으로 원하는 속도를 고르세요.<br>'
+      + '경로 필드 <b>72웨이브</b> → <b>아레나 18웨이브</b> → <b>우로보로스</b>가 계속 반복되고, '
+      + '우로보로스는 나올 때마다 훨씬 강해집니다. 16스테이지부터는 <b>보스가 무작위</b>로 나옵니다. '
+      + '적 체력은 끝없이 불어나니, 얼마나 버티는지가 승부입니다!'
+    : '이제 <b>새 판</b>이 시작됩니다. 튜토리얼에서 받은 골드와 유닛은 사라집니다.<br>'
+      + '처음 두 스테이지는 <b>2배속</b>, 3스테이지부터 <b>8배속</b>으로 진행됩니다. '
+      + '배속 버튼으로 속도를 바꿀 수 있고, 실제 플레이 2분 뒤부터 적이 크게 강해집니다. '
+      + '13스테이지부터는 경로가 무너지는 <b>아레나</b>가 시작됩니다. 행운을 빕니다!'; }},
 ];
 function showTutorial(done){
   S.tut = {i:-1, ok:false, okT:0, hold:true, done};
@@ -4722,7 +4730,7 @@ function renderCoach(){
     + '<div class="c-bar"><i style="width:' + pct + '%"></i></div>'
     + '<div class="c-btns">'
     + (last ? '' : '<button id="c-end" class="tut-ghost">튜토리얼 건너뛰기</button>')
-    + (last ? '<button id="c-next" class="go">실전 시작</button>'
+    + (last ? '<button id="c-next" class="go">' + (PENDING_ENDLESS ? '무한 모드 시작' : '실전 시작') + '</button>'
             : (T.ok ? '' : '<button id="c-skip" class="tut-ghost">이 단계 넘기기</button>'))
     + '</div>';
   // 폰에서는 윗줄을 눌러 안내창을 한 줄로 접을 수 있습니다
