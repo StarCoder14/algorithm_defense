@@ -432,6 +432,14 @@
     .aug-choice .as{font-size:10px}
   }
   .hide{display:none}
+  #title{transition:opacity .4s ease}
+  #title.out{opacity:0;pointer-events:none}
+  #boot{position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:14px;color:#7ee787;letter-spacing:1px;pointer-events:none;
+    background:rgba(11,14,23,.6);animation:bootFade 1s ease forwards}
+  @keyframes bootFade{0%,60%{opacity:1}100%{opacity:0}}
+  .boot{animation:bootIn .6s cubic-bezier(.22,1,.36,1) both}
+  @keyframes bootIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
   /* ══════════ PC 레이아웃 ══════════ */
   @media (min-width:1000px){
@@ -540,6 +548,7 @@
       <p class="t-tag">변수를 뽑아 자료구조로 합치고,<br>자료구조를 조합해 알고리즘을 만드는 랜덤 디펜스.</p>
       <div class="t-btns">
         <button class="go" id="t-start">게임 시작</button>
+        <button class="on" id="t-endless">무한 모드<small>시간 제한 없음 · 쓰러질 때까지</small></button>
         <div class="row2">
           <button id="t-dex">유닛 도감</button>
           <button id="t-how">플레이 방법</button>
@@ -1206,7 +1215,7 @@ const ARENA_BURST_RATE = 16;
 const ARENA_INFLOW_FROM = 7, ARENA_INFLOW_TO = 10;
 const arenaInflow = w => ARENA_INFLOW_FROM + (ARENA_INFLOW_TO - ARENA_INFLOW_FROM)
   * Math.min(1, Math.max(0, (w - ARENA_FROM) / (120 - ARENA_FROM)));
-const arenaWave = w => w >= ARENA_FROM;
+const arenaWave = w => !S.endless && w >= ARENA_FROM;
 const WAVE_LIMIT = 120;      // 한 웨이브 제한 시간(초). 정상 웨이브는 최장 65초입니다.
 // 아레나와 뱀은 포화로 승부가 나서 웨이브 제한이 없음.
 // 돌진 규칙과 상단 남은 초 표시가 같은 판단을 써야 함. 따로 두었더니 아레나에서 시계만 마이너스로 내려갔음
@@ -1240,7 +1249,28 @@ const spawnGapForRun = q => S.arena ? (1 + augState('traffic')) / ARENA_BURST_RA
   : Math.max(1 / SPAWN_RATE_MAX, SPAWN_WINDOW / Math.max(1, q));
 // 이번 웨이브를 다 뱉은 뒤 쉬는 시간 — 평균 유입이 ARENA_INFLOW_AVG 가 되도록 역산합니다.
 const arenaGapFor = (q, w) => Math.max(0.6, q * (1/arenaInflow(w) - 1/ARENA_BURST_RATE));
-const stageOf = w => Math.min(STAGES.length-1, Math.floor((w-1) / STAGE_LEN));
+// 무한 모드에서는 스테이지가 1→15→1 로 돌아갑니다.
+const stageOf = w => S.endless ? Math.floor((w-1) / STAGE_LEN) % STAGES.length
+                               : Math.min(STAGES.length-1, Math.floor((w-1) / STAGE_LEN));
+// ── 무한 모드 ───────────────────────────────────────────────────────────
+// 웨이브당 체력 증가폭은 실전의 ENDLESS_RATE 배로 낮추지만, 실전과 같은 구조로
+// 증가폭 자체가 점점 커지다가(120웨이브에 걸쳐 램프) 그 뒤로도 계속 곱해집니다 — 기하급수 성장입니다.
+// 아레나·뱀·시간 제한은 없고, 메모리가 바닥나면 끝입니다.
+const ENDLESS_RATE = 0.6;          // 실전 대비 웨이브당 증가폭 (0.6 = 60%)
+const ENDLESS_COUNT_MAX = 160;     // 마리 수 상한 — 끝없이 늘면 프레임이 버티지 못합니다
+const ENDLESS_SCORE_KEY = 'algodef_scores_endless_v1';
+let PENDING_ENDLESS = false;       // 타이틀에서 고른 모드. 튜토리얼 뒤 resetRun 을 지나도 유지됩니다
+const endlessCache = {};
+function endlessGrowth(w, g0, g1){
+  const key = w + ',' + g0;
+  if (endlessCache[key]) return endlessCache[key];
+  let m = 1;
+  for (let i=1;i<w;i++){
+    const rate = (g0-1) + (g1-g0) * Math.min(1, (i-1)/119);
+    m *= 1 + rate * ENDLESS_RATE;
+  }
+  return endlessCache[key] = m;
+}
 const stageWave = w => ((w-1) % STAGE_LEN) + 1;
 // ── 스테이지당 6웨이브 ──────────────────────────────────────────────
 // 부스에서 한 판을 줄이려고 스테이지마다 4·7번째 웨이브를 건너뜀.
@@ -1264,7 +1294,7 @@ function wavesPaidAt(w){
 const KILL_GOLD_MUL = STAGE_LEN / PLAYED_PER_STAGE;
 // 화면에 보이는 번호는 실제로 치른 순서로 셈. 스테이지 안에서 1~6, 판 전체로 1~90
 const playedSlotOf = w => stageWave(w) - SKIPPED_SLOTS.filter(slot => slot < stageWave(w)).length;
-const playedWaveOf = w => stageOf(w) * PLAYED_PER_STAGE + playedSlotOf(w);
+const playedWaveOf = w => Math.floor((w-1) / STAGE_LEN) * PLAYED_PER_STAGE + playedSlotOf(w);
 
 
 // ═══════════════════════════════ 맵 — 화면에 맞춰 세로/가로를 고릅니다
@@ -1931,20 +1961,23 @@ const mythCount = () => S.units.filter(u => U[u.id].t === 5).length;
 
 function buildWave(w){
   const q = [];
-  const hard = S.real >= BOOTH_HARD_AT;
+  const hard = !S.endless && S.real >= BOOTH_HARD_AT;
   const countScale = hard ? BOOTH_HARD_COUNT : BOOTH_EARLY_COUNT;
   const hpScale = hard ? BOOTH_HARD_HP : BOOTH_EARLY_HP;
   // 잡몹 성장은 마리 수 증가분만큼 낮췄습니다(위 '난이도 축' 참고).
   // 보스는 한 웨이브에 한 기뿐이라 마리 수와 무관 — 기존 곡선을 그대로 둡니다.
   const hw = mobHpWave(w);                            // 잡몹 체력 기준 웨이브 (후반·아레나에서 눌림)
-  const baseMul  = growth(hw, 1.0115, 1.13340) * hpScale;
-  const eliteMul = growth(hw, 1.0095, 1.11142) * hpScale;
-  const bossMul  = growth(w,  1.018,  1.1212) * hpScale;
+  const G = S.endless ? endlessGrowth : growth;       // 무한 모드: 증가폭은 낮게, 성장은 끝없이
+  const mw = S.endless ? w : hw;                      // 무한 모드는 후반 감쇠 없이 계속 오릅니다
+  const baseMul  = G(mw, 1.0115, 1.13340) * hpScale;
+  const eliteMul = G(mw, 1.0095, 1.11142) * hpScale;
+  const bossMul  = G(w,  1.018,  1.1212) * hpScale;
   const ELITE = {leak:1, inf:1, fork:1, gc:1, miss:1, opt:1, child:1,
                  thread:1, sema:1, packet:1, retry:1, page:1, zombie:1,
                  overrun:1, inject:1, phantom:1, hypercall:1, retrans:1,
                  grad:1, collide:1, qubit:1, bitflip:1};
-  const count = Math.max(3, Math.round(waveCount(w) * S.mut.count * countScale));
+  const baseCount = S.endless ? Math.min(ENDLESS_COUNT_MAX, waveCount(w)) : waveCount(w);
+  const count = Math.max(3, Math.round(baseCount * S.mut.count * countScale));
   const add = (t, f) => {
     const n = Math.floor(count*f);
     for (let i=0;i<n;i++) q.push({type:t, hpMul: ELITE[t] ? eliteMul : baseMul});
@@ -2013,7 +2046,7 @@ function startWave(){
     applyMutators(rollMutators(S.wave), S.wave);  // 스테이지 시작에만 갱신
     showStageCard(stageOf(S.wave));
     // 정해진 스테이지에 닿으면 한 번만 배속을 올립니다
-    if (stageOf(S.wave) === SPEED_FAST_STAGE - 1 && S.speed < SPEED_FAST) setSpeed(SPEED_FAST);
+    if (Math.floor((S.wave-1) / STAGE_LEN) === SPEED_FAST_STAGE - 1 && S.speed < SPEED_FAST) setSpeed(SPEED_FAST);
   }
   S.queue = buildWave(S.wave);
   S.phase = 'wave'; S.spawnT = 0; S.waveT = 0; S.rush = false;
@@ -2220,7 +2253,7 @@ function showSnakeCard(){
 }
 // 남은 시간을 보드 왼쪽 아래에 표시합니다. 1분 아래로 내려가면 빨갛게 바뀝니다.
 function drawSessionTime(){
-  if (!SESSION_SEC || S.phase === 'idle' || S.tut) return;
+  if (!SESSION_SEC || S.endless || S.phase === 'idle' || S.tut) return;
   const left = Math.max(0, SESSION_SEC - S.real);
   const m = Math.floor(left / 60), sec = Math.floor(left % 60);
   const label = m + ':' + String(sec).padStart(2, '0');
@@ -2322,6 +2355,7 @@ function setSpeed(v){
 function resetRun(){
   S.gold = 300; S.life = LIFE_BASE; S.maxLife = LIFE_BASE; S.wave = 0; S.phase = 'idle'; S.prep = 0;
   S.over = false; S.finalDown = false; S.paused = false; S.killed = 0;
+  S.endless = false; S.maxWave = 120;
   S.arena = false; S.holdArena = false; setSpeed(SPEED_START);
   S.units = []; S.enemies = []; S.corpses = []; S.fx = []; S.texts = []; S.pulses = [];
   S.queue = []; S.spawnT = 0; S.spawnGap = 0.32; S.waveN = 0; S.waveT = 0; S.rush = false;
@@ -2379,7 +2413,7 @@ function banner(title, html, win){
       <p>${html}</p>
       <div class="rs-g">
         ${cell('도달', `${st+1}-${playedSlotOf(Math.max(1,S.wave))}`, newWave)}
-        ${cell('웨이브', `${S.wave ? playedWaveOf(S.wave) : 0} / ${playedWaveOf(S.maxWave)}`, newWave)}
+        ${cell('웨이브', S.endless ? `${S.wave ? playedWaveOf(S.wave) : 0} · 무한` : `${S.wave ? playedWaveOf(S.wave) : 0} / ${playedWaveOf(S.maxWave)}`, newWave)}
         ${cell('처치', S.killed.toLocaleString(), newKill)}
         ${cell('남은 메모리', S.life)}
         ${cell('플레이 시간', `${mm}분 ${ss}초`)}
@@ -2416,8 +2450,10 @@ const LB_NAME = 10;   // 이 등수 안에 들면 직접 이름을 입력함. 11
 // 기록판 초기화용 관리자 비밀번호. 정적 사이트라 소스에 보이는 수준의 가벼운 잠금임(부스 방문자가 함부로 못 지우게).
 // 바꾸고 싶으면 이 값만 고치면 됨.
 const LB_ADMIN_PW = 'semicolon';
-function lbLoad(){ try { const a = JSON.parse(localStorage.getItem(LB_KEY)); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
-function lbSave(a){ try { localStorage.setItem(LB_KEY, JSON.stringify(a)); } catch(e){} }
+// 실전과 무한 모드는 기록판을 따로 씁니다
+const lbKey = () => (typeof S !== 'undefined' && S.endless) ? ENDLESS_SCORE_KEY : LB_KEY;
+function lbLoad(key){ try { const a = JSON.parse(localStorage.getItem(key || lbKey())); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
+function lbSave(a, key){ try { localStorage.setItem(key || lbKey(), JSON.stringify(a)); } catch(e){} }
 // 이 점수가 들어갈 등수(0부터). 현재 기록 중 더 높은 점수의 개수를 셈.
 function lbRankFor(score){ const a = lbLoad(); let r = 0; for (const e of a) if (e.score > score) r++; return r; }
 function lbQualifies(score){ return score > 0 && lbRankFor(score) < LB_SHOW; }   // 50등 안이면 기록판에 오름
@@ -2430,8 +2466,8 @@ function lbInsert(entry){
   lbSave(a);
   return a.indexOf(entry);
 }
-function lbBoardHTML(highlight){
-  const a = lbLoad();
+function lbBoardHTML(highlight, key){
+  const a = lbLoad(key);
   if (!a.length) return '<div class="lb-empty">아직 기록이 없습니다</div>';
   return '<ol class="lb-list">' + a.map((e,i) =>
     `<li class="${i===highlight?'me':''}"><span class="lb-rank">${i+1}</span>` +
@@ -3008,7 +3044,8 @@ function tick(now){
 }
 // 실제 시간으로 잽니다(배속과 무관). 타이틀·튜토리얼·종료 후에는 흐르지 않습니다.
 function sessionTick(dt){
-  if (!SESSION_SEC || S.over || S.tut || S.phase === 'idle') return;
+  if (!SESSION_SEC || S.endless || S.over || S.tut || S.phase === 'idle') return;
+  if (S.augmentAwait) return;                 // 증강을 고르는 동안은 시간이 흐르지 않습니다
   S.real += dt;
   const left = SESSION_SEC - S.real;
   for (const w of SESSION_WARN){
@@ -3208,7 +3245,7 @@ function advanceAlong(e, amount){
 function leak(e){
   e.gone = true;
   const b = ENEMY[e.type];
-  if (e.type === FINAL_BOSS){            // 최종 보스가 통과하면 그 자리에서 끝입니다
+  if (e.type === FINAL_BOSS && !S.endless){            // 최종 보스가 통과하면 그 자리에서 끝입니다
     S.life = 0;
     return gameOver(`${b.n}가 메모리를 통째로 덮어썼습니다`);
   }
@@ -4240,7 +4277,7 @@ function bindMenu(b){
     const pw = prompt('관리자 비밀번호를 입력하세요');
     if (pw === null) return;                              // 취소
     if (pw !== LB_ADMIN_PW){ alert('비밀번호가 틀렸습니다.'); return; }
-    lbSave([]); renderSheet(); alert('기록판을 초기화했습니다.');
+    lbSave([], LB_KEY); lbSave([], ENDLESS_SCORE_KEY); renderSheet(); alert('기록판을 초기화했습니다.');
   };
   const ps = b.querySelector('[data-act=pause]');
   if (ps) ps.onclick = () => { S.paused = !S.paused; S.autoPaused = false; renderSheet(); };
@@ -4261,7 +4298,8 @@ function sync(){
     setTimeout(() => chip.classList.remove('hurt'), 420);
   }
   lastLife = S.life;
-  $('s-wave').textContent = S.wave ? (stageOf(S.wave)+1) + '-' + playedSlotOf(S.wave) : '0-0';
+  $('s-wave').textContent = S.endless ? '∞' + (S.wave ? playedWaveOf(S.wave) : 0)
+    : S.wave ? (stageOf(S.wave)+1) + '-' + playedSlotOf(S.wave) : '0-0';
   $('s-unit').textContent = S.units.length + '/' + unitCap();
   $('s-opt').textContent = S.optTk;
   $('s-opt').style.color = S.optTk > 0 ? '#ffd76e' : '';
@@ -4437,7 +4475,14 @@ function titleSub(title, body){
   $('t-back').onclick = titleMain;
 }
 function bindTitle(){
-  $('t-start').onclick = () => {
+  const applyMode = () => {
+    S.endless = PENDING_ENDLESS;
+    S.maxWave = S.endless ? Infinity : 120;
+    if (S.endless) log('무한 모드 — 메모리가 바닥날 때까지 이어집니다', true);
+  };
+  $('t-endless').onclick = () => { PENDING_ENDLESS = true; startGame(); };
+  $('t-start').onclick = () => { PENDING_ENDLESS = false; startGame(); };
+  const startGame = () => {
     const t = $('title');
     t.classList.add('out');                       // 타이틀이 흐려지며 물러남
     $('banner').classList.add('hide');
@@ -4452,12 +4497,14 @@ function bindTitle(){
         if (el){ el.classList.add('boot'); setTimeout(() => el.classList.remove('boot'), 1000); }
       });
       // 부스 전시라 매 판 튜토리얼을 지나갑니다. 아는 사람은 건너뛰기로 넘어갑니다.
-      showTutorial(startWave);
+      showTutorial(() => { applyMode(); startWave(); });
     }, 400);
   };
   $('t-dex').onclick = () => titleSub('유닛 도감', htmlDex());
   $('t-how').onclick = () => titleSub('플레이 방법', HOW_HTML);
-  $('t-rank').onclick = () => titleSub('기록판', `<div class="lb-area" style="margin-top:0">${lbBoardHTML(-1)}</div>`);
+  $('t-rank').onclick = () => titleSub('기록판',
+    `<div class="lb-area" style="margin-top:0"><div class="lb-title"><b>실전</b></div>${lbBoardHTML(-1, LB_KEY)}</div>` +
+    `<div class="lb-area"><div class="lb-title"><b>무한 모드</b></div>${lbBoardHTML(-1, ENDLESS_SCORE_KEY)}</div>`);
 }
 // ── 부스 전시용 튜토리얼 (직접 해보기) ─────────────────────────────
 // 읽고 넘기는 카드가 아니라, 실제로 조작해야 다음 단계로 넘어갑니다.
