@@ -356,6 +356,24 @@
   #coach .c-bar i{display:block;height:100%;background:#ffd76e;transition:width .3s}
   #coach .c-btns{display:flex;gap:6px;justify-content:flex-end}
   #coach .c-btns .go{min-height:38px;padding:0 18px;font-size:13px}
+  #coach .c-top{pointer-events:auto;cursor:pointer}
+  #coach .c-fold{margin-left:10px;color:var(--dim);letter-spacing:0}
+  #coach.mini .c-d,#coach.mini .c-bar,#coach.mini .c-btns{display:none}
+  #coach.mini h4{margin-bottom:0}
+  #coach .c-fold{display:none}
+  @media (max-width:999px){
+    /* 폰: 안내창이 보드와 열린 창을 가리지 않게 작게 만들고, 가리킬 곳의 반대편으로 옮깁니다 */
+    #coach{padding:9px 12px 8px;border-radius:12px;width:calc(100% - 16px);
+      transition:top .25s ease,bottom .25s ease}
+    #coach.at-top{top:calc(6px + env(safe-area-inset-top));bottom:auto}
+    #coach .c-top{font-size:10px;letter-spacing:1px}
+    #coach h4{font-size:15px;margin:4px 0 3px}
+    #coach .c-d{font-size:12.5px;line-height:1.55}
+    #coach .c-bar{margin:6px 0 6px}
+    #coach .c-btns .go{min-height:32px;padding:0 14px;font-size:11.5px}
+    #coach .tut-ghost{min-height:32px;padding:0 10px;font-size:11px}
+    #coach .c-fold{display:inline}
+  }
   .tut-ghost{min-height:38px;padding:0 13px;font-size:12px;color:var(--dim);
     background:transparent;border:1px solid var(--line,#243049);border-radius:9px}
   #coach-ring{position:fixed;z-index:49;pointer-events:none;border:2px solid #ffd76e;border-radius:12px;
@@ -4676,7 +4694,7 @@ function tutGo(i){
   const prev = TUT_STEPS[T.i];
   if (prev && prev.leave) prev.leave();
   if (i >= TUT_STEPS.length) return endTutorial();
-  T.i = i; T.ok = false; T.okT = 0;
+  T.i = i; T.ok = false; T.okT = 0; T.mini = false;
   const c = TUT_STEPS[i];
   if (c.setup) c.setup();
   renderCoach(); sync();
@@ -4696,8 +4714,10 @@ function renderCoach(){
   const pct = Math.round(100 * T.i / (TUT_STEPS.length - 1));
   const el = $('coach');
   el.classList.toggle('ok', !!T.ok);
-  el.innerHTML = '<div class="c-top"><span>TUTORIAL · ' + (T.i + 1) + ' / ' + TUT_STEPS.length + '</span>'
-    + '<span class="c-state">' + (T.ok ? '✔ 잘했어요' : (c.done ? '직접 해보세요' : '')) + '</span></div>'
+  el.classList.toggle('mini', !!T.mini);
+  el.innerHTML = '<div class="c-top" id="c-top"><span>TUTORIAL · ' + (T.i + 1) + ' / ' + TUT_STEPS.length + '</span>'
+    + '<span><span class="c-state">' + (T.ok ? '✔ 잘했어요' : (c.done ? '직접 해보세요' : '')) + '</span>'
+    + '<span class="c-fold">' + (T.mini ? '▼ 펼치기' : '▲ 접기') + '</span></span></div>'
     + '<h4>' + c.t + '</h4><div class="c-d">' + c.d + '</div>'
     + '<div class="c-bar"><i style="width:' + pct + '%"></i></div>'
     + '<div class="c-btns">'
@@ -4705,9 +4725,23 @@ function renderCoach(){
     + (last ? '<button id="c-next" class="go">실전 시작</button>'
             : (T.ok ? '' : '<button id="c-skip" class="tut-ghost">이 단계 넘기기</button>'))
     + '</div>';
+  // 폰에서는 윗줄을 눌러 안내창을 한 줄로 접을 수 있습니다
+  $('c-top').onclick = () => { if (isDesk()) return; T.mini = !T.mini; renderCoach(); };
   const e = $('c-end');  if (e) e.onclick = endTutorial;
   const k = $('c-skip'); if (k) k.onclick = () => tutGo(T.i + 1);
   const x = $('c-next'); if (x) x.onclick = endTutorial;
+}
+// 폰에서 안내창 자리를 고릅니다. 아래에서 올라오는 창이 열려 있거나 가리킬 곳이 화면 아래쪽이면
+// 위로 올리고, 아니면 아래(버튼 줄 위)에 둡니다. 위에서 내려오는 창(연구소)이 열려 있으면 아래에 둡니다.
+function placeCoach(box){
+  const el = $('coach'); if (!el) return;
+  if (isDesk()){ el.classList.remove('at-top'); return; }
+  const sh = $('sheet'), open = sh.classList.contains('open');
+  let top;
+  if (open) top = !sh.classList.contains('top-open');
+  else if (box && box.w) top = (box.t + box.h/2) > innerHeight * 0.5;
+  else top = false;
+  el.classList.toggle('at-top', top);
 }
 // 가리킬 곳 위에 빛나는 테두리를 얹습니다. 클릭은 막지 않습니다(pointer-events:none).
 function placeRing(c){
@@ -4728,6 +4762,7 @@ function placeRing(c){
       const b = el.getBoundingClientRect(); box = {l:b.left - 4, t:b.top - 4, w:b.width + 8, h:b.height + 8};
     }
   }
+  placeCoach(box);
   if (!box || !box.w){ r.classList.add('hide'); return; }
   r.classList.remove('hide');
   r.style.left = box.l + 'px'; r.style.top = box.t + 'px';
